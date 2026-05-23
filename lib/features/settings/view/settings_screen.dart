@@ -150,6 +150,9 @@ class _SettingsView extends StatelessWidget {
               ),
             ),
           ),
+          const Spacer(),
+          const SizedBox(height: 15),
+          Image.asset(width: 100, height: 100, "assets/logo.png"),
         ],
       ),
     );

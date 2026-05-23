@@ -32,7 +32,10 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    AppRoutes.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+    AppRoutes.routeObserver.subscribe(
+      this,
+      ModalRoute.of(context) as PageRoute,
+    );
   }
 
   @override
@@ -94,7 +97,9 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
                         title: AppLocalizations.of(context)!.savedDrafts,
                         icon: Icons.description_outlined,
                         color: AppColors.labelGrey,
-                        badge: state.draftCount > 0 ? '${state.draftCount}' : null,
+                        badge: state.draftCount > 0
+                            ? '${state.draftCount}'
+                            : null,
                         onTap: () => context.push('/drafts'),
                       ),
                     ]),
@@ -133,6 +138,13 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
                       ),
                     ),
                   ),
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: Image.asset('assets/logo.png', height: 120),
+                  ),
+                ),
                 const SliverPadding(padding: EdgeInsets.only(bottom: 24)),
               ],
             ),
@@ -163,9 +175,7 @@ class _HomeListCard extends StatelessWidget {
     return Card(
       color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
@@ -187,7 +197,10 @@ class _HomeListCard extends StatelessWidget {
               ),
               if (badge != null)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: color.withOpacity(0.12),
                     borderRadius: BorderRadius.circular(20),

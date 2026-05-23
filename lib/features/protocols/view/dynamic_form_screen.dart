@@ -26,9 +26,13 @@ class _DynamicFormScreenState extends State<DynamicFormScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProtocolBloc(
-        sl<ProtocolRepository>(),
-      )..add(LoadProtocol(protocolId: widget.protocolId, protocolType: widget.protocolType)),
+      create: (_) => ProtocolBloc(sl<ProtocolRepository>())
+        ..add(
+          LoadProtocol(
+            protocolId: widget.protocolId,
+            protocolType: widget.protocolType,
+          ),
+        ),
       child: _DynamicFormView(protocolType: widget.protocolType),
     );
   }
@@ -50,7 +54,8 @@ class _DynamicFormView extends StatelessWidget {
               behavior: SnackBarBehavior.floating,
               action: SnackBarAction(
                 label: AppLocalizations.of(context)!.retry,
-                onPressed: () => context.read<ProtocolBloc>().add(const SaveDraft()),
+                onPressed: () =>
+                    context.read<ProtocolBloc>().add(const SaveDraft()),
               ),
               backgroundColor: AppColors.errorRed,
             ),
@@ -70,17 +75,21 @@ class _DynamicFormView extends StatelessWidget {
 
         if (state.error != null && state.sections.isEmpty) {
           return Scaffold(
-            appBar: AppBar(title: Text(AppLocalizations.of(context)!.errorGeneric)),
-            body: Center(
-              child: Text(state.error!),
+            appBar: AppBar(
+              title: Text(AppLocalizations.of(context)!.errorGeneric),
             ),
+            body: Center(child: Text(state.error!)),
           );
         }
 
         if (state.protocolId == 0) {
           return Scaffold(
-            appBar: AppBar(title: Text(AppLocalizations.of(context)!.errorGeneric)),
-            body: Center(child: Text(AppLocalizations.of(context)!.protocolNotInitialized)),
+            appBar: AppBar(
+              title: Text(AppLocalizations.of(context)!.errorGeneric),
+            ),
+            body: Center(
+              child: Text(AppLocalizations.of(context)!.protocolNotInitialized),
+            ),
           );
         }
 
@@ -98,7 +107,9 @@ class _DynamicFormView extends StatelessWidget {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       title: Text(AppLocalizations.of(ctx)!.unsavedChanges),
-                      content: Text(AppLocalizations.of(ctx)!.leaveWithoutSaving),
+                      content: Text(
+                        AppLocalizations.of(ctx)!.leaveWithoutSaving,
+                      ),
                       actions: [
                         TextButton(
                           onPressed: () {
@@ -129,7 +140,8 @@ class _DynamicFormView extends StatelessWidget {
             actions: [
               IconButton(
                 icon: const Icon(Icons.save),
-                onPressed: () => context.read<ProtocolBloc>().add(const SaveDraft()),
+                onPressed: () =>
+                    context.read<ProtocolBloc>().add(const SaveDraft()),
                 tooltip: AppLocalizations.of(context)!.save,
               ),
               PopupMenuButton<String>(
@@ -143,7 +155,11 @@ class _DynamicFormView extends StatelessWidget {
                     value: 'delete',
                     child: Row(
                       children: [
-                        const Icon(Icons.delete_outline, size: 18, color: AppColors.errorRed),
+                        const Icon(
+                          Icons.delete_outline,
+                          size: 18,
+                          color: AppColors.errorRed,
+                        ),
                         const SizedBox(width: 8),
                         Text(
                           AppLocalizations.of(context)!.deleteDraft,
