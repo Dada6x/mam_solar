@@ -56,6 +56,16 @@ flutter:
     - assets/protocols/
     - assets/
 
+  fonts:
+    - family: Cairo
+      fonts:
+        - asset: assets/fonts/Cairo/static/Cairo-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Cairo/static/Cairo-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Cairo/static/Cairo-Bold.ttf
+          weight: 700
+
 
 flutter_native_splash:
   color: "#ffffff"

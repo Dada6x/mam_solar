@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
+import 'package:mam_solar/core/constants/app_routes.dart';
 import 'package:mam_solar/core/services/injection.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
 import 'package:mam_solar/features/home/bloc/home_bloc.dart';
-import 'package:mam_solar/features/home/widgets/home_card.dart';
 import 'package:mam_solar/features/home/widgets/recent_draft_card.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
 
@@ -28,7 +28,24 @@ class _HomeView extends StatefulWidget {
   State<_HomeView> createState() => _HomeViewState();
 }
 
-class _HomeViewState extends State<_HomeView> {
+class _HomeViewState extends State<_HomeView> with RouteAware {
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AppRoutes.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    AppRoutes.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    context.read<HomeBloc>().add(const LoadHome());
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

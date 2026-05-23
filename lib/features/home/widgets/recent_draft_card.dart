@@ -33,6 +33,7 @@ class RecentDraftCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
+        color: Colors.white,
         margin: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
         child: Container(
           width: 160,

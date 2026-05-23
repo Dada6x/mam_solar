@@ -9,9 +9,10 @@ class AppTheme {
       seedColor: AppColors.primaryGreen,
       brightness: Brightness.light,
     );
-
+  
     return ThemeData(
       useMaterial3: true,
+      fontFamily: 'Cairo',
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.lightGrey,
       appBarTheme: const AppBarTheme(

@@ -1,3 +1,4 @@
+import 'package:flutter/widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mam_solar/features/home/view/home_screen.dart';
 import 'package:mam_solar/features/protocols/view/protocol_type_screen.dart';
@@ -19,13 +20,14 @@ class AppRoutes {
   static const String drafts = '/drafts';
   static const String settings = '/settings';
 
+  static final RouteObserver<ModalRoute> routeObserver =
+      RouteObserver<ModalRoute>();
+
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    observers: [routeObserver],
     routes: [
-      GoRoute(
-        path: '/',
-        builder: (context, state) => const HomeScreen(),
-      ),
+      GoRoute(path: '/', builder: (context, state) => const HomeScreen()),
       GoRoute(
         path: '/protocol-type',
         builder: (context, state) => const ProtocolTypeScreen(),

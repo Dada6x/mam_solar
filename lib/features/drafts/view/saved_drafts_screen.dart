@@ -193,6 +193,7 @@ class _DraftListItem extends StatelessWidget {
         child: const Icon(Icons.delete, color: Colors.white),
       ),
       child: Card(
+        color: Colors.white,
         margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
         child: ListTile(
           leading: CircleAvatar(
