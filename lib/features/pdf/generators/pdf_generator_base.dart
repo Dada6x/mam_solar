@@ -1,4 +1,6 @@
 import 'dart:io';
+import 'dart:typed_data';
+import 'package:flutter/services.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:mam_solar/core/utils/date_formatter.dart';
@@ -6,6 +8,17 @@ import 'package:mam_solar/core/utils/date_formatter.dart';
 class PdfGeneratorBase {
   static final _font = pw.Font.helvetica();
   static final _fontBold = pw.Font.helveticaBold();
+  static Uint8List? _logoBytes;
+
+  static Future<void> loadLogo() async {
+    if (_logoBytes != null) return;
+    try {
+      final data = await rootBundle.load('assets/logo.png');
+      _logoBytes = data.buffer.asUint8List();
+    } catch (_) {
+      _logoBytes = null;
+    }
+  }
 
   static PdfColor get _green => PdfColor.fromInt(0xFF2e7d32);
   static PdfColor get _labelGray => PdfColor.fromInt(0xFF555555);
@@ -58,12 +71,14 @@ class PdfGeneratorBase {
                 color: PdfColor.fromInt(0xFFf9a825),
                 borderRadius: pw.BorderRadius.circular(4),
               ),
-              child: pw.Center(
-                child: pw.Text( //TODO add logo here 
-                  'MS',
-                  style: pw.TextStyle(font: _fontBold, fontSize: 12),
-                ),
-              ),
+              child: _logoBytes != null
+                  ? pw.Image(pw.MemoryImage(_logoBytes!), fit: pw.BoxFit.contain)
+                  : pw.Center(
+                      child: pw.Text(
+                        'MS',
+                        style: pw.TextStyle(font: _fontBold, fontSize: 12),
+                      ),
+                    ),
             ),
             pw.Text(
               title,

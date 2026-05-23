@@ -7,6 +7,7 @@ import 'package:pdf/widgets.dart' as pw;
 import 'package:mam_solar/core/utils/pdf_naming_util.dart';
 import 'package:mam_solar/data/models/protocol_model.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
+import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 import 'package:mam_solar/features/pdf/generators/ac_protocol_pdf_generator.dart';
 import 'package:mam_solar/features/pdf/generators/work_order_pdf_generator.dart';
 import 'package:mam_solar/features/pdf/generators/damage_report_pdf_generator.dart';
@@ -68,6 +69,7 @@ class PdfBloc extends Bloc<PdfEvent, PdfState> {
         } catch (_) {}
       }
 
+      await PdfGeneratorBase.loadLogo();
       final doc = _generateDocument(protocol, data, repeatableData);
 
       final dir = await getApplicationDocumentsDirectory();

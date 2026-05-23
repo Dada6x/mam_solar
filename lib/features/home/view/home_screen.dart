@@ -89,18 +89,18 @@ class _HomeViewState extends State<_HomeView> {
                         badge: state.draftCount > 0 ? '${state.draftCount}' : null,
                         onTap: () => context.push('/drafts'),
                       ),
-                      HomeCard(
-                        title: AppLocalizations.of(context)!.exportedPdfs,
-                        icon: Icons.picture_as_pdf_outlined,
-                        onTap: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('PDF export folder'),
-                              behavior: SnackBarBehavior.floating,
-                            ),
-                          );
-                        },
-                      ),
+                      // HomeCard(
+                      //   title: AppLocalizations.of(context)!.exportedPdfs,
+                      //   icon: Icons.picture_as_pdf_outlined,
+                      //   onTap: () {
+                      //     ScaffoldMessenger.of(context).showSnackBar(
+                      //       SnackBar(
+                      //         content: Text('PDF export folder'),
+                      //         behavior: SnackBarBehavior.floating,
+                      //       ),
+                      //     );
+                      //   },
+                      // ),
                       HomeCard(
                         title: AppLocalizations.of(context)!.settings,
                         icon: Icons.settings_outlined,

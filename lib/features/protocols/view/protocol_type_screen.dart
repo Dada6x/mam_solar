@@ -2,27 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
-import 'package:sized_context/sized_context.dart';
 
 class ProtocolTypeScreen extends StatelessWidget {
   const ProtocolTypeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final isTablet = context.widthPx >= 600;
-    final crossAxisCount = isTablet ? 4 : 2;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.protocolType),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
-        child: GridView.count(
-          crossAxisCount: crossAxisCount,
-          mainAxisSpacing: 12,
-          crossAxisSpacing: 12,
-          childAspectRatio: 0.9,
+        child: ListView(
           children: [
             _ProtocolTypeCard(
               icon: Icons.solar_power,
@@ -31,6 +23,7 @@ class ProtocolTypeScreen extends StatelessWidget {
               color: AppColors.primaryGreen,
               onTap: () => context.push('/form/ac_acceptance'),
             ),
+            const SizedBox(height: 12),
             _ProtocolTypeCard(
               icon: Icons.build,
               title: AppLocalizations.of(context)!.workOrder,
@@ -38,6 +31,7 @@ class ProtocolTypeScreen extends StatelessWidget {
               color: Colors.blue.shade700,
               onTap: () => context.push('/form/work_order'),
             ),
+            const SizedBox(height: 12),
             _ProtocolTypeCard(
               icon: Icons.warning_amber,
               title: AppLocalizations.of(context)!.damageReport,
@@ -45,6 +39,7 @@ class ProtocolTypeScreen extends StatelessWidget {
               color: Colors.orange.shade800,
               onTap: () => context.push('/form/damage_report'),
             ),
+            const SizedBox(height: 12),
             _ProtocolTypeCard(
               icon: Icons.checklist,
               title: AppLocalizations.of(context)!.installationReport,
@@ -85,34 +80,35 @@ class _ProtocolTypeCard extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,
         child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 30),
+          child: Row(
             children: [
-              Icon(icon, size: 48, color: color),
-              const SizedBox(height: 12),
-              Text(
-                title,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: color,
+              Icon(icon, size: 40, color: color),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        color: color,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: AppColors.labelGrey,
+                      ),
+                    ),
+                  ],
                 ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
               ),
-              const SizedBox(height: 6),
-              Text(
-                subtitle,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontSize: 11,
-                  color: AppColors.labelGrey,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
+              Icon(Icons.chevron_right, color: color),
             ],
           ),
         ),

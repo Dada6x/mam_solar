@@ -61,11 +61,7 @@ class _MamSolarAppState extends State<MamSolarApp> {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.light,
             locale: locale,
-            supportedLocales: const [
-              Locale('en'),
-              Locale('de'),
-              Locale('ar'),
-            ],
+            supportedLocales: const [Locale('en'), Locale('de'), Locale('ar')],
             localizationsDelegates: [
               AppLocalizations.delegate,
               GlobalMaterialLocalizations.delegate,

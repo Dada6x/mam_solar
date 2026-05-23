@@ -31,7 +31,7 @@ class SignatureFieldWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(8),
           child: Container(
             width: double.infinity,
-            height: 100,
+            height: 180,
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade400),
               borderRadius: BorderRadius.circular(8),
@@ -45,7 +45,7 @@ class SignatureFieldWidget extends StatelessWidget {
                         child: Image.file(
                           File(signaturePath!),
                           width: double.infinity,
-                          height: 100,
+                          height: 180,
                           fit: BoxFit.contain,
                         ),
                       ),
