@@ -75,6 +75,69 @@ section_id: sec
         expect(field.type, FieldType.dropdown);
         expect(field.dropdownOptions, ['option_a', 'option_b', 'option_c']);
       });
+
+      test('syncs dropdown options to fieldPages when section has page breaks', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- type | dropdown | required | Type
+  options: option_a, option_b, option_c
+- textField | text | | Text
+---
+- checkboxField | checkbox | | Checkbox
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        final section = result.sections[0];
+        expect(section.fieldPages.length, 2);
+
+        // fieldPages[0] should have dropdown with options
+        final fieldInPage = section.fieldPages[0][0];
+        expect(fieldInPage.type, FieldType.dropdown);
+        expect(fieldInPage.dropdownOptions, ['option_a', 'option_b', 'option_c']);
+
+        // fields list should also have options
+        expect(section.fields[0].dropdownOptions, ['option_a', 'option_b', 'option_c']);
+      });
+
+      test('syncs show_if to fieldPages when section has page breaks', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- checkbox1 | checkbox | | Checkbox One
+- textField | text | | Text Field
+  show_if: checkbox1 == true
+---
+- otherField | text | | Other
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        final section = result.sections[0];
+        expect(section.fieldPages.length, 2);
+
+        // fieldPages[0] should have textField with show_if
+        final fieldInPage = section.fieldPages[0][1];
+        expect(fieldInPage.showIfField, 'checkbox1');
+        expect(fieldInPage.showIfOperator, '==');
+        expect(fieldInPage.showIfValue, 'true');
+
+        // fields list should also have show_if
+        expect(section.fields[1].showIfField, 'checkbox1');
+      });
     });
 
     group('repeatable sections', () {

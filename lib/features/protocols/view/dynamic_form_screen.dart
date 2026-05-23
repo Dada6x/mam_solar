@@ -5,14 +5,8 @@ import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/core/services/injection.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
 import 'package:mam_solar/features/protocols/bloc/protocol_bloc.dart';
-import 'package:mam_solar/features/protocols/forms/form_definition.dart';
-import 'package:mam_solar/features/protocols/widgets/form_field_renderer.dart';
-import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
-import 'package:mam_solar/features/protocols/widgets/repeatable_section_widget.dart';
-import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
-import 'package:mam_solar/features/settings/bloc/settings_bloc.dart';
+import 'package:mam_solar/features/protocols/widgets/question_wizard_widget.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
-import 'package:sized_context/sized_context.dart';
 
 class DynamicFormScreen extends StatefulWidget {
   final String protocolType;
@@ -47,28 +41,8 @@ class _DynamicFormView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final languageCode = context.watch<SettingsBloc>().state.languageCode;
-
     return BlocConsumer<ProtocolBloc, ProtocolState>(
       listener: (context, state) {
-        if (state.saveMessage == 'autosaved' && context.mounted) {
-          ScaffoldMessenger.of(context).clearSnackBars();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(Icons.check, size: 16, color: Colors.white),
-                  const SizedBox(width: 4),
-                  Text(AppLocalizations.of(context)!.autosaved),
-                ],
-              ),
-              behavior: SnackBarBehavior.floating,
-              duration: const Duration(seconds: 1),
-              backgroundColor: AppColors.primaryGreen,
-            ),
-          );
-        }
         if (state.error == 'saveFailed' && context.mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -103,11 +77,59 @@ class _DynamicFormView extends StatelessWidget {
           );
         }
 
-        final isTablet = context.widthPx >= 600;
+        if (state.protocolId == 0) {
+          return Scaffold(
+            appBar: AppBar(title: const Text('Error')),
+            body: const Center(child: Text('Protocol not initialized')),
+          );
+        }
 
         return Scaffold(
           appBar: AppBar(
-            title: Text(protocolType.replaceAll('_', ' ').toUpperCase()),
+            title: Text(
+              protocolType.replaceAll('_', ' ').toUpperCase(),
+              style: const TextStyle(fontSize: 14),
+            ),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () {
+                if (state.isDirty) {
+                  showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: Text(AppLocalizations.of(ctx)!.unsavedChanges),
+                      content: Text(AppLocalizations.of(ctx)!.leaveWithoutSaving),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(),
+                          child: Text(AppLocalizations.of(ctx)!.cancel),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context.read<ProtocolBloc>().add(const SaveDraft());
+                            Navigator.of(ctx).pop();
+                            context.pop();
+                          },
+                          child: Text(AppLocalizations.of(ctx)!.saveAndLeave),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(ctx).pop();
+                            context.pop();
+                          },
+                          child: Text(
+                            AppLocalizations.of(ctx)!.discard,
+                            style: const TextStyle(color: AppColors.errorRed),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                } else {
+                  context.pop();
+                }
+              },
+            ),
             actions: [
               IconButton(
                 icon: const Icon(Icons.save),
@@ -138,77 +160,12 @@ class _DynamicFormView extends StatelessWidget {
               ),
             ],
           ),
-          body: Column(
-            children: [
-              Expanded(
-                child: ListView(
-                  padding: const EdgeInsets.all(16),
-                  children: [
-                    ...state.sections.asMap().entries.map((entry) {
-                      return _FormSectionWidget(
-                        section: entry.value,
-                        index: entry.key,
-                        formData: state.formData,
-                        repeatableData: state.repeatableData,
-                        protocolId: state.protocolId,
-                        isTablet: isTablet,
-                        languageCode: languageCode,
-                      );
-                    }),
-                  ],
-                ),
-              ),
-              _buildBottomBar(context, state),
-            ],
+          body: QuestionWizardWidget(
+            protocolType: protocolType,
+            protocolId: state.protocolId,
           ),
         );
       },
-    );
-  }
-
-  Widget _buildBottomBar(BuildContext context, ProtocolState state) {
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 4,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: SafeArea(
-        child: SizedBox(
-          width: double.infinity,
-          child: ElevatedButton.icon(
-            onPressed: () {
-              final bloc = context.read<ProtocolBloc>();
-              final missing = bloc.getMissingRequiredFields();
-              if (missing.isNotEmpty) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('${AppLocalizations.of(context)!.fieldRequired}: ${missing.join(', ')}'),
-                    behavior: SnackBarBehavior.floating,
-                    backgroundColor: AppColors.errorRed,
-                  ),
-                );
-                return;
-              }
-              bloc.add(const GeneratePdf());
-            },
-            icon: state.pdfGenerating
-                ? const SizedBox(
-                    width: 18,
-                    height: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2, color: Colors.white),
-                  )
-                : const Icon(Icons.picture_as_pdf),
-            label: Text(AppLocalizations.of(context)!.generatePdf),
-          ),
-        ),
-      ),
     );
   }
 
@@ -236,169 +193,6 @@ class _DynamicFormView extends StatelessWidget {
           ),
         ],
       ),
-    );
-  }
-}
-
-class _FormSectionWidget extends StatefulWidget {
-  final FormSection section;
-  final int index;
-  final Map<String, dynamic> formData;
-  final Map<String, List<Map<String, dynamic>>> repeatableData;
-  final int protocolId;
-  final bool isTablet;
-  final String languageCode;
-
-  const _FormSectionWidget({
-    required this.section,
-    required this.index,
-    required this.formData,
-    required this.repeatableData,
-    required this.protocolId,
-    required this.isTablet,
-    required this.languageCode,
-  });
-
-  @override
-  State<_FormSectionWidget> createState() => _FormSectionWidgetState();
-}
-
-class _FormSectionWidgetState extends State<_FormSectionWidget> {
-  bool _isExpanded = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _isExpanded = widget.index == 0;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 12),
-      child: ExpansionTile(
-        title: Text(
-          _sectionLabel(),
-          style: const TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.bold,
-            color: AppColors.primaryGreen,
-          ),
-        ),
-        initiallyExpanded: _isExpanded,
-        onExpansionChanged: (expanded) {
-          setState(() => _isExpanded = expanded);
-        },
-        childrenPadding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
-        children: [
-          if (widget.section.isRepeatable)
-            _buildRepeatableSection()
-          else
-            _buildRegularFields(),
-        ],
-      ),
-    );
-  }
-
-  String _sectionLabel() {
-    return widget.section.labelKey;
-  }
-
-  bool _evaluateShowIf(FormFieldDef field) {
-    if (field.showIfField == null || field.showIfOperator == null || field.showIfValue == null) {
-      return true;
-    }
-    final currentValue = widget.formData[field.showIfField];
-    final currentStr = currentValue?.toString() ?? '';
-    if (field.showIfOperator == '==') return currentStr == field.showIfValue;
-    if (field.showIfOperator == '!=') return currentStr != field.showIfValue;
-    return true;
-  }
-
-  Widget _buildRegularFields() {
-    return Column(
-      children: widget.section.fields.map((field) {
-        if (!_evaluateShowIf(field)) {
-          return const SizedBox.shrink();
-        }
-
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: 12,
-            left: widget.isTablet ? 8 : 0,
-            right: widget.isTablet ? 8 : 0,
-          ),
-          child: field.type == FieldType.signature
-              ? _buildSignatureField(field)
-              : field.type == FieldType.photo
-                  ? _buildPhotoField(field)
-                  : FormFieldRenderer(
-                      field: field,
-                      value: widget.formData[field.id],
-                      onChanged: (v) {
-                        context.read<ProtocolBloc>().add(UpdateField(field.id, v));
-                      },
-                      protocolId: widget.protocolId,
-                      label: field.localizedLabel(widget.languageCode),
-                      formData: widget.formData,
-                      languageCode: widget.languageCode,
-                    ),
-        );
-      }).toList(),
-    );
-  }
-
-  Widget _buildSignatureField(FormFieldDef field) {
-    return SignatureFieldWidget(
-      label: field.localizedLabel(widget.languageCode),
-      signaturePath: widget.formData[field.id] as String?,
-      onTap: () async {
-        final result = await context.push<String>(
-          '/signature/${widget.protocolId}/${field.id}',
-        );
-        if (result != null) {
-          if (context.mounted) {
-            context.read<ProtocolBloc>().add(UpdateField(field.id, result));
-          }
-        }
-      },
-      onClear: () {
-        context.read<ProtocolBloc>().add(UpdateField(field.id, null));
-      },
-    );
-  }
-
-  Widget _buildPhotoField(FormFieldDef field) {
-    return PhotoCaptureFieldWidget(
-      label: field.localizedLabel(widget.languageCode),
-      imagePath: widget.formData[field.id] as String?,
-      onChanged: (v) {
-        context.read<ProtocolBloc>().add(UpdateField(field.id, v));
-      },
-    );
-  }
-
-  Widget _buildRepeatableSection() {
-    final items = widget.repeatableData[widget.section.id] ?? [{}];
-    return RepeatableSectionWidget(
-      section: widget.section,
-      items: items,
-      onFieldChanged: (index, key, value) {
-        context.read<ProtocolBloc>().add(
-          UpdateRepeatableField(widget.section.id, index, key, value),
-        );
-      },
-      onAdd: () {
-        context.read<ProtocolBloc>().add(
-          AddRepeatableItem(widget.section.id),
-        );
-      },
-      onRemove: (index) {
-        context.read<ProtocolBloc>().add(
-          RemoveRepeatableItem(widget.section.id, index),
-        );
-      },
-      languageCode: widget.languageCode,
     );
   }
 }

@@ -135,10 +135,11 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
 
   void _onUpdateRepeatableField(UpdateRepeatableField event, Emitter<ProtocolState> emit) {
     final newRepeatable = Map<String, List<Map<String, dynamic>>>.from(state.repeatableData);
-    final items = List<Map<String, dynamic>>.from(newRepeatable[event.sectionId] ?? []);
-    if (event.index < items.length) {
-      items[event.index] = Map<String, dynamic>.from(items[event.index])..[event.key] = event.value;
+    var items = List<Map<String, dynamic>>.from(newRepeatable[event.sectionId] ?? []);
+    while (items.length <= event.index) {
+      items.add({});
     }
+    items[event.index] = Map<String, dynamic>.from(items[event.index])..[event.key] = event.value;
     newRepeatable[event.sectionId] = items;
     emit(state.copyWith(repeatableData: newRepeatable, isDirty: true, saveMessage: null));
     _scheduleAutosave();
@@ -210,9 +211,18 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     for (final section in state.sections) {
       for (final field in section.fields) {
         if (field.required && field.type != FieldType.signature) {
-          final val = state.formData[field.id];
-          if (val == null || (val is String && val.trim().isEmpty)) {
-            return false;
+          if (section.isRepeatable) {
+            final items = state.repeatableData[section.id] ?? [];
+            final allFilled = items.isNotEmpty && items.every((item) {
+              final val = item[field.id];
+              return val != null && !(val is String && val.trim().isEmpty);
+            });
+            if (!allFilled) return false;
+          } else {
+            final val = state.formData[field.id];
+            if (val == null || (val is String && val.trim().isEmpty)) {
+              return false;
+            }
           }
         }
       }
@@ -225,9 +235,18 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     for (final section in state.sections) {
       for (final field in section.fields) {
         if (field.required && field.type != FieldType.signature) {
-          final val = state.formData[field.id];
-          if (val == null || (val is String && val.trim().isEmpty)) {
-            missing.add(field.labelKey);
+          if (section.isRepeatable) {
+            final items = state.repeatableData[section.id] ?? [];
+            final allFilled = items.isNotEmpty && items.every((item) {
+              final val = item[field.id];
+              return val != null && !(val is String && val.trim().isEmpty);
+            });
+            if (!allFilled) missing.add(field.labelKey);
+          } else {
+            final val = state.formData[field.id];
+            if (val == null || (val is String && val.trim().isEmpty)) {
+              missing.add(field.labelKey);
+            }
           }
         }
       }

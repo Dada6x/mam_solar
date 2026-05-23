@@ -9,11 +9,10 @@ version: 1.1
 ## Customer Data
 section_id: customer_data
 
-- fullName | text | required | Full Name | Vollständiger Name | الاسم الكامل
-- street   | text |          | Street | Straße | الشارع
-- zipCity  | text |          | ZIP / City | PLZ / Ort | الرمز البريدي / المدينة
-- email    | email |         | Email | E-Mail | البريد الإلكتروني
-<!-- - gender    | gender |         | Gender | GENDER | الجنس  -->
+- fullName | text  | required | Full Name | Vollständiger Name | الاسم الكامل
+- street   | text  |          | Street | Straße | الشارع
+- zipCity  | text  |          | ZIP / City | PLZ / Ort | الرمز البريدي / المدينة
+- email    | email |          | Email | E-Mail | البريد الإلكتروني
 
 ## Work Description
 section_id: work_description
@@ -55,16 +54,6 @@ section_id: completion
 
 - workCompleted  | checkbox | required | Work Completed | Arbeit abgeschlossen | العمل مكتمل
 - completionDate | date     |          | Completion Date | Abschlussdatum | تاريخ الإكمال
-- photoWork1     | photo    |          | Photo - Work 1 | Foto - Arbeit 1 | صورة - العمل 1
-- photoWork2     | photo    |          | Photo - Work 2 | Foto - Arbeit 2 | صورة - العمل 2
-
-## Remarks
-section_id: remarks
-
-- remarks | textarea |          | Remarks | Bemerkungen | ملاحظات
-
-## Signatures
-section_id: signatures
-
-- customerSignature   | signature | required | Customer Signature | Kundenunterschrift | توقيع العميل
-- technicianSignature | signature | required | Technician Signature | Technikerunterschrift | توقيع الفني
+---
+- photoWork1 | photo |          | Photo - Work 1 | Foto - Arbeit 1 | صورة - العمل 1
+- photoWork2 | photo |          | Photo - Work 2 | Foto - Arbeit 2 | صورة - العمل 2

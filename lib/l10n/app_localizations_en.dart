@@ -614,4 +614,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String pageOf(Object current, Object total) {
     return 'Page $current of $total';
   }
+
+  @override
+  String get noQuestions => 'No questions available';
+
+  @override
+  String get fieldRequiredSingle => 'Please answer this question';
+
+  @override
+  String get allQuestionsAnswered => 'All questions answered!';
+
+  @override
+  String get reviewAndGenerate => 'Review and generate your PDF';
+
+  @override
+  String get unsavedChanges => 'Unsaved changes';
+
+  @override
+  String get leaveWithoutSaving => 'Leave without saving?';
+
+  @override
+  String get saveAndLeave => 'Save & leave';
+
+  @override
+  String get discard => 'Discard';
 }

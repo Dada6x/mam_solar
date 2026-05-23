@@ -14,22 +14,22 @@ section_id: damage_declaration
 - causedByPartner  | checkbox |          | Caused by Partner Company | Durch Partnerfirma verursacht | بسبب شركة شريكة
 - companyLiability | checkbox |          | Company Liability | Firmenhaftung | مسؤولية الشركة
 
-## Injured Party
++ ## Injured Party
 section_id: injured_party
 
-- injuredName | text | required | Injured Party Name | Name des Geschädigten | اسم الطرف المتضرر
-- street      | text |          | Street | Straße | الشارع
-- zipCode     | text |          | ZIP Code | PLZ | الرمز البريدي
-- city        | text |          | City | Stadt | المدينة
-- phone       | text |          | Phone | Telefon | الهاتف
-- email       | email |         | Email | E-Mail | البريد الإلكتروني
+- injuredName | text  | required | Injured Party Name | Name des Geschädigten | اسم الطرف المتضرر
+- street      | text  |          | Street | Straße | الشارع
+- zipCode     | text  |          | ZIP Code | PLZ | الرمز البريدي
+- city        | text  |          | City | Stadt | المدينة
+- phone       | text  |          | Phone | Telefon | الهاتف
+- email       | email |          | Email | E-Mail | البريد الإلكتروني
 
 ## Incident Details
 section_id: incident_details
 
-- incidentDate          | date | required | Incident Date | Vorfallsdatum | تاريخ الحادث
-- incidentTime          | time |          | Incident Time | Vorfallszeit | وقت الحادث
-- secondPersonInvolved  | checkbox |       | Second Person Involved | Zweite Person beteiligt | شخص ثانٍ متورط
+- incidentDate         | date     | required | Incident Date | Vorfallsdatum | تاريخ الحادث
+- incidentTime         | time     |          | Incident Time | Vorfallszeit | وقت الحادث
+- secondPersonInvolved | checkbox |          | Second Person Involved | Zweite Person beteiligt | شخص ثانٍ متورط
 
 ## Damage Description
 section_id: damage_description
@@ -45,8 +45,9 @@ max: 10
 
 - deviceName        | text     |          | Device Name | Gerätename | اسم الجهاز
 - deviceBrand       | text     |          | Device Brand | Gerätemarke | العلامة التجارية للجهاز
-- devicePhoto       | photo    |          | Device Photo | Gerätefoto | صورة الجهاز
 - damageDescription | textarea |          | Damage Description | Schadensbeschreibung | وصف الضرر
+---
+- devicePhoto | photo |          | Device Photo | Gerätefoto | صورة الجهاز
 
 ## Damage Minimization
 section_id: damage_minimization
@@ -55,20 +56,20 @@ section_id: damage_minimization
 - minimizationNotes    | textarea |          | Minimization Notes | Minimierungsnotizen | ملاحظات التقليل
   show_if: minimizationPossible == true
 
-## Insurance
++ ## Insurance
 section_id: insurance
 
 - insuranceNotes | textarea |          | Insurance Notes | Versicherungsnotizen | ملاحظات التأمين
-
-## Remarks
-section_id: remarks
-
-- remarks | textarea |          | Remarks | Bemerkungen | ملاحظات
 
 ## Employee Info
 section_id: employee_info
 
 - employeeName | text | required | Employee Name | Mitarbeitername | اسم الموظف
+
++ ## Remarks
+section_id: remarks
+
+- remarks | textarea |          | Remarks | Bemerkungen | ملاحظات
 
 ## Signatures
 section_id: signatures

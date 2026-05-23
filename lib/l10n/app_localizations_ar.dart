@@ -614,4 +614,28 @@ class AppLocalizationsAr extends AppLocalizations {
   String pageOf(Object current, Object total) {
     return 'صفحة $current من $total';
   }
+
+  @override
+  String get noQuestions => 'لا توجد أسئلة متاحة';
+
+  @override
+  String get fieldRequiredSingle => 'الرجاء الإجابة على هذا السؤال';
+
+  @override
+  String get allQuestionsAnswered => 'تم الإجابة على جميع الأسئلة!';
+
+  @override
+  String get reviewAndGenerate => 'مراجعة وإنشاء PDF';
+
+  @override
+  String get unsavedChanges => 'تغييرات غير محفوظة';
+
+  @override
+  String get leaveWithoutSaving => 'المغادرة دون حفظ؟';
+
+  @override
+  String get saveAndLeave => 'حفظ والمغادرة';
+
+  @override
+  String get discard => 'تجاهل';
 }

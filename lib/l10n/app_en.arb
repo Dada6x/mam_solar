@@ -200,5 +200,13 @@
   "companyName": "BSH GmbH & Co. KG",
   "companyAddress": "Bamberger Str. 44, 97631 Bad Königshofen",
   "appVersion": "1.0.0",
-  "pageOf": "Page {current} of {total}"
+  "pageOf": "Page {current} of {total}",
+  "noQuestions": "No questions available",
+  "fieldRequiredSingle": "Please answer this question",
+  "allQuestionsAnswered": "All questions answered!",
+  "reviewAndGenerate": "Review and generate your PDF",
+  "unsavedChanges": "Unsaved changes",
+  "leaveWithoutSaving": "Leave without saving?",
+  "saveAndLeave": "Save & leave",
+  "discard": "Discard"
 }

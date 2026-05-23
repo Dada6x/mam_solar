@@ -1305,6 +1305,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Page {current} of {total}'**
   String pageOf(Object current, Object total);
+
+  /// No description provided for @noQuestions.
+  ///
+  /// In en, this message translates to:
+  /// **'No questions available'**
+  String get noQuestions;
+
+  /// No description provided for @fieldRequiredSingle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please answer this question'**
+  String get fieldRequiredSingle;
+
+  /// No description provided for @allQuestionsAnswered.
+  ///
+  /// In en, this message translates to:
+  /// **'All questions answered!'**
+  String get allQuestionsAnswered;
+
+  /// No description provided for @reviewAndGenerate.
+  ///
+  /// In en, this message translates to:
+  /// **'Review and generate your PDF'**
+  String get reviewAndGenerate;
+
+  /// No description provided for @unsavedChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsaved changes'**
+  String get unsavedChanges;
+
+  /// No description provided for @leaveWithoutSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave without saving?'**
+  String get leaveWithoutSaving;
+
+  /// No description provided for @saveAndLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & leave'**
+  String get saveAndLeave;
+
+  /// No description provided for @discard.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discard;
 }
 
 class _AppLocalizationsDelegate

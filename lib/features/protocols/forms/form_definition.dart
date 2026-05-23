@@ -19,6 +19,8 @@ class FormSection {
   final int minRepeat;
   final int maxRepeat;
   final FormFieldDef? repeatableField;
+  final bool merged;
+  final List<List<FormFieldDef>> fieldPages;
 
   const FormSection({
     required this.id,
@@ -28,6 +30,8 @@ class FormSection {
     this.minRepeat = 1,
     this.maxRepeat = 10,
     this.repeatableField,
+    this.merged = false,
+    this.fieldPages = const [],
   });
 }
 

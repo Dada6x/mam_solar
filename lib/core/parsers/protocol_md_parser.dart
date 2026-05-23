@@ -147,11 +147,13 @@ class ProtocolMdParser {
     // ── parse body ──
     final bodyLines = bodyStart.split('\n');
     List<FormFieldDef>? currentFields;
+    List<List<FormFieldDef>>? currentFieldPages;
     String? currentSectionId;
     String? currentSectionLabel;
     bool currentRepeatable = false;
     int currentMin = 1;
     int currentMax = 10;
+    bool currentMerged = false;
     FormFieldDef? lastField;
 
     void _finalizeSection() {
@@ -163,27 +165,52 @@ class ProtocolMdParser {
           isRepeatable: currentRepeatable,
           minRepeat: currentMin,
           maxRepeat: currentMax,
+          merged: currentMerged,
+          fieldPages: currentFieldPages != null && currentFieldPages!.length > 1
+              ? List.from(currentFieldPages!)
+              : const [],
         ));
       }
       currentFields = null;
+      currentFieldPages = null;
       currentSectionId = null;
       currentSectionLabel = null;
       currentRepeatable = false;
       currentMin = 1;
       currentMax = 10;
+      currentMerged = false;
       lastField = null;
     }
 
     for (final rawLine in bodyLines) {
       final line = rawLine.trim();
 
-      if (line.isEmpty || (line.startsWith('#') && !line.startsWith('##'))) continue;
+      if (line.isEmpty || (line.startsWith('#') && !line.startsWith('##') && !line.startsWith('+ ##'))) continue;
+
+      // merged section heading
+      if (line.startsWith('+ ## ')) {
+        _finalizeSection();
+        currentSectionLabel = line.substring(4).trim();
+        currentFields = [];
+        currentFieldPages = [[]];
+        currentMerged = true;
+        continue;
+      }
 
       // section heading
       if (line.startsWith('## ')) {
         _finalizeSection();
         currentSectionLabel = line.substring(3).trim();
         currentFields = [];
+        currentFieldPages = [[]];
+        continue;
+      }
+
+      // page break within a section
+      if (line == '---') {
+        if (currentFieldPages != null) {
+          currentFieldPages!.add([]);
+        }
         continue;
       }
 
@@ -225,6 +252,9 @@ class ProtocolMdParser {
             labelAr: labelAr,
           );
           currentFields?.add(lastField!);
+          if (currentFieldPages != null && currentFieldPages!.isNotEmpty) {
+            currentFieldPages!.last.add(lastField!);
+          }
         }
         continue;
       }
@@ -234,7 +264,7 @@ class ProtocolMdParser {
         final idx = currentFields!.indexOf(lastField!);
         if (idx >= 0) {
           final opts = line.substring('options:'.length).split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
-          currentFields![idx] = FormFieldDef(
+          final updated = FormFieldDef(
             id: lastField!.id,
             labelKey: lastField!.labelKey,
             type: lastField!.type,
@@ -246,6 +276,8 @@ class ProtocolMdParser {
             labelDe: lastField!.labelDe,
             labelAr: lastField!.labelAr,
           );
+          currentFields![idx] = updated;
+          _syncFieldToPages(lastField!, updated, currentFieldPages);
         }
         continue;
       }
@@ -263,7 +295,7 @@ class ProtocolMdParser {
 
           final idx = currentFields!.indexOf(lastField!);
           if (idx >= 0) {
-            currentFields![idx] = FormFieldDef(
+            final updated = FormFieldDef(
               id: lastField!.id,
               labelKey: lastField!.labelKey,
               type: lastField!.type,
@@ -275,6 +307,8 @@ class ProtocolMdParser {
               labelDe: lastField!.labelDe,
               labelAr: lastField!.labelAr,
             );
+            currentFields![idx] = updated;
+            _syncFieldToPages(lastField!, updated, currentFieldPages);
           }
         }
         continue;
@@ -349,5 +383,17 @@ class ProtocolMdParser {
 
   static bool _parseBool(String raw) {
     return raw.toLowerCase() == 'true' || raw == '1';
+  }
+
+  /// Replaces all occurrences of [oldField] with [newField] in [pages].
+  static void _syncFieldToPages(FormFieldDef oldField, FormFieldDef newField, List<List<FormFieldDef>>? pages) {
+    if (pages == null) return;
+    for (final page in pages) {
+      for (int i = 0; i < page.length; i++) {
+        if (identical(page[i], oldField)) {
+          page[i] = newField;
+        }
+      }
+    }
   }
 }
