@@ -28,6 +28,41 @@ class _SavedDraftsView extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.savedDrafts),
+        actions: [
+          if (context.watch<DraftsBloc>().state.drafts.isNotEmpty)
+            IconButton(
+              icon: const Icon(Icons.delete_sweep),
+              tooltip: 'Delete all',
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (ctx) => AlertDialog(
+                    title: Text(AppLocalizations.of(ctx)!.deleteDraftConfirm),
+                    content: Text(AppLocalizations.of(ctx)!.deleteDraftMsg),
+                    actions: [
+                      TextButton(
+                        onPressed: () => Navigator.of(ctx).pop(),
+                        child: Text(AppLocalizations.of(ctx)!.cancel),
+                      ),
+                      TextButton(
+                        onPressed: () async {
+                          await sl<ProtocolRepository>().clearAll();
+                          if (ctx.mounted) Navigator.of(ctx).pop();
+                          if (context.mounted) {
+                            context.read<DraftsBloc>().add(const LoadDrafts());
+                          }
+                        },
+                        child: Text(
+                          AppLocalizations.of(ctx)!.delete,
+                          style: const TextStyle(color: AppColors.errorRed),
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              },
+            ),
+        ],
       ),
       body: BlocBuilder<DraftsBloc, DraftsState>(
         builder: (context, state) {
