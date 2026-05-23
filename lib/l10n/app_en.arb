@@ -209,5 +209,19 @@
   "leaveWithoutSaving": "Leave without saving?",
   "saveAndLeave": "Save as draft",
   "discard": "Discard",
-  "exit": "Exit"
+  "exit": "Exit",
+  "loading": "Loading...",
+  "errorGeneric": "Error",
+  "protocolNotInitialized": "Protocol not initialized",
+  "retry": "Retry",
+  "camera": "Camera",
+  "gallery": "Gallery",
+  "failedToCapturePhoto": "Failed to capture photo",
+  "failedToPickImage": "Failed to pick image",
+  "failedToSaveSignature": "Failed to save signature",
+  "allDataCleared": "All data cleared",
+  "pdfPreview": "PDF Preview",
+  "openFile": "Open file",
+  "ok": "OK",
+  "deleteAll": "Delete all"
 }

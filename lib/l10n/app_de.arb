@@ -209,5 +209,19 @@
   "leaveWithoutSaving": "Ohne Speichern verlassen?",
   "saveAndLeave": "Als Entwurf speichern",
   "discard": "Verwerfen",
-  "exit": "Beenden"
+  "exit": "Beenden",
+  "loading": "Lade...",
+  "errorGeneric": "Fehler",
+  "protocolNotInitialized": "Protokoll nicht initialisiert",
+  "retry": "Wiederholen",
+  "camera": "Kamera",
+  "gallery": "Galerie",
+  "failedToCapturePhoto": "Fotoaufnahme fehlgeschlagen",
+  "failedToPickImage": "Bildauswahl fehlgeschlagen",
+  "failedToSaveSignature": "Signatur speichern fehlgeschlagen",
+  "allDataCleared": "Alle Daten gelöscht",
+  "pdfPreview": "PDF-Vorschau",
+  "openFile": "Datei öffnen",
+  "ok": "OK",
+  "deleteAll": "Alle löschen"
 }

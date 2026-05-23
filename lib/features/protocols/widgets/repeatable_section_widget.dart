@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
+import 'package:mam_solar/features/protocols/bloc/protocol_bloc.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
+import 'package:mam_solar/l10n/app_localizations.dart';
 import 'package:mam_solar/features/protocols/widgets/form_field_renderer.dart';
 
 class RepeatableSectionWidget extends StatefulWidget {
@@ -93,7 +96,7 @@ class _RepeatableSectionWidgetState extends State<RepeatableSectionWidget> {
           child: TextButton.icon(
             onPressed: widget.onAdd,
             icon: const Icon(Icons.add_circle_outline, size: 18),
-            label: const Text('Add item'),
+            label: Text(AppLocalizations.of(context)!.addItem),
           ),
         ),
       ],

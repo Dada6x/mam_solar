@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
+import 'package:mam_solar/l10n/app_localizations.dart';
 
 class PhotoCaptureFieldWidget extends StatefulWidget {
   final String? imagePath;
@@ -43,7 +44,7 @@ class _PhotoCaptureFieldWidgetState extends State<PhotoCaptureFieldWidget> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to capture photo')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToCapturePhoto)),
         );
       }
     }
@@ -63,7 +64,7 @@ class _PhotoCaptureFieldWidgetState extends State<PhotoCaptureFieldWidget> {
     } catch (_) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Failed to pick image')),
+          SnackBar(content: Text(AppLocalizations.of(context)!.failedToPickImage)),
         );
       }
     }
@@ -120,7 +121,7 @@ class _PhotoCaptureFieldWidgetState extends State<PhotoCaptureFieldWidget> {
                 child: OutlinedButton.icon(
                   onPressed: _takePhoto,
                   icon: const Icon(Icons.camera_alt, size: 18),
-                  label: const Text('Camera', style: TextStyle(fontSize: 12)),
+                  label: Text(AppLocalizations.of(context)!.camera, style: const TextStyle(fontSize: 12)),
                 ),
               ),
               const SizedBox(width: 8),
@@ -128,7 +129,7 @@ class _PhotoCaptureFieldWidgetState extends State<PhotoCaptureFieldWidget> {
                 child: OutlinedButton.icon(
                   onPressed: _pickFromGallery,
                   icon: const Icon(Icons.photo_library, size: 18),
-                  label: const Text('Gallery', style: TextStyle(fontSize: 12)),
+                  label: Text(AppLocalizations.of(context)!.gallery, style: const TextStyle(fontSize: 12)),
                 ),
               ),
             ],

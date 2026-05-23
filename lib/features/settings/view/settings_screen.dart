@@ -88,7 +88,7 @@ class _SettingsView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _InfoRow(label: l10n.appTitle, value: 'mam-solarbau'),
+                  _InfoRow(label: l10n.appTitle, value: l10n.appTitle),
                   const SizedBox(height: 12),
                   const Divider(height: 1),
                   const SizedBox(height: 12),
@@ -188,8 +188,8 @@ class _SettingsView extends StatelessWidget {
     await sigRepo.clearAll();
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('All data cleared'),
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.allDataCleared),
           behavior: SnackBarBehavior.floating,
         ),
       );

@@ -32,7 +32,7 @@ class _SavedDraftsView extends StatelessWidget {
           if (context.watch<DraftsBloc>().state.drafts.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.delete_sweep),
-              tooltip: 'Delete all',
+              tooltip: AppLocalizations.of(context)!.deleteAll,
               onPressed: () {
                 showDialog(
                   context: context,

@@ -643,4 +643,46 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get exit => 'Beenden';
+
+  @override
+  String get loading => 'Lade...';
+
+  @override
+  String get errorGeneric => 'Fehler';
+
+  @override
+  String get protocolNotInitialized => 'Protokoll nicht initialisiert';
+
+  @override
+  String get retry => 'Wiederholen';
+
+  @override
+  String get camera => 'Kamera';
+
+  @override
+  String get gallery => 'Galerie';
+
+  @override
+  String get failedToCapturePhoto => 'Fotoaufnahme fehlgeschlagen';
+
+  @override
+  String get failedToPickImage => 'Bildauswahl fehlgeschlagen';
+
+  @override
+  String get failedToSaveSignature => 'Signatur speichern fehlgeschlagen';
+
+  @override
+  String get allDataCleared => 'Alle Daten gelöscht';
+
+  @override
+  String get pdfPreview => 'PDF-Vorschau';
+
+  @override
+  String get openFile => 'Datei öffnen';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get deleteAll => 'Alle löschen';
 }

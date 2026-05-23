@@ -209,5 +209,19 @@
   "leaveWithoutSaving": "المغادرة دون حفظ؟",
   "saveAndLeave": "حفظ كمسودة",
   "discard": "تجاهل",
-  "exit": "خروج"
+  "exit": "خروج",
+  "loading": "جارٍ التحميل...",
+  "errorGeneric": "خطأ",
+  "protocolNotInitialized": "لم تتم تهيئة البروتوكول",
+  "retry": "إعادة المحاولة",
+  "camera": "الكاميرا",
+  "gallery": "المعرض",
+  "failedToCapturePhoto": "فشل التقاط الصورة",
+  "failedToPickImage": "فشل اختيار الصورة",
+  "failedToSaveSignature": "فشل حفظ التوقيع",
+  "allDataCleared": "تم مسح جميع البيانات",
+  "pdfPreview": "معاينة PDF",
+  "openFile": "فتح الملف",
+  "ok": "موافق",
+  "deleteAll": "حذف الكل"
 }

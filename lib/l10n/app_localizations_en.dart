@@ -641,4 +641,46 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get exit => 'Exit';
+
+  @override
+  String get loading => 'Loading...';
+
+  @override
+  String get errorGeneric => 'Error';
+
+  @override
+  String get protocolNotInitialized => 'Protocol not initialized';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get camera => 'Camera';
+
+  @override
+  String get gallery => 'Gallery';
+
+  @override
+  String get failedToCapturePhoto => 'Failed to capture photo';
+
+  @override
+  String get failedToPickImage => 'Failed to pick image';
+
+  @override
+  String get failedToSaveSignature => 'Failed to save signature';
+
+  @override
+  String get allDataCleared => 'All data cleared';
+
+  @override
+  String get pdfPreview => 'PDF Preview';
+
+  @override
+  String get openFile => 'Open file';
+
+  @override
+  String get ok => 'OK';
+
+  @override
+  String get deleteAll => 'Delete all';
 }

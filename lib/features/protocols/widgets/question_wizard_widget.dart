@@ -839,7 +839,7 @@ class _NavigationBar extends StatelessWidget {
                     TextButton.icon(
                       onPressed: onBack,
                       icon: const Icon(Icons.arrow_back, size: 18),
-                      label: const Text('Back'),
+                      label: Text(AppLocalizations.of(context)!.back),
                     )
                   else
                     const SizedBox(width: 72),
@@ -869,7 +869,7 @@ class _NavigationBar extends StatelessWidget {
             child: ElevatedButton.icon(
               onPressed: onAddRepeat,
               icon: const Icon(Icons.add, size: 18),
-              label: const Text('Add'),
+              label: Text(AppLocalizations.of(context)!.addItem),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.primaryGreen,
                 foregroundColor: Colors.white,
@@ -886,7 +886,7 @@ class _NavigationBar extends StatelessWidget {
         ElevatedButton.icon(
           onPressed: onNext,
           icon: const Icon(Icons.arrow_forward, size: 18),
-          label: const Text('Next'),
+          label: Text(AppLocalizations.of(context)!.next),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryGreen,
             foregroundColor: Colors.white,
@@ -911,13 +911,13 @@ class _NavigationBar extends StatelessWidget {
             padding: const EdgeInsets.only(right: 8),
             child: TextButton(
               onPressed: onSkip,
-              child: Text('Skip', style: TextStyle(color: AppColors.labelGrey)),
+              child: Text(AppLocalizations.of(context)!.skip, style: TextStyle(color: AppColors.labelGrey)),
             ),
           ),
         ElevatedButton.icon(
           onPressed: onNext,
           icon: const Icon(Icons.arrow_forward, size: 18),
-          label: const Text('Next'),
+          label: Text(AppLocalizations.of(context)!.next),
           style: ElevatedButton.styleFrom(
             backgroundColor: AppColors.primaryGreen,
             foregroundColor: Colors.white,

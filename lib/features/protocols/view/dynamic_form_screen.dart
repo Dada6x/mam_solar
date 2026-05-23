@@ -49,7 +49,7 @@ class _DynamicFormView extends StatelessWidget {
               content: Text(AppLocalizations.of(context)!.saveFailed),
               behavior: SnackBarBehavior.floating,
               action: SnackBarAction(
-                label: 'Retry',
+                label: AppLocalizations.of(context)!.retry,
                 onPressed: () => context.read<ProtocolBloc>().add(const SaveDraft()),
               ),
               backgroundColor: AppColors.errorRed,
@@ -63,14 +63,14 @@ class _DynamicFormView extends StatelessWidget {
       builder: (context, state) {
         if (state.isLoading) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Loading...')),
+            appBar: AppBar(title: Text(AppLocalizations.of(context)!.loading)),
             body: const Center(child: CircularProgressIndicator()),
           );
         }
 
         if (state.error != null && state.sections.isEmpty) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Error')),
+            appBar: AppBar(title: Text(AppLocalizations.of(context)!.errorGeneric)),
             body: Center(
               child: Text(state.error!),
             ),
@@ -79,8 +79,8 @@ class _DynamicFormView extends StatelessWidget {
 
         if (state.protocolId == 0) {
           return Scaffold(
-            appBar: AppBar(title: const Text('Error')),
-            body: const Center(child: Text('Protocol not initialized')),
+            appBar: AppBar(title: Text(AppLocalizations.of(context)!.errorGeneric)),
+            body: Center(child: Text(AppLocalizations.of(context)!.protocolNotInitialized)),
           );
         }
 
@@ -130,7 +130,7 @@ class _DynamicFormView extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.save),
                 onPressed: () => context.read<ProtocolBloc>().add(const SaveDraft()),
-                tooltip: 'Save',
+                tooltip: AppLocalizations.of(context)!.save,
               ),
               PopupMenuButton<String>(
                 onSelected: (val) {

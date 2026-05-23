@@ -67,7 +67,7 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
               child: Image.asset('assets/logo.png'),
             ),
             const SizedBox(width: 8),
-            const Text('mam-solarbau'),
+            Text("MAM-Solarbau"),
           ],
         ),
       ),

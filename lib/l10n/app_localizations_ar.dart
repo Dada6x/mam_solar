@@ -641,4 +641,46 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get exit => 'خروج';
+
+  @override
+  String get loading => 'جارٍ التحميل...';
+
+  @override
+  String get errorGeneric => 'خطأ';
+
+  @override
+  String get protocolNotInitialized => 'لم تتم تهيئة البروتوكول';
+
+  @override
+  String get retry => 'إعادة المحاولة';
+
+  @override
+  String get camera => 'الكاميرا';
+
+  @override
+  String get gallery => 'المعرض';
+
+  @override
+  String get failedToCapturePhoto => 'فشل التقاط الصورة';
+
+  @override
+  String get failedToPickImage => 'فشل اختيار الصورة';
+
+  @override
+  String get failedToSaveSignature => 'فشل حفظ التوقيع';
+
+  @override
+  String get allDataCleared => 'تم مسح جميع البيانات';
+
+  @override
+  String get pdfPreview => 'معاينة PDF';
+
+  @override
+  String get openFile => 'فتح الملف';
+
+  @override
+  String get ok => 'موافق';
+
+  @override
+  String get deleteAll => 'حذف الكل';
 }

@@ -55,7 +55,7 @@ class _SignatureViewState extends State<_SignatureView> {
         if (state.error != null) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error: ${state.error}'),
+              content: Text('${AppLocalizations.of(context)!.errorGeneric}: ${state.error}'),
               backgroundColor: AppColors.errorRed,
             ),
           );
@@ -131,7 +131,7 @@ class _SignatureViewState extends State<_SignatureView> {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Failed to save signature: $e'),
+            content: Text('${AppLocalizations.of(context)!.failedToSaveSignature}: $e'),
             backgroundColor: AppColors.errorRed,
           ),
         );

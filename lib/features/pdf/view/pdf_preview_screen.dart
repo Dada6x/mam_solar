@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:mam_solar/core/services/injection.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
 import 'package:mam_solar/features/pdf/bloc/pdf_bloc.dart';
+import 'package:mam_solar/l10n/app_localizations.dart';
 import 'package:open_filex/open_filex.dart';
 import 'package:pdf/pdf.dart';
 import 'package:printing/printing.dart';
@@ -36,12 +37,12 @@ class _PdfPreviewView extends StatelessWidget {
           showDialog(
             context: context,
             builder: (ctx) => AlertDialog(
-              title: const Text('PDF Generation Failed'),
+              title: Text(AppLocalizations.of(context)!.pdfGenerationFailed),
               content: Text(state.error!),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(ctx).pop(),
-                  child: const Text('OK'),
+                  child: Text(AppLocalizations.of(context)!.ok),
                 ),
               ],
             ),
@@ -51,13 +52,13 @@ class _PdfPreviewView extends StatelessWidget {
       builder: (context, state) {
         return Scaffold(
           appBar: AppBar(
-            title: const Text('PDF Preview'),
+            title: Text(AppLocalizations.of(context)!.pdfPreview),
             actions: [
               if (state.pdfPath != null)
                 IconButton(
                   icon: const Icon(Icons.open_in_new),
                   onPressed: () => _openFile(context, state.pdfPath!),
-                  tooltip: 'Open file',
+                  tooltip: AppLocalizations.of(context)!.openFile,
                 ),
             ],
           ),
@@ -85,7 +86,7 @@ class _PdfPreviewView extends StatelessWidget {
                         onPressed: () {
                           context.read<PdfBloc>().add(GeneratePdf(protocolId));
                         },
-                        child: const Text('Generate PDF'),
+                        child: Text(AppLocalizations.of(context)!.generatePdf),
                       ),
                     ],
                   ),
