@@ -4,13 +4,13 @@ import 'package:go_router/go_router.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/core/services/injection.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
-import 'package:mam_solar/data/repositories/signature_repository.dart';
 import 'package:mam_solar/features/protocols/bloc/protocol_bloc.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
 import 'package:mam_solar/features/protocols/widgets/form_field_renderer.dart';
 import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/repeatable_section_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
+import 'package:mam_solar/features/settings/bloc/settings_bloc.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
 import 'package:sized_context/sized_context.dart';
 
@@ -34,7 +34,6 @@ class _DynamicFormScreenState extends State<DynamicFormScreen> {
     return BlocProvider(
       create: (_) => ProtocolBloc(
         sl<ProtocolRepository>(),
-        sl<SignatureRepository>(),
       )..add(LoadProtocol(protocolId: widget.protocolId, protocolType: widget.protocolType)),
       child: _DynamicFormView(protocolType: widget.protocolType),
     );
@@ -48,6 +47,8 @@ class _DynamicFormView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final languageCode = context.watch<SettingsBloc>().state.languageCode;
+
     return BlocConsumer<ProtocolBloc, ProtocolState>(
       listener: (context, state) {
         if (state.saveMessage == 'autosaved' && context.mounted) {
@@ -151,6 +152,7 @@ class _DynamicFormView extends StatelessWidget {
                         repeatableData: state.repeatableData,
                         protocolId: state.protocolId,
                         isTablet: isTablet,
+                        languageCode: languageCode,
                       );
                     }),
                   ],
@@ -245,6 +247,7 @@ class _FormSectionWidget extends StatefulWidget {
   final Map<String, List<Map<String, dynamic>>> repeatableData;
   final int protocolId;
   final bool isTablet;
+  final String languageCode;
 
   const _FormSectionWidget({
     required this.section,
@@ -253,6 +256,7 @@ class _FormSectionWidget extends StatefulWidget {
     required this.repeatableData,
     required this.protocolId,
     required this.isTablet,
+    required this.languageCode,
   });
 
   @override
@@ -274,7 +278,7 @@ class _FormSectionWidgetState extends State<_FormSectionWidget> {
       margin: const EdgeInsets.only(bottom: 12),
       child: ExpansionTile(
         title: Text(
-          widget.section.labelKey,
+          _sectionLabel(),
           style: const TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.bold,
@@ -296,9 +300,28 @@ class _FormSectionWidgetState extends State<_FormSectionWidget> {
     );
   }
 
+  String _sectionLabel() {
+    return widget.section.labelKey;
+  }
+
+  bool _evaluateShowIf(FormFieldDef field) {
+    if (field.showIfField == null || field.showIfOperator == null || field.showIfValue == null) {
+      return true;
+    }
+    final currentValue = widget.formData[field.showIfField];
+    final currentStr = currentValue?.toString() ?? '';
+    if (field.showIfOperator == '==') return currentStr == field.showIfValue;
+    if (field.showIfOperator == '!=') return currentStr != field.showIfValue;
+    return true;
+  }
+
   Widget _buildRegularFields() {
     return Column(
       children: widget.section.fields.map((field) {
+        if (!_evaluateShowIf(field)) {
+          return const SizedBox.shrink();
+        }
+
         return Padding(
           padding: EdgeInsets.only(
             bottom: 12,
@@ -316,7 +339,9 @@ class _FormSectionWidgetState extends State<_FormSectionWidget> {
                         context.read<ProtocolBloc>().add(UpdateField(field.id, v));
                       },
                       protocolId: widget.protocolId,
-                      label: field.labelKey,
+                      label: field.localizedLabel(widget.languageCode),
+                      formData: widget.formData,
+                      languageCode: widget.languageCode,
                     ),
         );
       }).toList(),
@@ -325,7 +350,7 @@ class _FormSectionWidgetState extends State<_FormSectionWidget> {
 
   Widget _buildSignatureField(FormFieldDef field) {
     return SignatureFieldWidget(
-      label: field.labelKey,
+      label: field.localizedLabel(widget.languageCode),
       signaturePath: widget.formData[field.id] as String?,
       onTap: () async {
         final result = await context.push<String>(
@@ -345,7 +370,7 @@ class _FormSectionWidgetState extends State<_FormSectionWidget> {
 
   Widget _buildPhotoField(FormFieldDef field) {
     return PhotoCaptureFieldWidget(
-      label: field.labelKey,
+      label: field.localizedLabel(widget.languageCode),
       imagePath: widget.formData[field.id] as String?,
       onChanged: (v) {
         context.read<ProtocolBloc>().add(UpdateField(field.id, v));
@@ -373,6 +398,7 @@ class _FormSectionWidgetState extends State<_FormSectionWidget> {
           RemoveRepeatableItem(widget.section.id, index),
         );
       },
+      languageCode: widget.languageCode,
     );
   }
 }

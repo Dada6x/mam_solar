@@ -10,6 +10,8 @@ class FormFieldRenderer extends StatelessWidget {
   final ValueChanged<dynamic> onChanged;
   final int protocolId;
   final String label;
+  final Map<String, dynamic>? formData;
+  final String? languageCode;
 
   const FormFieldRenderer({
     super.key,
@@ -18,11 +20,21 @@ class FormFieldRenderer extends StatelessWidget {
     required this.onChanged,
     required this.protocolId,
     required this.label,
+    this.formData,
+    this.languageCode,
   });
 
   @override
   Widget build(BuildContext context) {
-    final labelText = label;
+    if (field.showIfField != null) {
+      if (!_evaluateShowIf()) {
+        return const SizedBox.shrink();
+      }
+    }
+
+    final lang = languageCode ?? 'en';
+    final effectiveLabel = field.localizedLabel(lang);
+    final labelText = effectiveLabel;
     final requiredMark = field.required ? ' *' : '';
 
     switch (field.type) {
@@ -111,7 +123,7 @@ class FormFieldRenderer extends StatelessWidget {
       case FieldType.dropdown:
         final options = field.dropdownOptions ?? [];
         return DropdownButtonFormField<String>(
-          value: value as String?,
+          initialValue: value as String?,
           decoration: InputDecoration(
             labelText: '$labelText$requiredMark',
             labelStyle: const TextStyle(fontSize: 13),
@@ -120,7 +132,7 @@ class FormFieldRenderer extends StatelessWidget {
             return DropdownMenuItem(
               value: opt,
               child: Text(
-                opt,
+                opt.replaceAll('_', ' '),
                 style: const TextStyle(fontSize: 13),
               ),
             );
@@ -136,7 +148,6 @@ class FormFieldRenderer extends StatelessWidget {
         );
 
       case FieldType.signature:
-        // Signature navigation is handled by the parent screen
         return SignatureFieldWidget(
           label: labelText,
           signaturePath: value as String?,
@@ -159,5 +170,22 @@ class FormFieldRenderer extends StatelessWidget {
       case FieldType.repeatable:
         return const SizedBox.shrink();
     }
+  }
+
+  bool _evaluateShowIf() {
+    if (field.showIfField == null || field.showIfOperator == null || field.showIfValue == null) {
+      return true;
+    }
+
+    final currentValue = formData?[field.showIfField];
+    final currentStr = currentValue?.toString() ?? '';
+
+    if (field.showIfOperator == '==') {
+      return currentStr == field.showIfValue;
+    } else if (field.showIfOperator == '!=') {
+      return currentStr != field.showIfValue;
+    }
+
+    return true;
   }
 }

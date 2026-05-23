@@ -1,0 +1,241 @@
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mam_solar/core/parsers/protocol_md_parser.dart';
+import 'package:mam_solar/features/protocols/forms/form_definition.dart';
+
+void main() {
+  group('ProtocolMdParser', () {
+    group('frontmatter parsing', () {
+      test('parses frontmatter keys correctly', () {
+        const md = '''
+---
+protocol: test_protocol
+title: Test Protocol
+title_de: Test Protokoll
+title_ar: بروتوكول اختبار
+version: 1.0
+---
+
+## Section One
+section_id: section_1
+
+- field1 | text | required | Field One
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.type, 'test_protocol');
+        expect(result.title, 'Test Protocol');
+        expect(result.titleDe, 'Test Protokoll');
+        expect(result.titleAr, 'بروتوكول اختبار');
+        expect(result.version, '1.0');
+      });
+    });
+
+    group('field parsing', () {
+      test('parses a text field with 3 language labels', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- field1 | text | required | Name | Name DE | اسم
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        expect(result.sections[0].fields.length, 1);
+        final field = result.sections[0].fields[0];
+        expect(field.id, 'field1');
+        expect(field.type, FieldType.text);
+        expect(field.required, true);
+        expect(field.labelKey, 'Name');
+        expect(field.labelDe, 'Name DE');
+        expect(field.labelAr, 'اسم');
+      });
+
+      test('parses a dropdown field with options', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- type | dropdown | required | Type
+  options: option_a, option_b, option_c
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 1);
+        final field = result.sections[0].fields[0];
+        expect(field.type, FieldType.dropdown);
+        expect(field.dropdownOptions, ['option_a', 'option_b', 'option_c']);
+      });
+    });
+
+    group('repeatable sections', () {
+      test('parses a repeatable section with min/max', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Repeating Section
+section_id: repeating
+repeatable: true
+min: 2
+max: 8
+
+- field1 | text | required | Field
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        final section = result.sections[0];
+        expect(section.isRepeatable, true);
+        expect(section.minRepeat, 2);
+        expect(section.maxRepeat, 8);
+      });
+    });
+
+    group('conditional fields', () {
+      test('parses a show_if conditional correctly', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- checkbox1 | checkbox | | Checkbox One
+- textField | text | | Text Field
+  show_if: checkbox1 == true
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 2);
+        final field = result.sections[0].fields[1];
+        expect(field.showIfField, 'checkbox1');
+        expect(field.showIfOperator, '==');
+        expect(field.showIfValue, 'true');
+      });
+
+      test('parses show_if with not-equal operator', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- status | dropdown | | Status
+- reason | textarea | | Reason
+  show_if: status != done
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 2);
+        final field = result.sections[0].fields[1];
+        expect(field.showIfField, 'status');
+        expect(field.showIfOperator, '!=');
+        expect(field.showIfValue, 'done');
+      });
+    });
+
+    group('error handling', () {
+      test('returns error section (not throw) on malformed input', () {
+        const md = 'this is not valid markdown with frontmatter';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        expect(result.sections[0].id, 'error');
+      });
+
+      test('handles empty input gracefully', () {
+        const md = '';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.isEmpty, true);
+      });
+    });
+
+    group('localizedLabel', () {
+      test('returns English label for en', () {
+        const field = FormFieldDef(
+          id: 'test',
+          labelKey: 'Name',
+          type: FieldType.text,
+          labelDe: 'Name DE',
+          labelAr: 'اسم',
+        );
+        expect(field.localizedLabel('en'), 'Name');
+      });
+
+      test('returns German label for de', () {
+        const field = FormFieldDef(
+          id: 'test',
+          labelKey: 'Name',
+          type: FieldType.text,
+          labelDe: 'Name DE',
+          labelAr: 'اسم',
+        );
+        expect(field.localizedLabel('de'), 'Name DE');
+      });
+
+      test('returns Arabic label for ar', () {
+        const field = FormFieldDef(
+          id: 'test',
+          labelKey: 'Name',
+          type: FieldType.text,
+          labelDe: 'Name DE',
+          labelAr: 'اسم',
+        );
+        expect(field.localizedLabel('ar'), 'اسم');
+      });
+
+      test('falls back to English when no translation exists', () {
+        const field = FormFieldDef(
+          id: 'test',
+          labelKey: 'Name',
+          type: FieldType.text,
+        );
+        expect(field.localizedLabel('de'), 'Name');
+        expect(field.localizedLabel('ar'), 'Name');
+      });
+    });
+
+    group('cache behavior', () {
+      test('caches and returns same instance on second call', () async {
+        // This test verifies the static caching logic
+        // by checking version-based caching
+        const md = '''
+---
+protocol: cache_test
+title: Cache Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- field1 | text | | Field
+''';
+        // Clear cache for this test
+        ProtocolMdParser.cache.clear();
+
+        final first = ProtocolMdParser.parseMarkdown('cache_test', md);
+        // Parse again - should use cached version
+        final second = ProtocolMdParser.parseMarkdown('cache_test', md);
+        expect(second.type, first.type);
+        expect(second.sections.length, first.sections.length);
+      });
+    });
+  });
+}

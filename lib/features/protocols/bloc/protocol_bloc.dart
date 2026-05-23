@@ -2,14 +2,10 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:mam_solar/core/parsers/protocol_md_parser.dart';
 import 'package:mam_solar/data/models/protocol_model.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
-import 'package:mam_solar/data/repositories/signature_repository.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
-import 'package:mam_solar/features/protocols/forms/ac_acceptance_form.dart';
-import 'package:mam_solar/features/protocols/forms/work_order_form.dart';
-import 'package:mam_solar/features/protocols/forms/damage_report_form.dart';
-import 'package:mam_solar/features/protocols/forms/installation_report_form.dart';
 
 part 'protocol_bloc.freezed.dart';
 
@@ -45,10 +41,9 @@ sealed class ProtocolState with _$ProtocolState {
 
 class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   final ProtocolRepository _protocolRepo;
-  final SignatureRepository _signatureRepo;
   Timer? _autosaveTimer;
 
-  ProtocolBloc(this._protocolRepo, this._signatureRepo) : super(const ProtocolState()) {
+  ProtocolBloc(this._protocolRepo) : super(const ProtocolState()) {
     on<LoadProtocol>(_onLoad);
     on<UpdateField>(_onUpdateField);
     on<UpdateRepeatableField>(_onUpdateRepeatableField);
@@ -57,21 +52,6 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     on<SaveDraft>(_onSaveDraft);
     on<GeneratePdf>(_onGeneratePdf);
     on<DeleteDraft>(_onDeleteDraft);
-  }
-
-  ProtocolFormDefinition _getFormDefinition(String type) {
-    switch (type) {
-      case 'ac_acceptance':
-        return AcAcceptanceForm();
-      case 'work_order':
-        return WorkOrderForm();
-      case 'damage_report':
-        return DamageReportForm();
-      case 'installation_report':
-        return InstallationReportForm();
-      default:
-        return AcAcceptanceForm();
-    }
   }
 
   Future<void> _onLoad(LoadProtocol event, Emitter<ProtocolState> emit) async {
@@ -110,8 +90,8 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
         return;
       }
 
-      final formDef = _getFormDefinition(type);
-      final sections = formDef.sections;
+      final parsed = await ProtocolMdParser.parse(type);
+      final sections = parsed.sections;
 
       if (existing == null) {
         final now = DateTime.now().millisecondsSinceEpoch;
@@ -214,8 +194,6 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
         emit(state.copyWith(pdfGenerating: false, error: 'Protocol not found'));
         return;
       }
-      // Generate PDF handled by PdfGenerator
-      // The BLoC just triggers the navigation to PDF preview
       emit(state.copyWith(pdfGenerating: false, pdfPath: 'preview'));
     } catch (e) {
       emit(state.copyWith(pdfGenerating: false, error: e.toString()));

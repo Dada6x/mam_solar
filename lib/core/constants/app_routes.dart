@@ -1,4 +1,3 @@
-import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mam_solar/features/home/view/home_screen.dart';
 import 'package:mam_solar/features/protocols/view/protocol_type_screen.dart';

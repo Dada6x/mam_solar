@@ -9,6 +9,7 @@ class RepeatableSectionWidget extends StatefulWidget {
   final void Function(int index, String key, dynamic value) onFieldChanged;
   final VoidCallback onAdd;
   final ValueChanged<int> onRemove;
+  final String languageCode;
 
   const RepeatableSectionWidget({
     super.key,
@@ -17,6 +18,7 @@ class RepeatableSectionWidget extends StatefulWidget {
     required this.onFieldChanged,
     required this.onAdd,
     required this.onRemove,
+    required this.languageCode,
   });
 
   @override
@@ -75,7 +77,9 @@ class _RepeatableSectionWidgetState extends State<RepeatableSectionWidget> {
                             widget.onFieldChanged(index, field.id, value);
                           },
                           protocolId: 0,
-                          label: field.labelKey,
+                          label: field.localizedLabel(widget.languageCode),
+                          formData: widget.items[index],
+                          languageCode: widget.languageCode,
                         ),
                       );
                     }).toList(),

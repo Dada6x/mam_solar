@@ -1,5 +1,3 @@
-import 'package:flutter/material.dart';
-
 enum FieldType {
   text,
   number,
@@ -18,6 +16,8 @@ class FormSection {
   final String labelKey;
   final List<FormFieldDef> fields;
   final bool isRepeatable;
+  final int minRepeat;
+  final int maxRepeat;
   final FormFieldDef? repeatableField;
 
   const FormSection({
@@ -25,6 +25,8 @@ class FormSection {
     required this.labelKey,
     required this.fields,
     this.isRepeatable = false,
+    this.minRepeat = 1,
+    this.maxRepeat = 10,
     this.repeatableField,
   });
 }
@@ -35,6 +37,11 @@ class FormFieldDef {
   final FieldType type;
   final bool required;
   final List<String>? dropdownOptions;
+  final String? showIfField;
+  final String? showIfOperator;
+  final String? showIfValue;
+  final String? labelDe;
+  final String? labelAr;
 
   const FormFieldDef({
     required this.id,
@@ -42,10 +49,16 @@ class FormFieldDef {
     required this.type,
     this.required = false,
     this.dropdownOptions,
+    this.showIfField,
+    this.showIfOperator,
+    this.showIfValue,
+    this.labelDe,
+    this.labelAr,
   });
-}
 
-abstract class ProtocolFormDefinition {
-  String get protocolType;
-  List<FormSection> get sections;
+  String localizedLabel(String languageCode) {
+    if (languageCode == 'de' && labelDe != null) return labelDe!;
+    if (languageCode == 'ar' && labelAr != null) return labelAr!;
+    return labelKey;
+  }
 }

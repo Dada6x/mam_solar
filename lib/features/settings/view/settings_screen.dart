@@ -5,6 +5,7 @@ import 'package:mam_solar/core/services/injection.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
 import 'package:mam_solar/data/repositories/signature_repository.dart';
 import 'package:mam_solar/features/settings/bloc/settings_bloc.dart';
+import 'package:mam_solar/features/settings/widgets/import_protocol_button.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
 
 class SettingsScreen extends StatelessWidget {
@@ -24,8 +25,6 @@ class _SettingsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context)!.settings),
@@ -119,6 +118,7 @@ class _SettingsView extends StatelessWidget {
               ),
             ),
           ),
+          const ImportProtocolButton(),
         ],
       ),
     );
