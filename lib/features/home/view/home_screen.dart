@@ -52,7 +52,7 @@ class _HomeViewState extends State<_HomeView> {
                 color: AppColors.accentYellow,
                 borderRadius: BorderRadius.circular(4),
               ),
-              child: const Icon(Icons.solar_power, size: 20, color: Colors.black87),
+              child: Image.asset('assets/logo.png'),
             ),
             const SizedBox(width: 8),
             const Text('mam-solarbau'),

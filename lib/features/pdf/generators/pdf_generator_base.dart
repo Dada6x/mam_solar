@@ -59,7 +59,7 @@ class PdfGeneratorBase {
                 borderRadius: pw.BorderRadius.circular(4),
               ),
               child: pw.Center(
-                child: pw.Text(
+                child: pw.Text( //TODO add logo here 
                   'MS',
                   style: pw.TextStyle(font: _fontBold, fontSize: 12),
                 ),
