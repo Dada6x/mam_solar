@@ -207,6 +207,7 @@
   "reviewAndGenerate": "Überprüfen und PDF erstellen",
   "unsavedChanges": "Ungespeicherte Änderungen",
   "leaveWithoutSaving": "Ohne Speichern verlassen?",
-  "saveAndLeave": "Speichern & verlassen",
-  "discard": "Verwerfen"
+  "saveAndLeave": "Als Entwurf speichern",
+  "discard": "Verwerfen",
+  "exit": "Beenden"
 }

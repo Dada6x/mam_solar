@@ -207,6 +207,7 @@
   "reviewAndGenerate": "مراجعة وإنشاء PDF",
   "unsavedChanges": "تغييرات غير محفوظة",
   "leaveWithoutSaving": "المغادرة دون حفظ؟",
-  "saveAndLeave": "حفظ والمغادرة",
-  "discard": "تجاهل"
+  "saveAndLeave": "حفظ كمسودة",
+  "discard": "تجاهل",
+  "exit": "خروج"
 }

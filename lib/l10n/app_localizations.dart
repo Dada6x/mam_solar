@@ -1345,7 +1345,7 @@ abstract class AppLocalizations {
   /// No description provided for @saveAndLeave.
   ///
   /// In en, this message translates to:
-  /// **'Save & leave'**
+  /// **'Save as draft'**
   String get saveAndLeave;
 
   /// No description provided for @discard.
@@ -1353,6 +1353,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Discard'**
   String get discard;
+
+  /// No description provided for @exit.
+  ///
+  /// In en, this message translates to:
+  /// **'Exit'**
+  String get exit;
 }
 
 class _AppLocalizationsDelegate

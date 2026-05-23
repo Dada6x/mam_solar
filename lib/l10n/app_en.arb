@@ -207,6 +207,7 @@
   "reviewAndGenerate": "Review and generate your PDF",
   "unsavedChanges": "Unsaved changes",
   "leaveWithoutSaving": "Leave without saving?",
-  "saveAndLeave": "Save & leave",
-  "discard": "Discard"
+  "saveAndLeave": "Save as draft",
+  "discard": "Discard",
+  "exit": "Exit"
 }

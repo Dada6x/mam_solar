@@ -634,8 +634,11 @@ class AppLocalizationsAr extends AppLocalizations {
   String get leaveWithoutSaving => 'المغادرة دون حفظ؟';
 
   @override
-  String get saveAndLeave => 'حفظ والمغادرة';
+  String get saveAndLeave => 'حفظ كمسودة';
 
   @override
   String get discard => 'تجاهل';
+
+  @override
+  String get exit => 'خروج';
 }

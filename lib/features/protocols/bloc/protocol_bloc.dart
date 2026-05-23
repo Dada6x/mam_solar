@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
@@ -41,7 +40,6 @@ sealed class ProtocolState with _$ProtocolState {
 
 class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   final ProtocolRepository _protocolRepo;
-  Timer? _autosaveTimer;
 
   ProtocolBloc(this._protocolRepo) : super(const ProtocolState()) {
     on<LoadProtocol>(_onLoad);
@@ -130,7 +128,6 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     final newData = Map<String, dynamic>.from(state.formData);
     newData[event.key] = event.value;
     emit(state.copyWith(formData: newData, isDirty: true, saveMessage: null));
-    _scheduleAutosave();
   }
 
   void _onUpdateRepeatableField(UpdateRepeatableField event, Emitter<ProtocolState> emit) {
@@ -142,7 +139,6 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     items[event.index] = Map<String, dynamic>.from(items[event.index])..[event.key] = event.value;
     newRepeatable[event.sectionId] = items;
     emit(state.copyWith(repeatableData: newRepeatable, isDirty: true, saveMessage: null));
-    _scheduleAutosave();
   }
 
   void _onAddRepeatableItem(AddRepeatableItem event, Emitter<ProtocolState> emit) {
@@ -161,13 +157,6 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     }
     newRepeatable[event.sectionId] = items;
     emit(state.copyWith(repeatableData: newRepeatable, isDirty: true));
-  }
-
-  void _scheduleAutosave() {
-    _autosaveTimer?.cancel();
-    _autosaveTimer = Timer(const Duration(milliseconds: 800), () {
-      add(const SaveDraft());
-    });
   }
 
   Future<void> _onSaveDraft(SaveDraft event, Emitter<ProtocolState> emit) async {
@@ -256,7 +245,6 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
 
   @override
   Future<void> close() {
-    _autosaveTimer?.cancel();
     return super.close();
   }
 }

@@ -636,8 +636,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get leaveWithoutSaving => 'Ohne Speichern verlassen?';
 
   @override
-  String get saveAndLeave => 'Speichern & verlassen';
+  String get saveAndLeave => 'Als Entwurf speichern';
 
   @override
   String get discard => 'Verwerfen';
+
+  @override
+  String get exit => 'Beenden';
 }

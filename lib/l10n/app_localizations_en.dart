@@ -634,8 +634,11 @@ class AppLocalizationsEn extends AppLocalizations {
   String get leaveWithoutSaving => 'Leave without saving?';
 
   @override
-  String get saveAndLeave => 'Save & leave';
+  String get saveAndLeave => 'Save as draft';
 
   @override
   String get discard => 'Discard';
+
+  @override
+  String get exit => 'Exit';
 }

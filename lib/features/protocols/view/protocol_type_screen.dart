@@ -9,9 +9,7 @@ class ProtocolTypeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(AppLocalizations.of(context)!.protocolType),
-      ),
+      appBar: AppBar(title: Text(AppLocalizations.of(context)!.protocolType)),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: ListView(
@@ -43,7 +41,9 @@ class ProtocolTypeScreen extends StatelessWidget {
             _ProtocolTypeCard(
               icon: Icons.checklist,
               title: AppLocalizations.of(context)!.installationReport,
-              subtitle: AppLocalizations.of(context)!.installationReportSubtitle,
+              subtitle: AppLocalizations.of(
+                context,
+              )!.installationReportSubtitle,
               color: Colors.teal.shade700,
               onTap: () => context.push('/form/installation_report'),
             ),
@@ -72,10 +72,9 @@ class _ProtocolTypeCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
+      color: Colors.white,
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: onTap,

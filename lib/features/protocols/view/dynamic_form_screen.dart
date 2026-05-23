@@ -101,10 +101,6 @@ class _DynamicFormView extends StatelessWidget {
                       content: Text(AppLocalizations.of(ctx)!.leaveWithoutSaving),
                       actions: [
                         TextButton(
-                          onPressed: () => Navigator.of(ctx).pop(),
-                          child: Text(AppLocalizations.of(ctx)!.cancel),
-                        ),
-                        TextButton(
                           onPressed: () {
                             context.read<ProtocolBloc>().add(const SaveDraft());
                             Navigator.of(ctx).pop();
@@ -118,7 +114,7 @@ class _DynamicFormView extends StatelessWidget {
                             context.pop();
                           },
                           child: Text(
-                            AppLocalizations.of(ctx)!.discard,
+                            AppLocalizations.of(ctx)!.exit,
                             style: const TextStyle(color: AppColors.errorRed),
                           ),
                         ),

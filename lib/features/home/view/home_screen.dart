@@ -8,7 +8,6 @@ import 'package:mam_solar/features/home/bloc/home_bloc.dart';
 import 'package:mam_solar/features/home/widgets/home_card.dart';
 import 'package:mam_solar/features/home/widgets/recent_draft_card.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
-import 'package:sized_context/sized_context.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -31,17 +30,13 @@ class _HomeView extends StatefulWidget {
 
 class _HomeViewState extends State<_HomeView> {
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final isTablet = context.widthPx >= 600;
-    final crossAxisCount = isTablet ? 3 : 2;
-
     return Scaffold(
       appBar: AppBar(
+        leading: IconButton(
+          onPressed: () => context.push('/settings'),
+          icon: const Icon(Icons.settings),
+        ),
         title: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
@@ -68,43 +63,22 @@ class _HomeViewState extends State<_HomeView> {
             child: CustomScrollView(
               slivers: [
                 SliverPadding(
-                  padding: const EdgeInsets.all(16),
-                  sliver: SliverGrid(
-                    gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: crossAxisCount,
-                      childAspectRatio: 1.1,
-                      crossAxisSpacing: 12,
-                      mainAxisSpacing: 12,
-                    ),
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 0),
+                  sliver: SliverList(
                     delegate: SliverChildListDelegate([
-                      HomeCard(
+                      _HomeListCard(
                         title: AppLocalizations.of(context)!.newProtocol,
                         icon: Icons.add_circle_outline,
                         color: AppColors.primaryGreen,
                         onTap: () => context.push('/protocol-type'),
                       ),
-                      HomeCard(
+                      const SizedBox(height: 12),
+                      _HomeListCard(
                         title: AppLocalizations.of(context)!.savedDrafts,
                         icon: Icons.description_outlined,
+                        color: AppColors.labelGrey,
                         badge: state.draftCount > 0 ? '${state.draftCount}' : null,
                         onTap: () => context.push('/drafts'),
-                      ),
-                      // HomeCard(
-                      //   title: AppLocalizations.of(context)!.exportedPdfs,
-                      //   icon: Icons.picture_as_pdf_outlined,
-                      //   onTap: () {
-                      //     ScaffoldMessenger.of(context).showSnackBar(
-                      //       SnackBar(
-                      //         content: Text('PDF export folder'),
-                      //         behavior: SnackBarBehavior.floating,
-                      //       ),
-                      //     );
-                      //   },
-                      // ),
-                      HomeCard(
-                        title: AppLocalizations.of(context)!.settings,
-                        icon: Icons.settings_outlined,
-                        onTap: () => context.push('/settings'),
                       ),
                     ]),
                   ),
@@ -112,7 +86,7 @@ class _HomeViewState extends State<_HomeView> {
                 if (state.recentDrafts.isNotEmpty)
                   SliverToBoxAdapter(
                     child: Padding(
-                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                      padding: const EdgeInsets.fromLTRB(16, 24, 16, 8),
                       child: Text(
                         AppLocalizations.of(context)!.recentDrafts,
                         style: const TextStyle(
@@ -147,6 +121,74 @@ class _HomeViewState extends State<_HomeView> {
             ),
           );
         },
+      ),
+    );
+  }
+}
+
+class _HomeListCard extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final Color color;
+  final String? badge;
+  final VoidCallback onTap;
+
+  const _HomeListCard({
+    required this.title,
+    required this.icon,
+    required this.color,
+    required this.onTap,
+    this.badge,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      color: Colors.white,
+      elevation: 2,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 40),
+          child: Row(
+            children: [
+              Icon(icon, size: 40, color: color),
+              const SizedBox(width: 16),
+              Expanded(
+                child: Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+              ),
+              if (badge != null)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: color.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    badge!,
+                    style: TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: color,
+                    ),
+                  ),
+                ),
+              const SizedBox(width: 8),
+              Icon(Icons.chevron_right, color: color),
+            ],
+          ),
+        ),
       ),
     );
   }
