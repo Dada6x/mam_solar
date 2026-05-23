@@ -150,11 +150,22 @@ class ProtocolMdParser {
     List<List<FormFieldDef>>? currentFieldPages;
     String? currentSectionId;
     String? currentSectionLabel;
+    String? currentSectionLabelDe;
+    String? currentSectionLabelAr;
     bool currentRepeatable = false;
     int currentMin = 1;
     int currentMax = 10;
     bool currentMerged = false;
     FormFieldDef? lastField;
+
+    List<String> _parseHeadingLabels(String heading) {
+      final parts = heading.split('|').map((s) => s.trim()).toList();
+      return [
+        parts[0],
+        parts.length > 1 ? parts[1] : '',
+        parts.length > 2 ? parts[2] : '',
+      ];
+    }
 
     void _finalizeSection() {
       if (currentSectionId != null && currentFields != null) {
@@ -169,12 +180,16 @@ class ProtocolMdParser {
           fieldPages: currentFieldPages != null && currentFieldPages!.length > 1
               ? List.from(currentFieldPages!)
               : const [],
+          labelDe: currentSectionLabelDe,
+          labelAr: currentSectionLabelAr,
         ));
       }
       currentFields = null;
       currentFieldPages = null;
       currentSectionId = null;
       currentSectionLabel = null;
+      currentSectionLabelDe = null;
+      currentSectionLabelAr = null;
       currentRepeatable = false;
       currentMin = 1;
       currentMax = 10;
@@ -190,7 +205,10 @@ class ProtocolMdParser {
       // merged section heading
       if (line.startsWith('+ ## ')) {
         _finalizeSection();
-        currentSectionLabel = line.substring(4).trim();
+        final labels = _parseHeadingLabels(line.substring(4).trim());
+        currentSectionLabel = labels[0];
+        currentSectionLabelDe = labels[1].isNotEmpty ? labels[1] : null;
+        currentSectionLabelAr = labels[2].isNotEmpty ? labels[2] : null;
         currentFields = [];
         currentFieldPages = [[]];
         currentMerged = true;
@@ -200,7 +218,10 @@ class ProtocolMdParser {
       // section heading
       if (line.startsWith('## ')) {
         _finalizeSection();
-        currentSectionLabel = line.substring(3).trim();
+        final labels = _parseHeadingLabels(line.substring(3).trim());
+        currentSectionLabel = labels[0];
+        currentSectionLabelDe = labels[1].isNotEmpty ? labels[1] : null;
+        currentSectionLabelAr = labels[2].isNotEmpty ? labels[2] : null;
         currentFields = [];
         currentFieldPages = [[]];
         continue;

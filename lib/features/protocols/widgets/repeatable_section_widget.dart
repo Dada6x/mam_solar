@@ -51,7 +51,7 @@ class _RepeatableSectionWidgetState extends State<RepeatableSectionWidget> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          '${widget.section.labelKey} #${index + 1}',
+                          '${widget.section.localizedLabel(widget.languageCode)} #${index + 1}',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,

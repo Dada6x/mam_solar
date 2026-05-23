@@ -356,9 +356,9 @@ class _ProgressBar extends StatelessWidget {
                 ),
               ),
               const Spacer(),
-              if (currentPage.section.labelKey.isNotEmpty)
+              if (currentPage.section.localizedLabel(languageCode).isNotEmpty)
                 Text(
-                  currentPage.section.labelKey,
+                  currentPage.section.localizedLabel(languageCode),
                   style: const TextStyle(
                     fontSize: 11,
                     color: AppColors.labelGrey,
@@ -419,7 +419,7 @@ class _RepeatableSectionPage extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            section.labelKey,
+            section.localizedLabel(languageCode),
             style: const TextStyle(
               fontSize: 18,
               fontWeight: FontWeight.bold,
@@ -499,7 +499,7 @@ class _RepeatItemCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Text(
-                  '${section.labelKey} #${itemIndex + 1}',
+                  '${section.localizedLabel(languageCode)} #${itemIndex + 1}',
                   style: TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
@@ -633,7 +633,7 @@ class _FieldGroupPage extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.only(bottom: 20),
               child: Text(
-                section.labelKey,
+                section.localizedLabel(languageCode),
                 style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,

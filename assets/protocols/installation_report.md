@@ -6,7 +6,7 @@ title_ar: تقرير التركيب
 version: 1.1
 ---
 
-## Customer Data
+## Customer Data | Kundendaten | بيانات العميل
 
 section_id: customer_data
 
@@ -20,7 +20,7 @@ section_id: customer_data
 - installerName | text | required | Installer Name | Installateur | اسم المثبت
 - partnerCompany | text | | Partner Company | Partnerfirma | الشركة الشريكة
 
-## Installation Details
+## Installation Details | Installationsdetails | تفاصيل التركيب
 
 section_id: installation_details
 
@@ -35,7 +35,7 @@ section_id: installation_details
 - groundRodInstalled | checkbox | | Ground Rod Installed | Erdungsstab installiert | قضيب التأريض مثبت
 - privateMeterInstalled | checkbox | | Private Meter Installed | Privater Zähler installiert | العداد الخاص مثبت
 
-## Meter Cabinet
+## Meter Cabinet | Zählerschrank | خزانة العداد
 
 section_id: meter_cabinet
 
@@ -50,7 +50,7 @@ section_id: meter_cabinet
 - photoNewCabinet | photo | | Photo - New Cabinet | Foto - Neuer Schrank | صورة - الخزانة الجديدة
 - photoOldCabinet | photo | | Photo - Old Cabinet | Foto - Alter Schrank | صورة - الخزانة القديمة
 
-## Meter Information
+## Meter Information | Zählerinformationen | معلومات العداد
 
 section_id: meter_information
 
@@ -64,12 +64,12 @@ section_id: meter_information
 
 - photoMeter | photo | | Photo - Meter | Foto - Zähler | صورة - العداد
 
-* ## Remarks
++ ## Remarks | Bemerkungen | ملاحظات
   section_id: remarks
 
 - remarks | textarea | | Remarks | Bemerkungen | ملاحظات
 
-## Signatures
+## Signatures | Unterschriften | التوقيعات
 
 section_id: signatures
 

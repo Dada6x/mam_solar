@@ -21,6 +21,8 @@ class FormSection {
   final FormFieldDef? repeatableField;
   final bool merged;
   final List<List<FormFieldDef>> fieldPages;
+  final String? labelDe;
+  final String? labelAr;
 
   const FormSection({
     required this.id,
@@ -32,7 +34,15 @@ class FormSection {
     this.repeatableField,
     this.merged = false,
     this.fieldPages = const [],
+    this.labelDe,
+    this.labelAr,
   });
+
+  String localizedLabel(String languageCode) {
+    if (languageCode == 'de' && labelDe != null) return labelDe!;
+    if (languageCode == 'ar' && labelAr != null) return labelAr!;
+    return labelKey;
+  }
 }
 
 class FormFieldDef {

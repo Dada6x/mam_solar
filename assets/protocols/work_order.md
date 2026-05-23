@@ -6,7 +6,7 @@ title_ar: أمر العمل
 version: 1.1
 ---
 
-## Customer Data
+## Customer Data | Kundendaten | بيانات العميل
 section_id: customer_data
 
 - fullName | text  | required | Full Name | Vollständiger Name | الاسم الكامل
@@ -14,13 +14,13 @@ section_id: customer_data
 - zipCity  | text  |          | ZIP / City | PLZ / Ort | الرمز البريدي / المدينة
 - email    | email |          | Email | E-Mail | البريد الإلكتروني
 
-## Work Description
+## Work Description | Arbeitsbeschreibung | وصف العمل
 section_id: work_description
 
 - description | textarea | required | Description | Beschreibung | الوصف
 - workDetail  | textarea |          | Work Detail | Arbeitsdetail | تفاصيل العمل
 
-## Materials
+## Materials | Materialien | المواد
 section_id: materials
 repeatable: true
 min: 0
@@ -29,7 +29,7 @@ max: 20
 - quantity | text |          | Quantity | Menge | الكمية
 - material | text |          | Material | Material | المادة
 
-## Travel
+## Travel | Anreise | السفر
 section_id: travel
 repeatable: true
 min: 0
@@ -38,7 +38,7 @@ max: 10
 - departure   | text |          | Departure | Abfahrt | المغادرة
 - destination | text |          | Destination | Zielort | الوجهة
 
-## Working Hours
+## Working Hours | Arbeitsstunden | ساعات العمل
 section_id: working_hours
 repeatable: true
 min: 1
@@ -49,7 +49,7 @@ max: 14
 - startTime | time | required | Start Time | Startzeit | وقت البدء
 - endTime   | time | required | End Time | Endzeit | وقت الانتهاء
 
-## Completion
+## Completion | Abschluss | الإكمال
 section_id: completion
 
 - workCompleted  | checkbox | required | Work Completed | Arbeit abgeschlossen | العمل مكتمل

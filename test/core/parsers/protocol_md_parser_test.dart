@@ -274,6 +274,98 @@ section_id: sec
       });
     });
 
+    group('section heading labels', () {
+      test('parses pipe-delimited heading labels', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Customer Data | Kundendaten | بيانات العميل
+section_id: sec
+
+- field1 | text | | Field
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        final section = result.sections[0];
+        expect(section.labelKey, 'Customer Data');
+        expect(section.labelDe, 'Kundendaten');
+        expect(section.labelAr, 'بيانات العميل');
+      });
+
+      test('returns English label when no pipe-delimited labels', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Customer Data
+section_id: sec
+
+- field1 | text | | Field
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 1);
+        final section = result.sections[0];
+        expect(section.labelKey, 'Customer Data');
+        expect(section.labelDe, isNull);
+        expect(section.labelAr, isNull);
+      });
+
+      test('uses localizedLabel for sections', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Customer | Kunde | عميل
+section_id: sec
+
+- field1 | text | | Field
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        final section = result.sections[0];
+        expect(section.localizedLabel('en'), 'Customer');
+        expect(section.localizedLabel('de'), 'Kunde');
+        expect(section.localizedLabel('ar'), 'عميل');
+        expect(section.localizedLabel('fr'), 'Customer');
+      });
+
+      test('parses pipe-delimited labels on merged sections', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section One
+section_id: sec1
+
+- field1 | text | | Field
+
++ ## Remarks | Bemerkungen | ملاحظات
+section_id: remarks
+
+- remark | textarea | | Remark
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections.length, 2);
+        final merged = result.sections[1];
+        expect(merged.merged, true);
+        expect(merged.labelKey, 'Remarks');
+        expect(merged.labelDe, 'Bemerkungen');
+        expect(merged.labelAr, 'ملاحظات');
+      });
+    });
+
     group('cache behavior', () {
       test('caches and returns same instance on second call', () async {
         // This test verifies the static caching logic

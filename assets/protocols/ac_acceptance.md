@@ -6,7 +6,7 @@ title_ar: بروتوكول قبول التيار المتردد
 version: 2.1
 ---
 
-## Customer Data
+## Customer Data | Kundendaten | بيانات العميل
 section_id: customer_data
 
 - customerName     | text      | required | Customer Name | Kundenname | اسم العميل
@@ -19,7 +19,7 @@ section_id: customer_data
 - installerName    | text      | required | Installer Name | Installateur | اسم المثبت
 - partnerCompany   | text      |          | Partner Company | Partnerfirma | الشركة الشريكة
 
-## Installation Details
+## Installation Details | Installationsdetails | تفاصيل التركيب
 section_id: installation_details
 
 - installationType    | dropdown | required | Installation Type | Installationstyp | نوع التركيب
@@ -36,7 +36,7 @@ section_id: installation_details
 - supervisorIntroduced  | checkbox |          | Supervisor Introduced | Aufsicht eingewiesen | تم تعريف المشرف
 - shoeCoversWorn        | checkbox |          | Shoe Covers Worn | Schuhüberzieher getragen | أغطية الأحذية مرتدية
 
-## Inverter
+## Inverter | Wechselrichter | العاكس
 section_id: inverter
 repeatable: true
 min: 1
@@ -57,7 +57,7 @@ max: 5
 - photoCommunication | photo |         | Photo - Communication | Foto - Kommunikation | صورة - الاتصالات
 - photoFinalInstall | photo |          | Photo - Final Installation | Foto - Endinstallation | صورة - التركيب النهائي
 
-## Battery Storage
+## Battery Storage | Batteriespeicher | تخزين البطارية
 section_id: battery_storage
 
 - batteryBrand           | text     |          | Battery Brand | Batteriemarke | العلامة التجارية للبطارية
@@ -69,7 +69,7 @@ section_id: battery_storage
 ---
 - photoBattery | photo |          | Photo - Battery | Foto - Batterie | صورة - البطارية
 
-## Meter Cabinet
+## Meter Cabinet | Zählerschrank | خزانة العداد
 section_id: meter_cabinet
 
 - newCabinetInstalled    | checkbox |          | New Cabinet Installed | Neuer Schrank installiert | الخزانة الجديدة مثبتة
@@ -85,7 +85,7 @@ section_id: meter_cabinet
 - photoAcOvervoltage | photo |          | Photo - AC Overvoltage | Foto - AC Überspannung | صورة - الجهد الزائد AC
 - photoRcd           | photo |          | Photo - RCD | Foto - RCD | صورة - RCD
 
-## Meter Information
+## Meter Information | Zählerinformationen | معلومات العداد
 section_id: meter_information
 
 - meterType              | dropdown |          | Meter Type | Zählertyp | نوع العداد
@@ -102,7 +102,7 @@ section_id: meter_information
 - photoMeter         | photo |          | Photo - Meter | Foto - Zähler | صورة - العداد
 - photoMeterReadings | photo |          | Photo - Meter Readings | Foto - Zählerstände | صورة - قراءات العداد
 
-## Cable Routes
+## Cable Routes | Kabelwege | مسارات الكابل
 section_id: cable_routes
 
 - routeOver25m | checkbox |          | Cable Route Over 25m | Kabelweg über 25m | مسار الكابل أكثر من 25م
@@ -112,7 +112,7 @@ section_id: cable_routes
 - photoCable2 | photo |          | Photo - Cable 2 | Foto - Kabel 2 | صورة - الكابل 2
 - photoCable3 | photo |          | Photo - Cable 3 | Foto - Kabel 3 | صورة - الكابل 3
 
-## Final Acceptance
+## Final Acceptance | Endabnahme | القبول النهائي
 section_id: final_acceptance
 
 - systemOperational | checkbox | required | System Operational | Anlage betriebsbereit | النظام جاهز للتشغيل
@@ -120,12 +120,12 @@ section_id: final_acceptance
 - customerInformed  | checkbox | required | Customer Informed | Kunde informiert | تم إعلام العميل
 - invoiceApproved   | checkbox | required | Invoice Approved | Rechnung freigegeben | الفاتورة معتمدة
 
-+ ## Remarks
++ ## Remarks | Bemerkungen | ملاحظات
 section_id: remarks
 
 - remarks | textarea |          | Remarks | Bemerkungen | ملاحظات
 
-## Signatures
+## Signatures | Unterschriften | التوقيعات
 section_id: signatures
 
 - customerSignature  | signature | required | Customer Signature | Kundenunterschrift | توقيع العميل
