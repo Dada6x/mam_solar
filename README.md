@@ -97,14 +97,7 @@ Work تكليف
 Damage
 Instillation
 
-
-
-# TODO 
+# TODO
 
 - make if the thing is null not to show in the final PDF
-- if inverters are 0 and go generate pdf it bugs out 
-
-
-
-add him an app icon :3
-
+- if inverters are 0 and go generate pdf it bugs out

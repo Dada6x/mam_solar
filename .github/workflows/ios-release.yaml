@@ -1,0 +1,47 @@
+name: Flutter iOS Release
+
+on:
+  push:
+    tags:
+      - 'v*' # triggers on tags like v1.0.0, v1.2.3
+
+jobs:
+  build-ios:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.22.0' # match your flutter version
+          channel: 'stable'
+          cache: true
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Build unsigned .ipa
+        run: flutter build ipa --release --no-codesign
+
+      # Rename for clarity
+      - name: Rename .ipa
+        run: |
+          mv build/ios/ipa/*.ipa build/ios/ipa/MyApp-${{ github.ref_name }}.ipa
+
+      # Create GitHub Release and upload the .ipa automatically
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: build/ios/ipa/*.ipa
+          name: Release ${{ github.ref_name }}
+          body: |
+            ## Install instructions
+            1. Download the `.ipa` file below
+            2. Install [Sideloadly](https://sideloadly.io/) on your PC/Mac
+            3. Plug in your iPhone, open Sideloadly, drag the `.ipa` in and hit Start
+            4. Trust the app on your phone: Settings → General → VPN & Device Management
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # free, built-in, no setup needed
