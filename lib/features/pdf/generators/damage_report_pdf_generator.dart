@@ -55,7 +55,7 @@ class DamageReportPdfGenerator {
 
   static pw.Widget _buildIncidentSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('Incident Details', [
-      PdfGeneratorBase.buildFieldRow('Date', PdfGeneratorBase.safeString(data['incidentDateTime'])),
+      PdfGeneratorBase.buildFieldRow('Date', PdfGeneratorBase.safeString(data['incidentDate'])),
       PdfGeneratorBase.buildFieldRow('Time', PdfGeneratorBase.safeString(data['incidentTime'])),
       PdfGeneratorBase.buildFieldRow('Second Person', data['secondPersonInvolved'] == true ? 'Yes' : 'No'),
     ]);

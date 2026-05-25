@@ -65,7 +65,7 @@ class WorkOrderPdfGenerator {
   }
 
   static pw.Widget _buildVehicleTravelSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
-    final travels = repeatableData['vehicle_travel'] ?? [];
+    final travels = repeatableData['travel'] ?? [];
     final fields = <pw.Widget>[];
     if (travels.isEmpty) {
       fields.add(PdfGeneratorBase.buildFieldRow('Travel', 'None'));

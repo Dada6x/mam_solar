@@ -65,8 +65,8 @@ class PdfGeneratorBase {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Container(
-              width: 60,
-              height: 40,
+              width: 80,
+              height: 54,
               decoration: pw.BoxDecoration(
                 color: PdfColor.fromInt(0xFFf9a825),
                 borderRadius: pw.BorderRadius.circular(4),

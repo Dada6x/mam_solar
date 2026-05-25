@@ -38,7 +38,6 @@ class _MamSolarAppState extends State<MamSolarApp> {
     super.initState();
     _settingsBloc = sl<SettingsBloc>();
     _settingsBloc.add(const LoadLanguage());
-
     _router = AppRoutes.router;
   }
 
@@ -55,7 +54,6 @@ class _MamSolarAppState extends State<MamSolarApp> {
       child: BlocBuilder<SettingsBloc, SettingsState>(
         builder: (context, state) {
           final locale = Locale(state.languageCode);
-
           return MaterialApp.router(
             title: 'mam-solarbau',
             debugShowCheckedModeBanner: false,

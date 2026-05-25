@@ -179,12 +179,15 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   Future<void> _onGeneratePdf(GeneratePdf event, Emitter<ProtocolState> emit) async {
     emit(state.copyWith(pdfGenerating: true, error: null));
     try {
-      final protocol = await _protocolRepo.getProtocol(state.protocolId);
-      if (protocol == null) {
-        emit(state.copyWith(pdfGenerating: false, error: 'Protocol not found'));
-        return;
+      // save current form data to DB first so PdfBloc reads fresh data
+      final data = Map<String, dynamic>.from(state.formData);
+      if (state.repeatableData.isNotEmpty) {
+        data['_repeatable'] = state.repeatableData.map(
+          (k, v) => MapEntry(k, v.map((e) => Map<String, dynamic>.from(e)).toList()),
+        );
       }
-      emit(state.copyWith(pdfGenerating: false, pdfPath: 'preview'));
+      await _protocolRepo.updateJsonData(state.protocolId, data);
+      emit(state.copyWith(pdfGenerating: false, isDirty: false, pdfPath: 'preview'));
     } catch (e) {
       emit(state.copyWith(pdfGenerating: false, error: e.toString()));
     }

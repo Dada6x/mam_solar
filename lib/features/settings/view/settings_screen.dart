@@ -88,7 +88,7 @@ class _SettingsView extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _InfoRow(label: l10n.appTitle, value: l10n.appTitle),
+                  _InfoRow(label: "", value: l10n.appTitle),
                   const SizedBox(height: 12),
                   const Divider(height: 1),
                   const SizedBox(height: 12),

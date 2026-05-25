@@ -82,8 +82,11 @@ class AcProtocolPdfGenerator {
         fields.add(PdfGeneratorBase.buildFieldRow('Serial', PdfGeneratorBase.safeString(inv['serialNumber'])));
         fields.add(PdfGeneratorBase.buildFieldRow('Network', PdfGeneratorBase.safeString(inv['networkType'])));
         fields.add(PdfGeneratorBase.buildFieldRow('Correct', inv['installedCorrectly'] == true ? 'Yes' : 'No'));
+        fields.add(PdfGeneratorBase.buildFieldRow('Fireproof Surface', inv['mountedOnFireproofSurface'] == true ? 'Yes' : 'No'));
         fields.add(PdfGeneratorBase.buildPhotoField('Dataplate', inv['photoDataplate'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('AC Connection', inv['photoAcConnection'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('AC Grid', inv['photoAcGrid'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('AC Backup', inv['photoAcBackup'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Communication', inv['photoCommunication'] as String?));
         fields.add(PdfGeneratorBase.buildPhotoField('Final Install', inv['photoFinalInstall'] as String?));
         if (i < inverters.length - 1) {
           fields.add(pw.SizedBox(height: 6));
@@ -98,8 +101,9 @@ class AcProtocolPdfGenerator {
       PdfGeneratorBase.buildFieldRow('Brand', PdfGeneratorBase.safeString(data['batteryBrand'])),
       PdfGeneratorBase.buildFieldRow('Model', PdfGeneratorBase.safeString(data['batteryModel'])),
       PdfGeneratorBase.buildFieldRow('Towers', PdfGeneratorBase.safeString(data['batteryTowers'])),
-      PdfGeneratorBase.buildFieldRow('Modules/Tower', PdfGeneratorBase.safeString(data['batteryModules'])),
+      PdfGeneratorBase.buildFieldRow('Modules/Tower', PdfGeneratorBase.safeString(data['batteryModulesPerTower'])),
       PdfGeneratorBase.buildFieldRow('Serial Numbers', PdfGeneratorBase.safeString(data['serialNumbers'])),
+      PdfGeneratorBase.buildFieldRow('Standards Followed', data['standardsFollowed'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildPhotoField('Battery Photo', data['photoBattery'] as String?),
     ]);
   }
@@ -109,20 +113,28 @@ class AcProtocolPdfGenerator {
       PdfGeneratorBase.buildFieldRow('New Cabinet', data['newCabinetInstalled'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildFieldRow('All Components', data['allComponentsInstalled'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildFieldRow('Touch Protection', data['touchProtection'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('APZ', data['apzInstalled'] == true ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('APZ Connected', data['apzConnected'] == true ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('APZ Installed', data['apzInstalled'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildFieldRow('Energrid', data['energridInstalled'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildPhotoField('New Cabinet', data['photoNewCabinet'] as String?),
       PdfGeneratorBase.buildPhotoField('Old Cabinet', data['photoOldCabinet'] as String?),
+      PdfGeneratorBase.buildPhotoField('SLS/NH', data['photoSlsOrNh'] as String?),
+      PdfGeneratorBase.buildPhotoField('AC Overvoltage', data['photoAcOvervoltage'] as String?),
+      PdfGeneratorBase.buildPhotoField('RCD', data['photoRcd'] as String?),
     ]);
   }
 
   static pw.Widget _buildMeterInfoSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('Meter Information', [
       PdfGeneratorBase.buildFieldRow('Meter Type', PdfGeneratorBase.safeString(data['meterType'])),
-      PdfGeneratorBase.buildFieldRow('Replacement Needed', data['meterReplacementNeeded'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildFieldRow('Removal Needed', data['meterRemovalNeeded'] == true ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('Replacement Needed', data['meterReplacementNeeded'] == true ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('New Meter Type', PdfGeneratorBase.safeString(data['newMeterType'])),
+      PdfGeneratorBase.buildFieldRow('Remote Control', data['remoteControl'] == true ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('Meter Consolidation', data['meterConsolidation'] == true ? 'Yes' : 'No'),
       PdfGeneratorBase.buildFieldRow('Measurement Concept', PdfGeneratorBase.safeString(data['measurementConcept'])),
-      PdfGeneratorBase.buildPhotoField('Meter Photo', data['photoMeter'] as String?),
+      PdfGeneratorBase.buildPhotoField('Meter', data['photoMeter'] as String?),
+      PdfGeneratorBase.buildPhotoField('Meter Readings', data['photoMeterReadings'] as String?),
     ]);
   }
 
