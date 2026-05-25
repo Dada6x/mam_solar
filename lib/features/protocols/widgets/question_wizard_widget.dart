@@ -82,9 +82,8 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
         final fieldGroups = _getFieldGroups(section, formData);
         for (int gi = 0; gi < fieldGroups.length; gi++) {
           final group = fieldGroups[gi];
-          final visible = group
-              .where((f) => _evaluateShowIf(f, formData))
-              .toList();
+          final visible =
+              group.where((f) => _evaluateShowIf(f, formData)).toList();
           if (visible.isEmpty) continue;
           pages.add(
             _WizardPage(
@@ -189,7 +188,8 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
           },
           onNext: () {
             if (currentPage.section.isRepeatable) {
-              final items = state.repeatableData[currentPage.section.id] ?? [];
+              final items =
+                  state.repeatableData[currentPage.section.id] ?? [];
               for (int ri = 0; ri < items.length; ri++) {
                 for (final field in currentPage.fields) {
                   if (!field.required) continue;
@@ -211,9 +211,8 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
                 return val == null || (val is String && val.trim().isEmpty);
               }).toList();
               if (emptyRequired.isNotEmpty) {
-                final firstLabel = emptyRequired.first.localizedLabel(
-                  languageCode,
-                );
+                final firstLabel =
+                    emptyRequired.first.localizedLabel(languageCode);
                 setState(
                   () => _validationError =
                       '$firstLabel ${AppLocalizations.of(context)!.fieldRequiredSingle}',
@@ -307,7 +306,7 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
   }
 }
 
-// ─── Progress Bar ───────────────────────────────────────────
+// ─── Progress Bar ────────────────────────────────────────────
 
 class _ProgressBar extends StatelessWidget {
   final int current;
@@ -329,6 +328,8 @@ class _ProgressBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final progress = total > 1 ? current / (total - 1) : 0.0;
+    final sectionLabel =
+        currentPage.section.localizedLabel(languageCode);
 
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -347,6 +348,7 @@ class _ProgressBar extends StatelessWidget {
         children: [
           Row(
             children: [
+              // Fixed-width counter so it never shrinks
               Text(
                 '${current + 1} / $total',
                 style: const TextStyle(
@@ -355,16 +357,20 @@ class _ProgressBar extends StatelessWidget {
                   color: AppColors.primaryGreen,
                 ),
               ),
-              const Spacer(),
-              if (currentPage.section.localizedLabel(languageCode).isNotEmpty)
-                Text(
-                  currentPage.section.localizedLabel(languageCode),
-                  style: const TextStyle(
-                    fontSize: 11,
-                    color: AppColors.labelGrey,
+              const SizedBox(width: 8),
+              // Section label gets all remaining space and ellipsises
+              if (sectionLabel.isNotEmpty)
+                Expanded(
+                  child: Text(
+                    sectionLabel,
+                    style: const TextStyle(
+                      fontSize: 11,
+                      color: AppColors.labelGrey,
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.end,
                   ),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
                 ),
             ],
           ),
@@ -387,7 +393,7 @@ class _ProgressBar extends StatelessWidget {
   }
 }
 
-// ─── Repeatable Section Page ─────────────────────────────────
+// ─── Repeatable Section Page ──────────────────────────────────
 
 class _RepeatableSectionPage extends StatelessWidget {
   final FormSection section;
@@ -425,6 +431,8 @@ class _RepeatableSectionPage extends StatelessWidget {
               fontWeight: FontWeight.bold,
               color: Color(0xFF1a1a2e),
             ),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 2,
           ),
           const SizedBox(height: 12),
           ...List.generate(items.length, (ri) {
@@ -496,14 +504,18 @@ class _RepeatItemCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 8, 8, 0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  '${section.localizedLabel(languageCode)} #${itemIndex + 1}',
-                  style: TextStyle(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w600,
-                    color: AppColors.primaryGreen.withValues(alpha: 0.8),
+                // Label takes available space, never pushes remove button off
+                Expanded(
+                  child: Text(
+                    '${section.localizedLabel(languageCode)} #${itemIndex + 1}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.primaryGreen.withValues(alpha: 0.8),
+                    ),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 1,
                   ),
                 ),
                 if (canRemove)
@@ -529,6 +541,7 @@ class _RepeatItemCard extends StatelessWidget {
                       ),
                       style: TextButton.styleFrom(
                         padding: const EdgeInsets.symmetric(horizontal: 6),
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
                     ),
                   ),
@@ -602,7 +615,7 @@ class _RepeatItemCard extends StatelessWidget {
   }
 }
 
-// ─── Field Group Page ───────────────────────────────────────
+// ─── Field Group Page ─────────────────────────────────────────
 
 class _FieldGroupPage extends StatelessWidget {
   final FormSection section;
@@ -639,6 +652,8 @@ class _FieldGroupPage extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                   color: Color(0xFF1a1a2e),
                 ),
+                overflow: TextOverflow.ellipsis,
+                maxLines: 2,
               ),
             ),
           ...fields.asMap().entries.map((entry) {
@@ -705,7 +720,7 @@ class _FieldGroupPage extends StatelessWidget {
   }
 }
 
-// ─── Review Page ────────────────────────────────────────────
+// ─── Review Page ──────────────────────────────────────────────
 
 class _ReviewPage extends StatelessWidget {
   final String protocolType;
@@ -751,7 +766,10 @@ class _ReviewPage extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               AppLocalizations.of(context)!.reviewAndGenerate,
-              style: const TextStyle(fontSize: 14, color: AppColors.labelGrey),
+              style: const TextStyle(
+                fontSize: 14,
+                color: AppColors.labelGrey,
+              ),
               textAlign: TextAlign.center,
             ),
           ],
@@ -761,7 +779,7 @@ class _ReviewPage extends StatelessWidget {
   }
 }
 
-// ─── Navigation Bar ─────────────────────────────────────────
+// ─── Navigation Bar ───────────────────────────────────────────
 
 class _NavigationBar extends StatelessWidget {
   final _WizardPage currentPage;
@@ -818,6 +836,7 @@ class _NavigationBar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Validation error — wraps onto multiple lines, never overflows
             if (validationError != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -828,6 +847,8 @@ class _NavigationBar extends StatelessWidget {
                     color: AppColors.errorRed,
                   ),
                   textAlign: TextAlign.center,
+                  maxLines: 3,
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             if (isLastPage)
@@ -835,15 +856,13 @@ class _NavigationBar extends StatelessWidget {
             else
               Row(
                 children: [
+                  // Back button — fixed minimum width, never grows
                   if (canGoBack)
-                    TextButton.icon(
-                      onPressed: onBack,
-                      icon: const Icon(Icons.arrow_back, size: 18),
-                      label: Text(AppLocalizations.of(context)!.back),
-                    )
+                    _BackButton(onBack: onBack)
                   else
                     const SizedBox(width: 72),
                   const Spacer(),
+                  // Right-side actions are wrapped so they can shrink if needed
                   if (isRepeatPage)
                     _buildRepeatNavigation(context)
                   else
@@ -863,38 +882,18 @@ class _NavigationBar extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (!atMax)
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: ElevatedButton.icon(
-              onPressed: onAddRepeat,
-              icon: const Icon(Icons.add, size: 18),
-              label: Text(AppLocalizations.of(context)!.addItem),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryGreen,
-                foregroundColor: Colors.white,
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
-                ),
-              ),
-            ),
+        if (!atMax) ...[
+          _NavButton(
+            onPressed: onAddRepeat,
+            icon: Icons.add,
+            label: AppLocalizations.of(context)!.addItem,
           ),
-        ElevatedButton.icon(
+          const SizedBox(width: 8),
+        ],
+        _NavButton(
           onPressed: onNext,
-          icon: const Icon(Icons.arrow_forward, size: 18),
-          label: Text(AppLocalizations.of(context)!.next),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryGreen,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+          icon: Icons.arrow_forward,
+          label: AppLocalizations.of(context)!.next,
         ),
       ],
     );
@@ -906,26 +905,25 @@ class _NavigationBar extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        if (allOptional)
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: TextButton(
-              onPressed: onSkip,
-              child: Text(AppLocalizations.of(context)!.skip, style: TextStyle(color: AppColors.labelGrey)),
+        if (allOptional) ...[
+          TextButton(
+            onPressed: onSkip,
+            style: TextButton.styleFrom(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+            ),
+            child: Text(
+              AppLocalizations.of(context)!.skip,
+              style: const TextStyle(color: AppColors.labelGrey),
+              overflow: TextOverflow.ellipsis,
             ),
           ),
-        ElevatedButton.icon(
+          const SizedBox(width: 6),
+        ],
+        _NavButton(
           onPressed: onNext,
-          icon: const Icon(Icons.arrow_forward, size: 18),
-          label: Text(AppLocalizations.of(context)!.next),
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.primaryGreen,
-            foregroundColor: Colors.white,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
-            ),
-          ),
+          icon: Icons.arrow_forward,
+          label: AppLocalizations.of(context)!.next,
         ),
       ],
     );
@@ -946,7 +944,10 @@ class _NavigationBar extends StatelessWidget {
                 ),
               )
             : const Icon(Icons.picture_as_pdf, size: 20),
-        label: Text(AppLocalizations.of(context)!.generatePdf),
+        label: Text(
+          AppLocalizations.of(context)!.generatePdf,
+          overflow: TextOverflow.ellipsis,
+        ),
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryGreen,
           foregroundColor: Colors.white,
@@ -955,6 +956,73 @@ class _NavigationBar extends StatelessWidget {
             borderRadius: BorderRadius.circular(10),
           ),
           elevation: 2,
+        ),
+      ),
+    );
+  }
+}
+
+// ─── Shared small widgets ─────────────────────────────────────
+
+/// Back button with a stable min-width so the spacer calculation is reliable.
+class _BackButton extends StatelessWidget {
+  final VoidCallback onBack;
+  const _BackButton({required this.onBack});
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      constraints: const BoxConstraints(minWidth: 72),
+      child: TextButton.icon(
+        onPressed: onBack,
+        icon: const Icon(Icons.arrow_back, size: 18),
+        label: Text(
+          AppLocalizations.of(context)!.back,
+          overflow: TextOverflow.ellipsis,
+        ),
+        style: TextButton.styleFrom(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+        ),
+      ),
+    );
+  }
+}
+
+/// Reusable green elevated button used for Next / Add in the nav bar.
+/// Uses [FittedBox] so its label scales down instead of overflowing on
+/// very narrow screens.
+class _NavButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final IconData icon;
+  final String label;
+
+  const _NavButton({
+    required this.onPressed,
+    required this.icon,
+    required this.label,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ConstrainedBox(
+      // Never narrower than 80 dp, never wider than 160 dp
+      constraints: const BoxConstraints(minWidth: 80, maxWidth: 160),
+      child: ElevatedButton.icon(
+        onPressed: onPressed,
+        icon: Icon(icon, size: 18),
+        label: FittedBox(
+          fit: BoxFit.scaleDown,
+          child: Text(label),
+        ),
+        style: ElevatedButton.styleFrom(
+          backgroundColor: AppColors.primaryGreen,
+          foregroundColor: Colors.white,
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8),
+          ),
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       ),
     );

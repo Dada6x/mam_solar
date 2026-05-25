@@ -89,3 +89,32 @@ lib/
 - No authentication
 - Signature pad requires syncfusion_flutter_signaturepad license (free for development)
 - Photos and signatures stored as local files (not encrypted)
+
+- each protocol what it dose got untill now (at least what i know )
+
+AC instillaion
+Work تكليف
+Damage
+Instillation
+
+
+# ac
+in the storage unit 
+    - qr code 
+    - SID code 
+    - EMS image 
+    - cable image
+    - open AC plug image
+    - storage unit no cover image
+    - storage unit all cover image
+    - storage unit from a distance
+in inverters
+    التأريص
+    UK
+    DC safty
+    WR inverter
+
+
+
+add him an app icon :3
+
