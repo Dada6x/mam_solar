@@ -26,28 +26,30 @@ class ProtocolRepository {
   }
 
   Future<void> updateProtocol(ProtocolModel protocol) async {
-    await (_db.protocolsTable.update(
-    )).write(
-      ProtocolsTableCompanion(
-        type: Value(protocol.type),
-        customerName: Value(protocol.customerName),
-        createdAt: Value(protocol.createdAt),
-        updatedAt: Value(protocol.updatedAt),
-        status: Value(protocol.status),
-        jsonData: Value(protocol.jsonData),
-        pdfPath: Value(protocol.pdfPath),
-      ),
-    );
+    await (_db.protocolsTable.update()
+          ..where((tbl) => tbl.id.equals(protocol.id)))
+        .write(
+          ProtocolsTableCompanion(
+            type: Value(protocol.type),
+            customerName: Value(protocol.customerName),
+            createdAt: Value(protocol.createdAt),
+            updatedAt: Value(protocol.updatedAt),
+            status: Value(protocol.status),
+            jsonData: Value(protocol.jsonData),
+            pdfPath: Value(protocol.pdfPath),
+          ),
+        );
   }
 
   Future<void> updateJsonData(int id, Map<String, dynamic> data) async {
     final now = DateTime.now().millisecondsSinceEpoch;
-    await (_db.protocolsTable.update()).write(
-      ProtocolsTableCompanion(
-        jsonData: Value(json.encode(data)),
-        updatedAt: Value(now),
-      ),
-    );
+    await (_db.protocolsTable.update()..where((tbl) => tbl.id.equals(id)))
+        .write(
+          ProtocolsTableCompanion(
+            jsonData: Value(json.encode(data)),
+            updatedAt: Value(now),
+          ),
+        );
   }
 
   Future<ProtocolModel?> getProtocol(int id) async {

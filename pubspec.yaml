@@ -46,6 +46,7 @@ dev_dependencies:
   freezed: ^3.2.5
   flutter_lints: ^6.0.0
   drift_dev: ^2.22.0
+  flutter_launcher_icons: ^0.14.4
 
 flutter:
   uses-material-design: true
@@ -65,6 +66,15 @@ flutter:
           weight: 600
         - asset: assets/fonts/Cairo/static/Cairo-Bold.ttf
           weight: 700
+
+flutter_icons:
+  android: true
+  ios: true
+  image_path: "assets/logo.png"
+
+  # For Android adaptive icon (API 26+)
+  adaptive_icon_background: "#FFFFFF"  # or an image path
+  adaptive_icon_foreground: "assets/logo.png"
 
 
 flutter_native_splash:

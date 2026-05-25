@@ -72,7 +72,10 @@ class PdfGeneratorBase {
                 borderRadius: pw.BorderRadius.circular(4),
               ),
               child: _logoBytes != null
-                  ? pw.Image(pw.MemoryImage(_logoBytes!), fit: pw.BoxFit.contain)
+                  ? pw.Image(
+                      pw.MemoryImage(_logoBytes!),
+                      fit: pw.BoxFit.contain,
+                    )
                   : pw.Center(
                       child: pw.Text(
                         'MS',
@@ -80,10 +83,7 @@ class PdfGeneratorBase {
                       ),
                     ),
             ),
-            pw.Text(
-              title,
-              style: pw.TextStyle(font: _fontBold, fontSize: 16),
-            ),
+            pw.Text(title, style: pw.TextStyle(font: _fontBold, fontSize: 16)),
             pw.Text(
               protocolNumber,
               style: pw.TextStyle(font: _font, fontSize: 9, color: _labelGray),
@@ -104,13 +104,10 @@ class PdfGeneratorBase {
       mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
       children: [
         pw.Text(
-          'Customer: $customerName',
+          'Kunde: $customerName',
           style: pw.TextStyle(font: _font, fontSize: 10),
         ),
-        pw.Text(
-          'Date: $date',
-          style: pw.TextStyle(font: _font, fontSize: 10),
-        ),
+        pw.Text('Datum: $date', style: pw.TextStyle(font: _font, fontSize: 10)),
       ],
     );
   }
@@ -131,7 +128,7 @@ class PdfGeneratorBase {
               style: pw.TextStyle(font: _font, fontSize: 8, color: _labelGray),
             ),
             pw.Text(
-              'Page ${context.pageNumber} of ${context.pagesCount}',
+              'Seite ${context.pageNumber} von ${context.pagesCount}',
               style: pw.TextStyle(font: _font, fontSize: 8, color: _labelGray),
             ),
             pw.Text(
@@ -230,12 +227,7 @@ class PdfGeneratorBase {
           style: pw.TextStyle(font: _font, fontSize: 9, color: _labelGray),
         ),
         pw.SizedBox(height: 4),
-        pw.Image(
-          image,
-          width: 120,
-          height: 80,
-          fit: pw.BoxFit.cover,
-        ),
+        pw.Image(image, width: 120, height: 80, fit: pw.BoxFit.cover),
         pw.SizedBox(height: 8),
       ],
     );
@@ -265,10 +257,7 @@ class PdfGeneratorBase {
           decoration: pw.BoxDecoration(
             border: pw.Border.all(color: PdfColors.grey),
           ),
-          child: pw.Image(
-            image,
-            fit: pw.BoxFit.contain,
-          ),
+          child: pw.Image(image, fit: pw.BoxFit.contain),
         ),
         pw.SizedBox(height: 8),
       ],

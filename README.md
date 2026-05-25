@@ -98,21 +98,11 @@ Damage
 Instillation
 
 
-# ac
-in the storage unit 
-    - qr code 
-    - SID code 
-    - EMS image 
-    - cable image
-    - open AC plug image
-    - storage unit no cover image
-    - storage unit all cover image
-    - storage unit from a distance
-in inverters
-    التأريص
-    UK
-    DC safty
-    WR inverter
+
+# TODO 
+
+- make if the thing is null not to show in the final PDF
+- if inverters are 0 and go generate pdf it bugs out 
 
 
 

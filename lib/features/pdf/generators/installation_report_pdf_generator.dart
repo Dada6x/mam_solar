@@ -15,7 +15,7 @@ class InstallationReportPdfGenerator {
     );
 
     return PdfGeneratorBase.createDocument(
-      title: 'Installation Report',
+      title: 'Installationsbericht',
       protocolNumber: protocolNumber,
       customerName: customerName,
       date: date,
@@ -30,52 +30,52 @@ class InstallationReportPdfGenerator {
   }
 
   static pw.Widget _buildCustomerDataSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Customer Data', [
+    return PdfGeneratorBase.buildSection('Kundendaten', [
       PdfGeneratorBase.buildFieldRow('Name', PdfGeneratorBase.safeString(data['customerName'])),
-      PdfGeneratorBase.buildFieldRow('Street', PdfGeneratorBase.safeString(data['street'])),
-      PdfGeneratorBase.buildFieldRow('City', PdfGeneratorBase.safeString(data['city'])),
-      PdfGeneratorBase.buildFieldRow('ZIP', PdfGeneratorBase.safeString(data['zipCode'])),
-      PdfGeneratorBase.buildFieldRow('Email', PdfGeneratorBase.safeString(data['email'])),
-      PdfGeneratorBase.buildFieldRow('Phone', PdfGeneratorBase.safeString(data['phone'])),
-      PdfGeneratorBase.buildFieldRow('Installation Date', PdfGeneratorBase.safeString(data['installationDate'])),
-      PdfGeneratorBase.buildFieldRow('Installer', PdfGeneratorBase.safeString(data['installerName'])),
-      PdfGeneratorBase.buildFieldRow('Partner Company', PdfGeneratorBase.safeString(data['partnerCompany'])),
+      PdfGeneratorBase.buildFieldRow('Straße', PdfGeneratorBase.safeString(data['street'])),
+      PdfGeneratorBase.buildFieldRow('Ort', PdfGeneratorBase.safeString(data['city'])),
+      PdfGeneratorBase.buildFieldRow('PLZ', PdfGeneratorBase.safeString(data['zipCode'])),
+      PdfGeneratorBase.buildFieldRow('E-Mail', PdfGeneratorBase.safeString(data['email'])),
+      PdfGeneratorBase.buildFieldRow('Telefon', PdfGeneratorBase.safeString(data['phone'])),
+      PdfGeneratorBase.buildFieldRow('Installationsdatum', PdfGeneratorBase.safeString(data['installationDate'])),
+      PdfGeneratorBase.buildFieldRow('Installateur', PdfGeneratorBase.safeString(data['installerName'])),
+      PdfGeneratorBase.buildFieldRow('Partnerunternehmen', PdfGeneratorBase.safeString(data['partnerCompany'])),
     ]);
   }
 
   static pw.Widget _buildInstallationDetailsSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Installation Details', [
-      PdfGeneratorBase.buildFieldRow('Type', PdfGeneratorBase.safeString(data['installationType'])),
-      PdfGeneratorBase.buildFieldRow('Storage Manufacturer', PdfGeneratorBase.safeString(data['storageManufacturer'])),
-      PdfGeneratorBase.buildFieldRow('Wallbox', data['wallboxInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('Backup', data['backupInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('Ground Rod', data['groundRodInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('Private Meter', data['privateMeterInstalled'] == true ? 'Yes' : 'No'),
+    return PdfGeneratorBase.buildSection('Installationsdetails', [
+      PdfGeneratorBase.buildFieldRow('Typ', PdfGeneratorBase.safeString(data['installationType'])),
+      PdfGeneratorBase.buildFieldRow('Speicherhersteller', PdfGeneratorBase.safeString(data['storageManufacturer'])),
+      PdfGeneratorBase.buildFieldRow('Wallbox installiert', data['wallboxInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Backup installiert', data['backupInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Erdungsstab installiert', data['groundRodInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Privater Zähler', data['privateMeterInstalled'] == true ? 'Ja' : 'Nein'),
     ]);
   }
 
   static pw.Widget _buildMeterCabinetSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Meter Cabinet', [
-      PdfGeneratorBase.buildFieldRow('New Cabinet', data['newCabinetInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('All Components', data['allComponentsInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('Touch Protection', data['touchProtection'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('APZ', data['apzInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('Energrid', data['energridInstalled'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildPhotoField('New Cabinet', data['photoNewCabinet'] as String?),
-      PdfGeneratorBase.buildPhotoField('Old Cabinet', data['photoOldCabinet'] as String?),
+    return PdfGeneratorBase.buildSection('Zählerschrank', [
+      PdfGeneratorBase.buildFieldRow('Neuer Schrank', data['newCabinetInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Alle Komponenten installiert', data['allComponentsInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Berührungsschutz', data['touchProtection'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('APZ', data['apzInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Energrid', data['energridInstalled'] == true ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildPhotoField('Neuer Schrank', data['photoNewCabinet'] as String?),
+      PdfGeneratorBase.buildPhotoField('Alter Schrank', data['photoOldCabinet'] as String?),
     ]);
   }
 
   static pw.Widget _buildRemarksSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Remarks', [
-      PdfGeneratorBase.buildFieldRow('Remarks', PdfGeneratorBase.safeString(data['remarks'])),
+    return PdfGeneratorBase.buildSection('Bemerkungen', [
+      PdfGeneratorBase.buildFieldRow('Bemerkungen', PdfGeneratorBase.safeString(data['remarks'])),
     ]);
   }
 
   static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Signatures', [
-      PdfGeneratorBase.buildSignatureField('Customer', data['customerSignature'] as String?),
-      PdfGeneratorBase.buildSignatureField('Installer', data['installerSignature'] as String?),
+    return PdfGeneratorBase.buildSection('Unterschriften', [
+      PdfGeneratorBase.buildSignatureField('Kunde', data['customerSignature'] as String?),
+      PdfGeneratorBase.buildSignatureField('Installateur', data['installerSignature'] as String?),
     ]);
   }
 }
