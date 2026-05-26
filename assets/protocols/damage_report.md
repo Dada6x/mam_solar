@@ -1,78 +1,142 @@
 ---
 protocol: damage_report
 title: Damage Report
-title_de: Schadensbericht
+title_de: Schadensprotokoll
 title_ar: تقرير الضرر
-version: 1.1
+version: 2.0
+company: MAM Solarbau
 ---
 
 ## Damage Declaration | Schadenserklärung | إعلان الضرر
+
 section_id: damage_declaration
 
-- damageType       | dropdown | required | Damage Type | Schadensart | نوع الضرر
-  options: at_customer, at_third_party, material_damage
-- causedByPartner  | checkbox |          | Caused by Partner Company | Durch Partnerfirma verursacht | بسبب شركة شريكة
-- companyLiability | checkbox |          | Company Liability | Firmenhaftung | مسؤولية الشركة
+- damageType | dropdown | required | What type of damage occurred? | Was für ein Schaden ist entstanden? | ما نوع الضرر الذي حدث؟
+  options: at_customer, at_third_party, material_damage_own, personal_injury, vehicle_accident, other
+- damageTypeOther | text | | Other (please specify) | Sonstiges (bitte angeben) | أخرى (يرجى التحديد)
+  show_if: damageType == other
+- causedByPartner | radio | required | Was the damage caused by a partner company? | Wurde der Schaden durch Partner verursacht? | هل سببه شركة شريكة؟
+  options: yes, no
+- partnerCompanyName | text | required | Name of partner company | Name des Partnerunternehmens | اسم الشركة الشريكة
+  show_if: causedByPartner == yes
+- companyLiability | radio | required | Will damage be regulated through own business liability insurance? | Wird der Schaden über die eigene Betriebshaftpflichtversicherung reguliert? | هل سيتم تنظيم الضرر عبر التأمين الخاص؟
+  options: yes, no
+- insurancePolicyNumber | text | required | Insurance policy number | Versicherungsnummer | رقم بوليصة التأمين
+  show_if: companyLiability == yes
+- claimNumber | text | | Claim number (if already assigned) | Schadensnummer (falls bereits vergeben) | رقم المطالبة (إذا تم تعيينه)
+  show_if: companyLiability == yes
 
-+ ## Injured Party | Geschädigter | الطرف المتضرر
+## Injured Party | Daten des Geschädigten | بيانات الطرف المتضرر
+
 section_id: injured_party
 
-- injuredName | text  | required | Injured Party Name | Name des Geschädigten | اسم الطرف المتضرر
-- street      | text  |          | Street | Straße | الشارع
-- zipCode     | text  |          | ZIP Code | PLZ | الرمز البريدي
-- city        | text  |          | City | Stadt | المدينة
-- phone       | text  |          | Phone | Telefon | الهاتف
-- email       | email |          | Email | E-Mail | البريد الإلكتروني
+- injuredName | text | required | Injured Party Name | Vor- und Nachname | اسم الطرف المتضرر
+- street | text | required | Street | Straße | الشارع
+- houseNumber | text | required | House Number | Nr. | رقم المنزل
+- zipCode | text | required | ZIP Code | PLZ | الرمز البريدي
+- city | text | required | City | Ort | المدينة
+- phone | text | required | Phone | Telefon | الهاتف
+- email | email | required | Email | E-Mail | البريد الإلكتروني
+
+## Second Injured Party | 2. Geschädigte Person | الشخص المتضرر الثاني
+
+section_id: second_party
+optional_section: true
+
+- secondPersonInvolved | radio | required | Was there a second injured person? | Gab es eine 2. Geschädigte Person? | هل كان هناك شخص متضرر ثانٍ؟
+  options: yes, no
+- secondName | text | required | Second Party Name | Name | الاسم
+  show_if: secondPersonInvolved == yes
+- secondStreet | text | | Street | Straße | الشارع
+  show_if: secondPersonInvolved == yes
+- secondZipCity | text | | ZIP / City | PLZ / Ort | الرمز البريدي / المدينة
+  show_if: secondPersonInvolved == yes
+- secondPhone | text | | Phone | Telefon | الهاتف
+  show_if: secondPersonInvolved == yes
+- secondEmail | email | | Email | E-Mail | البريد الإلكتروني
+  show_if: secondPersonInvolved == yes
 
 ## Incident Details | Vorfallsdetails | تفاصيل الحادث
+
 section_id: incident_details
 
-- incidentDate         | date     | required | Incident Date | Vorfallsdatum | تاريخ الحادث
-- incidentTime         | time     |          | Incident Time | Vorfallszeit | وقت الحادث
-- secondPersonInvolved | checkbox |          | Second Person Involved | Zweite Person beteiligt | شخص ثانٍ متورط
+- incidentDateTime | datetime | required | Date and Time of Incident | Datum und Uhrzeit des Unfalls | تاريخ ووقت الحادث
 
 ## Damage Description | Schadensbeschreibung | وصف الضرر
+
 section_id: damage_description
 
-- initialSituation | textarea | required | Initial Situation | Ausgangssituation | الوضع الأولي
-- incidentSequence | textarea | required | Incident Sequence | Vorfallshergang | تسلسل الحادث
+- initialSituation | textarea | required | Initial Situation (what was the situation before?) | Ausgangssituation (Was war die Situation vorher?) | الوضع الأولي (ماذا كان الوضع قبل ذلك؟)
+  placeholder_de: z.B. Vorschäden bekannt, Zustand vor Arbeitsbeginn
+- incidentSequence | textarea | required | Incident Sequence (step by step what happened) | Ablauf des Vorfalls (Schritt für Schritt was passiert ist) | تسلسل الحادث (ما الذي حدث خطوة بخطوة)
+- affectedSummary | textarea | | Summary of affected items/people | Zusammenfassung der betroffenen Geräte/Personen | ملخص العناصر/الأشخاص المتضررين
 
-## Affected Devices | Betroffene Geräte | الأجهزة المتضررة
+## Witnesses | Zeugen | الشهود
+
+section_id: witnesses
+optional_section: true
+repeatable: true
+min: 0
+max: 5
+
+- witnessName | text | | Witness Name | Name des Zeugen | اسم الشاهد
+- witnessPhone | text | | Phone | Telefon | الهاتف
+- witnessEmail | email | | Email | E-Mail | البريد الإلكتروني
+- witnessStatement | textarea | | Witness Statement | Aussage des Zeugen | إفادة الشاهد
+
+## Affected Devices/Items | Sichtbare Schäden | الأضرار المرئية
+
 section_id: affected_devices
 repeatable: true
 min: 1
-max: 10
+max: 20
 
-- deviceName        | text     |          | Device Name | Gerätename | اسم الجهاز
-- deviceBrand       | text     |          | Device Brand | Gerätemarke | العلامة التجارية للجهاز
-- damageDescription | textarea |          | Damage Description | Schadensbeschreibung | وصف الضرر
+- itemName | text | required | Item/Device Name | Name des Gegenstandes/Geräts | اسم الجهاز/العنصر
+- brand | text | required | Brand | Marke | الماركة
+- model | text | | Model | Modell | الطراز
+- serialNumber | text | | Serial Number | Seriennummer | الرقم التسلسلي
+- purchaseDate | date | | Purchase Date (if known) | Kaufdatum (falls bekannt) | تاريخ الشراء
+- estimatedValue | number | required | Estimated Value in EUR | Geschätzter Wert in EUR | القيمة المقدرة باليورو
+- damageDescription | textarea | required | Damage Description | Beschreibung des Schadens | وصف الضرر
+
 ---
-- devicePhoto | photo |          | Device Photo | Gerätefoto | صورة الجهاز
+
+- photoOverview | photo | required | Overview photo of damage | Übersichtsfoto Schaden | صورة عامة للضرر
+- photoDetail | photo | required | Detail photo of damage | Detailfoto Schaden | صورة تفصيلية للضرر
+- photoTypeLabel | photo | | Photo of type label / serial number | Foto Typenschild / Seriennummer | صورة لوحة النوع / الرقم التسلسلي
 
 ## Damage Minimization | Schadensminimierung | تقليل الضرر
+
 section_id: damage_minimization
 
-- minimizationPossible | checkbox |          | Minimization Possible | Minimierung möglich | التقليل ممكن
-- minimizationNotes    | textarea |          | Minimization Notes | Minimierungsnotizen | ملاحظات التقليل
-  show_if: minimizationPossible == true
+- minimizationPossible | radio | required | On-site damage minimization possible? | Schadensminimierung vor Ort möglich? | تقليل الضرر في الموقع ممكن؟
+  options: yes, no
+- minimizationActionsTaken | textarea | required | What actions were taken? | Welche Maßnahmen wurden ergriffen? | ما الإجراءات التي تم اتخاذها؟
+  show_if: minimizationPossible == yes
+- minimizationNotPossibleReason | textarea | required | Why not possible? | Warum nicht möglich? | لماذا غير ممكن؟
+  show_if: minimizationPossible == no
 
-+ ## Insurance | Versicherung | التأمين
-section_id: insurance
+## Remarks | Bemerkungen | ملاحظات
 
-- insuranceNotes | textarea |          | Insurance Notes | Versicherungsnotizen | ملاحظات التأمين
-
-## Employee Info | Mitarbeiterinfo | معلومات الموظف
-section_id: employee_info
-
-- employeeName | text | required | Employee Name | Mitarbeitername | اسم الموظف
-
-+ ## Remarks | Bemerkungen | ملاحظات
 section_id: remarks
 
-- remarks | textarea |          | Remarks | Bemerkungen | ملاحظات
+- remarks | textarea | | Remarks (initial situation, sequence, affected devices) | Bemerkungen (Ausgangssituation, Ablauf, betroffene Geräte) | ملاحظات
+
+## Employee Info | Mitarbeiterinfo | معلومات الموظف
+
+section_id: employee_info
+
+- employeeName | dropdown | required | Name of Employee / Partner Company | Name Mitarbeiter / Partnerunternehmen | اسم الموظف / الشركة الشريكة
+  options: dynamic_from_employees
 
 ## Signatures | Unterschriften | التوقيعات
+
 section_id: signatures
 
-- damagedPartySignature | signature | required | Damaged Party Signature | Unterschrift Geschädigter | توقيع الطرف المتضرر
-- employeeSignature     | signature | required | Employee Signature | Mitarbeiterunterschrift | توقيع الموظف
+- damagedPartySignature | signature | required | Damaged Party Signature | Unterschrift des Geschädigten | توقيع الطرف المتضرر
+- employeeSignature | signature | required | MAM Solarbau Employee Signature | Unterschrift MAM Solarbau Mitarbeiter | توقيع موظف MAM Solarbau
+- protocolDateTime | datetime | calculated | Protocol creation date/time | Protokollerstellung Datum/Uhrzeit | تاريخ/وقت إنشاء البروتوكول
+  default: current_time
+- emailSentTo | email | calculated | Email sent to | E-Mail versendet an | البريد الإلكتروني المرسل إلى
+  source: injured_party.email
+- copyToInsurance | checkbox | | Send copy to insurance broker | Kopie an Versicherungsmakler senden | إرسال نسخة إلى وسيط التأمين

@@ -36,6 +36,7 @@ dependencies:
   syncfusion_flutter_signaturepad: ^27.1.48
   flutter_native_splash: ^2.4.7
 
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
