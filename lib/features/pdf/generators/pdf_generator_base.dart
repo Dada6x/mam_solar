@@ -265,6 +265,19 @@ class PdfGeneratorBase {
   }
 
   // ---------------------------
+  // DISPLAY TEXT
+  // ---------------------------
+  static pw.Widget buildDisplayTextField(String text) {
+    return pw.Padding(
+      padding: const pw.EdgeInsets.symmetric(vertical: 4),
+      child: pw.Text(
+        text,
+        style: pw.TextStyle(font: _font, fontSize: 9, fontStyle: pw.FontStyle.italic),
+      ),
+    );
+  }
+
+  // ---------------------------
   // SAFE STRING
   // ---------------------------
   static String safeString(dynamic value) {

@@ -296,6 +296,31 @@ class ProtocolMdParser {
             showIfValue: lastField!.showIfValue,
             labelDe: lastField!.labelDe,
             labelAr: lastField!.labelAr,
+            acceptedFormats: lastField!.acceptedFormats,
+          );
+          currentFields![idx] = updated;
+          _syncFieldToPages(lastField!, updated, currentFieldPages);
+        }
+        continue;
+      }
+
+      // accepted_formats line
+      if (line.startsWith('accepted_formats:') && lastField != null) {
+        final formats = line.substring('accepted_formats:'.length).split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+        final idx = currentFields!.indexOf(lastField!);
+        if (idx >= 0) {
+          final updated = FormFieldDef(
+            id: lastField!.id,
+            labelKey: lastField!.labelKey,
+            type: lastField!.type,
+            required: lastField!.required,
+            dropdownOptions: lastField!.dropdownOptions,
+            showIfField: lastField!.showIfField,
+            showIfOperator: lastField!.showIfOperator,
+            showIfValue: lastField!.showIfValue,
+            labelDe: lastField!.labelDe,
+            labelAr: lastField!.labelAr,
+            acceptedFormats: formats,
           );
           currentFields![idx] = updated;
           _syncFieldToPages(lastField!, updated, currentFieldPages);
@@ -327,6 +352,7 @@ class ProtocolMdParser {
               showIfValue: showVal,
               labelDe: lastField!.labelDe,
               labelAr: lastField!.labelAr,
+              acceptedFormats: lastField!.acceptedFormats,
             );
             currentFields![idx] = updated;
             _syncFieldToPages(lastField!, updated, currentFieldPages);
@@ -397,6 +423,10 @@ class ProtocolMdParser {
         return FieldType.signature;
       case 'textarea':
         return FieldType.textarea;
+      case 'file':
+        return FieldType.file;
+      case 'display_text':
+        return FieldType.displayText;
       default:
         return FieldType.text;
     }

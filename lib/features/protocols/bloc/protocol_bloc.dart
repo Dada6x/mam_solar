@@ -202,7 +202,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   bool areRequiredFieldsFilled() {
     for (final section in state.sections) {
       for (final field in section.fields) {
-        if (field.required && field.type != FieldType.signature) {
+        if (field.required && field.type != FieldType.signature && field.type != FieldType.displayText) {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
             final allFilled = items.isNotEmpty && items.every((item) {
@@ -226,7 +226,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     final missing = <String>[];
     for (final section in state.sections) {
       for (final field in section.fields) {
-        if (field.required && field.type != FieldType.signature) {
+        if (field.required && field.type != FieldType.signature && field.type != FieldType.displayText) {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
             final allFilled = items.isNotEmpty && items.every((item) {

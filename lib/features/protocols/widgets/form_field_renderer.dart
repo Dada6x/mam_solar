@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
+import 'package:mam_solar/features/protocols/widgets/file_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
 
@@ -167,6 +168,23 @@ class FormFieldRenderer extends StatelessWidget {
           onChanged: onChanged,
         );
 
+      case FieldType.file:
+        return FileFieldWidget(
+          label: '$labelText$requiredMark',
+          filePath: value as String?,
+          onChanged: onChanged,
+          acceptedFormats: field.acceptedFormats,
+        );
+
+      case FieldType.displayText:
+        return Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Text(
+            labelText,
+            style: const TextStyle(fontSize: 13, color: AppColors.labelGrey, fontStyle: FontStyle.italic),
+          ),
+        );
+
       case FieldType.repeatable:
         return const SizedBox.shrink();
     }
@@ -178,6 +196,12 @@ class FormFieldRenderer extends StatelessWidget {
     }
 
     final currentValue = formData?[field.showIfField];
+
+    if (field.showIfValue == 'unchecked') {
+      final isChecked = currentValue == true || currentValue == 'true';
+      return field.showIfOperator == '==' ? !isChecked : isChecked;
+    }
+
     final currentStr = currentValue?.toString() ?? '';
 
     if (field.showIfOperator == '==') {

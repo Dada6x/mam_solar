@@ -9,6 +9,8 @@ enum FieldType {
   signature,
   textarea,
   repeatable,
+  file,
+  displayText,
 }
 
 class FormSection {
@@ -56,6 +58,7 @@ class FormFieldDef {
   final String? showIfValue;
   final String? labelDe;
   final String? labelAr;
+  final List<String>? acceptedFormats;
 
   const FormFieldDef({
     required this.id,
@@ -68,6 +71,7 @@ class FormFieldDef {
     this.showIfValue,
     this.labelDe,
     this.labelAr,
+    this.acceptedFormats,
   });
 
   String localizedLabel(String languageCode) {

@@ -60,6 +60,8 @@ class AcProtocolPdfGenerator {
       PdfGeneratorBase.buildFieldRow('Speicherhersteller', PdfGeneratorBase.safeString(data['storageManufacturer'])),
       PdfGeneratorBase.buildFieldRow('Wallbox', data['wallboxInstalled'] == true ? 'Ja' : 'Nein'),
       PdfGeneratorBase.buildFieldRow('Backup', data['backupInstalled'] == true ? 'Ja' : 'Nein'),
+      if (data['backupInstalled'] != true)
+        PdfGeneratorBase.buildFieldRow('Backup-Hinweis', PdfGeneratorBase.safeString(data['backupHint'])),
       PdfGeneratorBase.buildFieldRow('Inspektion', inspectionCompleted ? 'Ja' : 'Nein'),
       if (!inspectionCompleted)
         PdfGeneratorBase.buildFieldRow('Inspektionsgrund', PdfGeneratorBase.safeString(data['inspectionReason'])),
@@ -222,7 +224,7 @@ class AcProtocolPdfGenerator {
       PdfGeneratorBase.buildFieldRow('Kunde eingewiesen', data['customerInformed'] == true ? 'Ja' : 'Nein'),
       PdfGeneratorBase.buildFieldRow('Rechnung genehmigt', data['invoiceApproved'] == true ? 'Ja' : 'Nein'),
       PdfGeneratorBase.buildFieldRow('Aufräumen erledigt', data['cleanupDone'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Beigefügtes Dokument', PdfGeneratorBase.safeString(data['attachedDocument'])),
+      PdfGeneratorBase.buildFieldRow('Beigefügtes Messprotokoll', PdfGeneratorBase.safeString(data['measurementProtocol'])),
     ]);
   }
 
@@ -236,6 +238,15 @@ class AcProtocolPdfGenerator {
     return PdfGeneratorBase.buildSection('Unterschriften', [
       PdfGeneratorBase.buildFieldRow('Ort', PdfGeneratorBase.safeString(data['signatureLocation'])),
       PdfGeneratorBase.buildSignatureField('Kunde', data['customerSignature'] as String?),
+      PdfGeneratorBase.buildDisplayTextField(
+        'Vom Anlagenbetreiber und Installationsbetrieb wird erklärt, dass die oben genannte Anlage technisch betriebsbereit i.S.d. § 3 Nr. 30 EEG (2021) ist, an dem das AC- und DC-Abnahmeprotokoll unterzeichnet vorliegen.',
+      ),
+      PdfGeneratorBase.buildDisplayTextField(
+        'Die Widerspruchsfrist beträgt 14 Tage, nach Ablauf der Frist gilt das Abnahmeprotokoll als bestätigt.',
+      ),
+      PdfGeneratorBase.buildDisplayTextField(
+        'Der ausführende Elektroinstallateur bestätigt mit seiner Unterschrift die elektrische Anlage nach den aktuell gültigen DIN-VDE Normen sowie TAB und TAR installiert, gemessen und abgenommen zu haben.',
+      ),
       PdfGeneratorBase.buildSignatureField('Installateur', data['installerSignature'] as String?),
     ]);
   }

@@ -55,6 +55,50 @@ section_id: sec
         expect(field.labelAr, 'اسم');
       });
 
+      test('parses a file field with accepted_formats', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- docFile | file | required | Attach Document
+  accepted_formats: pdf, jpg, png
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 1);
+        final field = result.sections[0].fields[0];
+        expect(field.type, FieldType.file);
+        expect(field.required, true);
+        expect(field.acceptedFormats, ['pdf', 'jpg', 'png']);
+      });
+
+      test('parses a display_text field', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- declaration | display_text | | This is a declaration text | Dies ist ein Erklärungstext
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 1);
+        final field = result.sections[0].fields[0];
+        expect(field.type, FieldType.displayText);
+        expect(field.required, false);
+        expect(field.labelKey, 'This is a declaration text');
+        expect(field.labelDe, 'Dies ist ein Erklärungstext');
+      });
+
       test('parses a dropdown field with options', () {
         const md = '''
 ---
@@ -188,6 +232,29 @@ section_id: sec
         expect(field.showIfField, 'checkbox1');
         expect(field.showIfOperator, '==');
         expect(field.showIfValue, 'true');
+      });
+
+      test('parses show_if with unchecked keyword', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- backupInstalled | checkbox | required | Backup Installed
+- backupHint | textarea | | Hint / Notes
+  show_if: backupInstalled == unchecked
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 2);
+        final field = result.sections[0].fields[1];
+        expect(field.showIfField, 'backupInstalled');
+        expect(field.showIfOperator, '==');
+        expect(field.showIfValue, 'unchecked');
       });
 
       test('parses show_if with not-equal operator', () {
