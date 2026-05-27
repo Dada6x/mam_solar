@@ -4,17 +4,28 @@ import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class WorkOrderPdfGenerator {
   static const _expectedFlatKeys = [
-    'fullName', 'street', 'zipCity', 'email',
+    // Customer Data
+    'fullName', 'street','city', 'zipCity', 'email', 'phone',
+    // Work Description
     'description', 'workDetail',
-    'workCompleted', 'photoWork1', 'photoWork2', 'completionDate',
+    // Completion
+    'workCompleted',
+    'reason', 'nextAppointment', 'whatIsMissing', // show_if: workCompleted == no
+    'completionDate',
+    // Meter Readings (flat photo)
+    'photoMeter',
+    // Remarks
     'remarks',
-    'customerSignature', 'technicianSignature',
+    // Signatures
+    'customerFullName','customerSignature', 'companySignature', 'signerName', 'emailSentTo',
   ];
 
   static const _expectedRepeatableKeys = {
-    'materials': ['quantity', 'material'],
-    'travel': ['departure', 'destination'],
-    'working_hours': ['date', 'techName', 'startTime', 'endTime'],
+    'materials': ['quantity', 'unit', 'material'],
+    'travel': ['licensePlate', 'departure', 'destination', 'kilometers'],
+    'working_hours': ['date', 'techName', 'startTime', 'endTime', 'duration'],
+    'meter_readings': ['meterNumber', 'reading'],
+    'work_photos': ['category', 'photo', 'description'],
   };
 
   static pw.Document generate({
@@ -42,6 +53,8 @@ class WorkOrderPdfGenerator {
         _buildMaterialsSection(repeatableData),
         _buildVehicleTravelSection(repeatableData),
         _buildWorkingHoursSection(repeatableData),
+        _buildMeterReadingsSection(data, repeatableData),
+        _buildWorkPhotosSection(repeatableData),
         _buildCompletionSection(data),
         _buildRemarksSection(data),
         _buildSignaturesSection(data),
@@ -49,14 +62,20 @@ class WorkOrderPdfGenerator {
     );
   }
 
+  // ── Customer Data ──────────────────────────────────────────────────────────
+
   static pw.Widget _buildCustomerDataSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('Customer Data', [
       PdfGeneratorBase.buildFieldRow('Name', PdfGeneratorBase.safeString(data['fullName'])),
       PdfGeneratorBase.buildFieldRow('Street', PdfGeneratorBase.safeString(data['street'])),
+      PdfGeneratorBase.buildFieldRow('City', PdfGeneratorBase.safeString(data['city'])),
       PdfGeneratorBase.buildFieldRow('ZIP/City', PdfGeneratorBase.safeString(data['zipCity'])),
       PdfGeneratorBase.buildFieldRow('Email', PdfGeneratorBase.safeString(data['email'])),
+      PdfGeneratorBase.buildFieldRow('Phone', PdfGeneratorBase.safeString(data['phone'])),
     ]);
   }
+
+  // ── Work Description ───────────────────────────────────────────────────────
 
   static pw.Widget _buildWorkDescriptionSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('Work Description', [
@@ -65,15 +84,22 @@ class WorkOrderPdfGenerator {
     ]);
   }
 
+  // ── Materials ──────────────────────────────────────────────────────────────
+
   static pw.Widget _buildMaterialsSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final materials = repeatableData['materials'] ?? [];
     final fields = <pw.Widget>[];
+
     if (materials.isEmpty) {
       fields.add(PdfGeneratorBase.buildFieldRow('Materials', 'None'));
     } else {
       for (var i = 0; i < materials.length; i++) {
         final m = materials[i];
-        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Qty', PdfGeneratorBase.safeString(m['quantity'])));
+        final qty = PdfGeneratorBase.safeString(m['quantity']);
+        final unit = PdfGeneratorBase.safeString(m['unit']);
+        final qtyWithUnit = unit.isNotEmpty ? '$qty $unit' : qty;
+
+        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Qty', qtyWithUnit));
         fields.add(PdfGeneratorBase.buildFieldRow('Material', PdfGeneratorBase.safeString(m['material'])));
         if (i < materials.length - 1) fields.add(pw.SizedBox(height: 4));
       }
@@ -81,25 +107,33 @@ class WorkOrderPdfGenerator {
     return PdfGeneratorBase.buildSection('Materials', fields);
   }
 
+  // ── Vehicle / Travel ───────────────────────────────────────────────────────
+
   static pw.Widget _buildVehicleTravelSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final travels = repeatableData['travel'] ?? [];
     final fields = <pw.Widget>[];
+
     if (travels.isEmpty) {
       fields.add(PdfGeneratorBase.buildFieldRow('Travel', 'None'));
     } else {
       for (var i = 0; i < travels.length; i++) {
         final t = travels[i];
-        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Departure', PdfGeneratorBase.safeString(t['departure'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} License Plate', PdfGeneratorBase.safeString(t['licensePlate'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Departure', PdfGeneratorBase.safeString(t['departure'])));
         fields.add(PdfGeneratorBase.buildFieldRow('Destination', PdfGeneratorBase.safeString(t['destination'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Kilometers', PdfGeneratorBase.safeString(t['kilometers'])));
         if (i < travels.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
     return PdfGeneratorBase.buildSection('Vehicle / Travel', fields);
   }
 
+  // ── Working Hours ──────────────────────────────────────────────────────────
+
   static pw.Widget _buildWorkingHoursSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final hours = repeatableData['working_hours'] ?? [];
     final fields = <pw.Widget>[];
+
     if (hours.isEmpty) {
       fields.add(PdfGeneratorBase.buildFieldRow('Hours', 'None'));
     } else {
@@ -113,20 +147,92 @@ class WorkOrderPdfGenerator {
         fields.add(PdfGeneratorBase.buildFieldRow('Technician', PdfGeneratorBase.safeString(h['techName'])));
         fields.add(PdfGeneratorBase.buildFieldRow('Start', PdfGeneratorBase.safeString(h['startTime'])));
         fields.add(PdfGeneratorBase.buildFieldRow('End', PdfGeneratorBase.safeString(h['endTime'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Duration', PdfGeneratorBase.safeString(h['duration']))); 
         if (i < hours.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
     return PdfGeneratorBase.buildSection('Working Hours', fields);
   }
 
-  static pw.Widget _buildCompletionSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Completion', [
-      PdfGeneratorBase.buildFieldRow('Work Completed', data['workCompleted'] == true ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildPhotoField('Photo 1', data['photoWork1'] as String?),
-      PdfGeneratorBase.buildPhotoField('Photo 2', data['photoWork2'] as String?),
-      PdfGeneratorBase.buildFieldRow('Completion Date', PdfGeneratorBase.safeString(data['completionDate'])),
-    ]);
+  // ── Meter Readings ─────────────────────────────────────────────────────────
+
+  static pw.Widget _buildMeterReadingsSection(
+    Map<String, dynamic> data,
+    Map<String, List<Map<String, dynamic>>> repeatableData,
+  ) {
+    final readings = repeatableData['meter_readings'] ?? [];
+    final fields = <pw.Widget>[];
+
+    if (readings.isEmpty) {
+      fields.add(PdfGeneratorBase.buildFieldRow('Readings', 'None'));
+    } else {
+      for (var i = 0; i < readings.length; i++) {
+        final r = readings[i];
+        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Meter No.', PdfGeneratorBase.safeString(r['meterNumber'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Reading (kWh)', PdfGeneratorBase.safeString(r['reading'])));
+        if (i < readings.length - 1) fields.add(pw.SizedBox(height: 4));
+      }
+    }
+
+    // Flat meter photo (outside the repeatable block in the MD)
+    fields.add(pw.SizedBox(height: 6));
+    fields.add(PdfGeneratorBase.buildPhotoField('Meter Photo', data['photoMeter'] as String?));
+
+    return PdfGeneratorBase.buildSection('Meter Readings', fields);
   }
+
+  // ── Work Photos ────────────────────────────────────────────────────────────
+
+  static pw.Widget _buildWorkPhotosSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+    final photos = repeatableData['work_photos'] ?? [];
+    final fields = <pw.Widget>[];
+
+    if (photos.isEmpty) {
+      fields.add(PdfGeneratorBase.buildFieldRow('Photos', 'None'));
+    } else {
+      for (var i = 0; i < photos.length; i++) {
+        final p = photos[i];
+        final category = PdfGeneratorBase.safeString(p['category']);
+        final description = PdfGeneratorBase.safeString(p['description']);
+
+        fields.add(pw.Text(
+          'Photo #${i + 1}${category.isNotEmpty ? ' — $category' : ''}',
+          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+        ));
+        if (description.isNotEmpty) {
+          fields.add(PdfGeneratorBase.buildFieldRow('Description', description));
+        }
+        fields.add(PdfGeneratorBase.buildPhotoField('Photo', p['photo'] as String?));
+        if (i < photos.length - 1) fields.add(pw.SizedBox(height: 6));
+      }
+    }
+    return PdfGeneratorBase.buildSection('Work Photos', fields);
+  }
+
+  // ── Completion ─────────────────────────────────────────────────────────────
+
+  static pw.Widget _buildCompletionSection(Map<String, dynamic> data) {
+    // MD uses 'yes'/'no' strings (radio), not booleans
+    final workCompleted = data['workCompleted']?.toString().toLowerCase();
+    final isCompleted = workCompleted == 'yes';
+    final fields = <pw.Widget>[
+      PdfGeneratorBase.buildFieldRow('Work Completed', isCompleted ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('Completion Date', PdfGeneratorBase.safeString(data['completionDate'])),
+    ];
+
+    // show_if: workCompleted == no
+    if (!isCompleted) {
+      fields.addAll([
+        PdfGeneratorBase.buildFieldRow('Reason (not completed)', PdfGeneratorBase.safeString(data['reason'])),
+        PdfGeneratorBase.buildFieldRow('Next Appointment', PdfGeneratorBase.safeString(data['nextAppointment'])),
+        PdfGeneratorBase.buildFieldRow('What is missing', PdfGeneratorBase.safeString(data['whatIsMissing'])),
+      ]);
+    }
+
+    return PdfGeneratorBase.buildSection('Completion', fields);
+  }
+
+  // ── Remarks ────────────────────────────────────────────────────────────────
 
   static pw.Widget _buildRemarksSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('Remarks', [
@@ -134,10 +240,15 @@ class WorkOrderPdfGenerator {
     ]);
   }
 
-  static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Signatures', [
-      PdfGeneratorBase.buildSignatureField('Customer', data['customerSignature'] as String?),
-      PdfGeneratorBase.buildSignatureField('Technician', data['technicianSignature'] as String?),
-    ]);
-  }
+  // ── Signatures ─────────────────────────────────────────────────────────────
+
+static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
+  return PdfGeneratorBase.buildSection('Signatures', [
+    PdfGeneratorBase.buildFieldRow('Customer Full Name', PdfGeneratorBase.safeString(data['customerFullName'])),
+    PdfGeneratorBase.buildSignatureField('Customer', data['customerSignature'] as String?),
+    PdfGeneratorBase.buildSignatureField('MAM Solarbau', data['companySignature'] as String?),
+    PdfGeneratorBase.buildFieldRow('Signing Technician', PdfGeneratorBase.safeString(data['signerName'])),
+    // PdfGeneratorBase.buildFieldRow('Email Sent To', PdfGeneratorBase.safeString(data['emailSentTo'])),
+  ]);
+}
 }
