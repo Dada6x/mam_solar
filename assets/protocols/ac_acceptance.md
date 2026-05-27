@@ -29,7 +29,7 @@ section_id: customer_data
 
 section_id: installation_details
 
-- installationType | dropdown | required | Installation Type | Installationstyp | نوع التركيب
+- installationType | dropdown | | Installation Type | Installationstyp | نوع التركيب
   options: solar_pv, solar_pv_battery, solar_pv_wallbox
 
 - storageManufacturer | text | | Storage Manufacturer | Speicherhersteller | الشركة المصنعة للتخزين
@@ -53,10 +53,10 @@ repeatable: true
 min: 1
 max: 5
 
-- brand | text | required | Brand | Marke | الماركة
+- brand | text | | Brand | Marke | الماركة
 - model | text | | Model | Modell | الطراز
-- serialNumber | text | required | Serial Number | Seriennummer | الرقم التسلسلي
-- networkType | dropdown | required | Network Type | Netzwerktyp | نوع الشبكة
+- serialNumber | text | | Serial Number | Seriennummer | الرقم التسلسلي
+- networkType | dropdown | | Network Type | Netzwerktyp | نوع الشبكة
   options: wlan, powerline, ethernet
 
 - installedCorrectly | checkbox | | Installed Correctly | Richtig installiert | مثبت بشكل صحيح
@@ -140,7 +140,7 @@ section_id: meter_cabinet
 - photoApzCableInside | photo | | Photo - APZ Cable Inside | Foto - APZ Kabel innen | صورة - كابل APZ الداخلي
 - photoApzMeterConnections | photo | | Photo - APZ Meter Connections | Foto - APZ Zähleranschlüsse | صورة - توصيلات عداد APZ
 
-- photoCabinet | photo | required | Cabinet Photo | Schrank Foto | صورة الخزانة
+- photoCabinet | photo | | Cabinet Photo | Schrank Foto | صورة الخزانة
 
 ---
 
@@ -208,9 +208,9 @@ section_id: cable_routes
 
 - notes | textarea | | Notes | Notizen | ملاحظات
 
-- photoCableRoute | photo | required | Photos of Entire AC Cable Route | Bilder des gesamten AC Kabelwegs | صور لمسار كابل AC بالكامل
+- photoCableRoute | photo | | Photos of Entire AC Cable Route | Bilder des gesamten AC Kabelwegs | صور لمسار كابل AC بالكامل
   multiple: true
-
+<!-- TODO make it repatable for the images ? -->
 - photoCable1 | photo | | Photo - Cable 1 | Foto - Kabel 1 | صورة - الكابل 1
 - photoCable2 | photo | | Photo - Cable 2 | Foto - Kabel 2 | صورة - الكابل 2
 - photoCable3 | photo | | Photo - Cable 3 | Foto - Kabel 3 | صورة - الكابل 3
@@ -222,13 +222,13 @@ section_id: cable_routes
 section_id: heat_pump
 optional_section: true
 
-- heatPumpOrdered | radio | required | Heat Pump Ordered Through MAM Solarbau? | Wärmepumpe bei MAM Solarbau beauftragt? | هل تم طلب المضخة الحرارية عبر MAM Solarbau؟
+- heatPumpOrdered | radio | | Heat Pump Ordered Through MAM Solarbau? | Wärmepumpe bei MAM Solarbau beauftragt? | هل تم طلب المضخة الحرارية عبر MAM Solarbau؟
   options: yes, no
 
-- photoSubDistribution | photo | required | Photo - Sub-distribution / ZK Integration from Distance | Unterverteilung / ZK Einbindung aus größerer Entfernung | صورة - التوزيع الفرعي / دمج ZK من مسافة
+- photoSubDistribution | photo | | Photo - Sub-distribution / ZK Integration from Distance | Unterverteilung / ZK Einbindung aus größerer Entfernung | صورة - التوزيع الفرعي / دمج ZK من مسافة
   show_if: heatPumpOrdered == yes
 
-- photoFusesHeatPump | photo | required | Photo - Heat Pump Fuses (Legible) | Sicherungen Wärmepumpe leserlich | صورة - منصهرات المضخة الحرارية واضحة
+- photoFusesHeatPump | photo | | Photo - Heat Pump Fuses (Legible) | Sicherungen Wärmepumpe leserlich | صورة - منصهرات المضخة الحرارية واضحة
   show_if: heatPumpOrdered == yes
 
 ---
@@ -237,7 +237,7 @@ optional_section: true
 
 section_id: cleanliness
 
-- siteCleanedUp | checkbox | required | Waste Loaded Into Own Vehicle and Site Left Clean | Abfall im eigenen Fahrzeug entsorgt und Baustelle sauber verlassen | تم تحميل النفايات وترك الموقع نظيفًا
+- siteCleanedUp | checkbox | | Waste Loaded Into Own Vehicle and Site Left Clean | Abfall im eigenen Fahrzeug entsorgt und Baustelle sauber verlassen | تم تحميل النفايات وترك الموقع نظيفًا
 
 ---
 
@@ -247,8 +247,8 @@ section_id: final_acceptance
 
 - systemOperational | checkbox | required | System Operational | Anlage betriebsbereit | النظام يعمل
 - customerInformed | checkbox | required | Customer Informed | Kunde informiert | تم إعلام العميل
-- invoiceApproved | checkbox | required | Invoice Approved | Rechnung freigegeben | تمت الموافقة على الفاتورة
-- detailsRecorded | checkbox | required | All Details Recorded and Discussed with Customer | Alle Details erfasst und mit dem Kunden besprochen | تم تسجيل جميع التفاصيل ومناقشتها مع العميل
+- invoiceApproved | checkbox | | Invoice Approved | Rechnung freigegeben | تمت الموافقة على الفاتورة
+- detailsRecorded | checkbox | | All Details Recorded and Discussed with Customer | Alle Details erfasst und mit dem Kunden besprochen | تم تسجيل جميع التفاصيل ومناقشتها مع العميل
 - completionDate | date | required | Completion Date | Abschlussdatum | تاريخ الانتهاء
 - completionTime | time | required | Completion Time | Abschlusszeit | وقت الانتهاء
 
@@ -259,6 +259,18 @@ section_id: final_acceptance
 section_id: remarks
 
 - remarksGeneral | textarea | | Remarks | Bemerkungen | ملاحظات
+
+---
+
+## Additional info | additional  | additional info
+
+section_id: additional_info
+repeatable: true
+min: 1
+max: 10
+
+- note | textarea | | Remarks | Bemerkungen | ملاحظة
+- image | photo| || image| image | صورة
 
 ---
 

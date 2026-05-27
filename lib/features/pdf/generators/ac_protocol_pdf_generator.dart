@@ -64,6 +64,8 @@ class AcProtocolPdfGenerator {
     'completionDate', 'completionTime',
     'remarks',
     'systemOperational', 'customerInformed', 'invoiceApproved',
+    // additional info 
+    'note', 'image',
 
     // Customer Signature
     'customerSignature', 'customerFullName',
@@ -135,6 +137,7 @@ class AcProtocolPdfGenerator {
         _buildCleanlinessSection(data),
         _buildFinalAcceptanceSection(data),
         _buildRemarksSection(data),
+        _buildAdditionalInfoSection(repeatableData),
         _buildSignaturesSection(data),
       ],
     );
@@ -336,28 +339,34 @@ fields.add(PdfGeneratorBase.buildFieldRow('Additional Details', PdfGeneratorBase
     ]);
   }
 
-  static pw.Widget _buildProtectionDevicesSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
-    final devices = repeatableData['protection_devices'] ?? [];
-    final fields = <pw.Widget>[];
-    
-    if (devices.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('New Protection Devices', 'No data'));
-    } else {
-      for (var i = 0; i < devices.length; i++) {
-        final device = devices[i];
-        fields.add(pw.Text(
-          'Protection Device #${i + 1}',
-          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
-        ));
-        fields.add(PdfGeneratorBase.buildPhotoField('Photo', device['photoProtectionDevice'] as String?));
-        
-        if (i < devices.length - 1) {
-          fields.add(pw.SizedBox(height: 6));
-        }
+static pw.Widget _buildProtectionDevicesSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+  final devices = repeatableData['protection_devices'] ?? [];
+  final fields = <pw.Widget>[];
+  
+  if (devices.isEmpty) {
+    fields.add(PdfGeneratorBase.buildFieldRow('New Protection Devices', 'No data'));
+  } else {
+    for (var i = 0; i < devices.length; i++) {
+      final device = devices[i];
+      fields.add(pw.Text(
+        'Protection Device #${i + 1}',
+        style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+      ));
+      
+      fields.add(PdfGeneratorBase.buildPhotoField('Photo', device['photoProtectionDevice'] as String?));
+      
+      // Since they are now inside the 'device' object, we access them here:
+      fields.add(PdfGeneratorBase.buildFieldRow('No Changes Made', _yesNo(device['noChangesMade'])));
+      fields.add(PdfGeneratorBase.buildFieldRow('System Stability Tested', _yesNo(device['systemStabilityTested'])));
+      fields.add(PdfGeneratorBase.buildFieldRow('EnerGrid Used', _yesNo(device['enerGridUsed'])));
+      
+      if (i < devices.length - 1) {
+        fields.add(pw.SizedBox(height: 10)); // Added a bit more space between devices
       }
     }
-    return PdfGeneratorBase.buildSection('New Protection Devices', fields);
   }
+  return PdfGeneratorBase.buildSection('New Protection Devices', fields);
+}
 
 static pw.Widget _buildMeterRegistrationSection(
     Map<String, List<Map<String, dynamic>>> repeatableData,
@@ -460,6 +469,32 @@ static pw.Widget _buildMeterRegistrationSection(
       PdfGeneratorBase.buildFieldRow('Remarks', PdfGeneratorBase.safeString(data['remarksGeneral'])),
     ]);
   }
+
+static pw.Widget _buildAdditionalInfoSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+  final infoList = repeatableData['additional_info'] ?? [];
+  final fields = <pw.Widget>[];
+
+  if (infoList.isEmpty) {
+    fields.add(PdfGeneratorBase.buildFieldRow('Additional Info', 'No data'));
+  } else {
+    for (var i = 0; i < infoList.length; i++) {
+      final item = infoList[i];
+      fields.add(pw.Text(
+        'Additional Info #${i + 1}',
+        style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+      ));
+      
+      fields.add(PdfGeneratorBase.buildFieldRow('Note', PdfGeneratorBase.safeString(item['note'])));
+      fields.add(PdfGeneratorBase.buildPhotoField('Image', item['image'] as String?));
+      
+      if (i < infoList.length - 1) {
+        fields.add(pw.SizedBox(height: 6));
+      }
+    }
+  }
+  return PdfGeneratorBase.buildSection('Additional Info', fields);
+}
+
 
   static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('Signatures', [
