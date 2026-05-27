@@ -77,6 +77,28 @@ section_id: sec
         expect(field.acceptedFormats, ['pdf', 'jpg', 'png']);
       });
 
+      test('parses a radio field with options', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- choice | radio | required | Make a choice
+  options: yes, no, maybe
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 1);
+        final field = result.sections[0].fields[0];
+        expect(field.type, FieldType.radio);
+        expect(field.required, true);
+        expect(field.dropdownOptions, ['yes', 'no', 'maybe']);
+      });
+
       test('parses a display_text field', () {
         const md = '''
 ---
@@ -255,6 +277,31 @@ section_id: sec
         expect(field.showIfField, 'backupInstalled');
         expect(field.showIfOperator, '==');
         expect(field.showIfValue, 'unchecked');
+      });
+
+      test('parses show_if with OR conditions', () {
+        const md = '''
+---
+protocol: test
+title: Test
+version: 1.0
+---
+
+## Section
+section_id: sec
+
+- status | radio | required | Status
+  options: yes, no, not_possible
+- reason | textarea | required | Reason
+  show_if: status == no OR status == not_possible
+''';
+        final result = ProtocolMdParser.parseMarkdown('test', md);
+        expect(result.sections[0].fields.length, 2);
+        final field = result.sections[0].fields[1];
+        expect(field.showIfField, 'status');
+        expect(field.showIfOperator, '==');
+        expect(field.showIfValue, 'no');
+        expect(field.showIfValues, ['no', 'not_possible']);
       });
 
       test('parses show_if with not-equal operator', () {

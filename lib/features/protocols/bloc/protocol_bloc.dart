@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:logger/logger.dart';
 import 'package:mam_solar/core/parsers/protocol_md_parser.dart';
 import 'package:mam_solar/data/models/protocol_model.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
@@ -40,6 +41,7 @@ sealed class ProtocolState with _$ProtocolState {
 
 class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   final ProtocolRepository _protocolRepo;
+  final Logger _log = Logger();
 
   ProtocolBloc(this._protocolRepo) : super(const ProtocolState()) {
     on<LoadProtocol>(_onLoad);
@@ -101,6 +103,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           jsonData: '{}',
         );
         final id = await _protocolRepo.insertProtocol(newProtocol);
+        _log.i('Created new protocol #$id (type: $type)');
         emit(state.copyWith(
           isLoading: false,
           protocolType: type,
@@ -110,6 +113,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           repeatableData: repeatableData,
         ));
       } else {
+        _log.i('Loaded existing protocol #${existing.id} (type: $type): ${formData.length} fields loaded');
         emit(state.copyWith(
           isLoading: false,
           protocolType: type,
@@ -125,12 +129,14 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   }
 
   void _onUpdateField(UpdateField event, Emitter<ProtocolState> emit) {
+    _log.i('Field updated: ${event.key} = ${event.value}');
     final newData = Map<String, dynamic>.from(state.formData);
     newData[event.key] = event.value;
     emit(state.copyWith(formData: newData, isDirty: true, saveMessage: null));
   }
 
   void _onUpdateRepeatableField(UpdateRepeatableField event, Emitter<ProtocolState> emit) {
+    _log.i('Repeatable field updated: ${event.sectionId}[${event.index}].${event.key} = ${event.value}');
     final newRepeatable = Map<String, List<Map<String, dynamic>>>.from(state.repeatableData);
     var items = List<Map<String, dynamic>>.from(newRepeatable[event.sectionId] ?? []);
     while (items.length <= event.index) {
@@ -163,6 +169,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     if (state.protocolId == 0) return;
     emit(state.copyWith(isSaving: true, error: null));
     try {
+      _log.i('Saving draft protocol #${state.protocolId}: ${state.formData.length} fields');
       final data = Map<String, dynamic>.from(state.formData);
       if (state.repeatableData.isNotEmpty) {
         data['_repeatable'] = state.repeatableData.map(
@@ -172,6 +179,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
       await _protocolRepo.updateJsonData(state.protocolId, data);
       emit(state.copyWith(isSaving: false, isDirty: false, saveMessage: 'autosaved'));
     } catch (e) {
+      _log.e('Save draft failed', error: e);
       emit(state.copyWith(isSaving: false, error: 'saveFailed'));
     }
   }
@@ -179,6 +187,16 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   Future<void> _onGeneratePdf(GeneratePdf event, Emitter<ProtocolState> emit) async {
     emit(state.copyWith(pdfGenerating: true, error: null));
     try {
+      _log.i('=== PDF Generation Start for protocol #${state.protocolId} ===');
+      _log.i('Form fields present: ${state.formData.length}');
+      for (final entry in state.formData.entries) {
+        _log.i('  $entry.key = ${entry.value}');
+      }
+      _log.i('Repeatable sections present: ${state.repeatableData.length}');
+      for (final entry in state.repeatableData.entries) {
+        _log.i('  ${entry.key}: ${entry.value.length} items');
+      }
+
       // save current form data to DB first so PdfBloc reads fresh data
       final data = Map<String, dynamic>.from(state.formData);
       if (state.repeatableData.isNotEmpty) {
@@ -189,6 +207,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
       await _protocolRepo.updateJsonData(state.protocolId, data);
       emit(state.copyWith(pdfGenerating: false, isDirty: false, pdfPath: 'preview'));
     } catch (e) {
+      _log.e('PDF generation failed', error: e);
       emit(state.copyWith(pdfGenerating: false, error: e.toString()));
     }
   }

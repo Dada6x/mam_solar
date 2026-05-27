@@ -3,19 +3,120 @@ import 'package:mam_solar/core/utils/date_formatter.dart';
 import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class AcProtocolPdfGenerator {
+  static const _expectedFlatKeys = [
+    // Customer Data
+    'customerName', 'street', 'houseNumber', 'city', 'zipCode', 'email', 'phone',
+    'installationDate', 'installationTime',
+    'installerName', 'partnerCompany',
+
+    // Installation Type
+    'backupInstalled', 
+    'inspectionCompleted', 'inspectionReason',
+    'groundRodInstalled', 'privateMeterInstalled',
+
+    'installationType', 'storageManufacturer', 'wallboxInstalled',
+    'supervisorIntroduced', 'shoeCoversWorn',
+
+    // Equipotential Bonding
+    'componentsConnected',
+    'eqEarthingConnected', 'eqUkConnected', 'eqDcOvervoltageConnected', 'eqInverterConnected',
+    'photoBonding',
+
+    // Meter Cabinet
+    'newCabinetInstalled', 'allComponentsInstalled', 'touchProtection',
+    'apzWiring', 'apzInstalled',
+    'existingSystemChanges','energridInstalled',
+    'photoCabinet',
+    'photoNewFuse', 'photoApzCable', 'photoApzWiringMeter',
+    'photoEnergrid',
+    'photoPvLabel', 'photoNewCabinet', 'photoOldCabinet', 'photoSlsOrNh',
+    'photoAcOvervoltage', 'photoRcd', 'photoCableRouteToNewCabinet',
+    'photoApzCableInside', 'photoApzMeterConnections',
+
+    // Meter Registration
+    'newMeterType',
+    'remoteControlPresent', 'photoRemoteControl',
+    'removeRemoteControl',
+    'meterConsolidation', 'consolidationDescription',
+    'meterRemarks',
+    'measurementConcept',
+    'meterType', 'meterRemovalNeeded', 'meterReplacementNeeded',
+    'remoteControl',
+    'photoMeter', 'photoMeterReadings',
+
+    // Heat Pump
+    'heatPumpOrdered',
+    'photoSubDistribution', 'photoFusesHeatPump',
+    'heatPumpRequested',
+
+    // Cable Routes
+    'photoCableRoute',
+    'routeOver25m', 'additionalMeters',
+    'notes',
+    'photoCable1', 'photoCable2', 'photoCable3', 'photoCable4',
+
+    // Cleanliness
+    'siteCleanedUp',
+
+    // Final Acceptance
+    'detailsRecorded',
+    'measurementProtocol',
+    'completionDate', 'completionTime',
+    'remarks',
+    'systemOperational', 'customerInformed', 'invoiceApproved',
+
+    // Customer Signature
+    'customerSignature', 'customerFullName',
+
+    // Installer Signature
+    'installerSignature',
+  ];
+
+  static const _expectedRepeatableKeys = {
+    'inverter': [
+      'inverterCount', 'brand', 'model', 'serialNumber', 'networkType',
+      'installedCorrectly', 'mountedOnFireproofSurface', 'normsFollowed',
+      'fusesPerSpec', 'fusesRemark',
+      'manufacturerStandardsFollowed',
+      'photoDataplate', 'photoAcGrid', 'photoAcBackup', 'photoCommunicationPlug',
+      'photoThreeCommunicationPorts', 'photoEarthingLeft', 'photoEarthingRight',
+      'photoPlcOrWlanExtender', 'photoDcBatteryCables', 'photoFinalInstall',
+    ],
+    'batteryStorage': [
+      'batteryBrand', 'batteryModel', 'batterySid',
+      'batteryTowers', 'batteryModulesPerTower', 'serialNumbers',
+      'standardsFollowed',
+      'photoQrCode', 'photoBatteryConnections', 'photoEmsNumber', 'photoAcPlugOpen',
+      'photoBatteryWithoutCovers', 'photoBatteryWithCovers', 'photoBatteryFromDistance',
+      'photoBatteryBase', 'photoBatteryEarthing', 'photoBatteryTowerFinal',
+    ],
+    'distributionBoard': [
+      'photoDistBoard',
+    ],
+    'protectionDevice': [
+      'photoProtectionDevice',
+    ],
+    'existingMeters': [
+      'meterNumber', 'meterType', 'photoMeter',
+    ],
+  };
+
   static pw.Document generate({
     required int protocolId,
     required String customerName,
     required Map<String, dynamic> data,
     required Map<String, List<Map<String, dynamic>>> repeatableData,
   }) {
+    PdfGeneratorBase.logExpectedFields(data, 'AcProtocolPdfGenerator', _expectedFlatKeys);
+    PdfGeneratorBase.logExpectedRepeatableFields(repeatableData, 'AcProtocolPdfGenerator', _expectedRepeatableKeys);
+
     final date = DateFormatter.formatDate(DateTime.now());
     final protocolNumber = DateFormatter.protocolNumber(
       'AC', DateTime.now(), protocolId,
     );
 
     return PdfGeneratorBase.createDocument(
-      title: 'AC Abnahme',
+      title: 'AC Acceptance Protocol',
       protocolNumber: protocolNumber,
       customerName: customerName,
       date: date,
@@ -23,15 +124,15 @@ class AcProtocolPdfGenerator {
         _buildCustomerDataSection(data),
         _buildInstallationDetailsSection(data),
         _buildInverterSection(repeatableData),
-        _buildBatteryStorageSection(data),
-        _buildEqualizationBarSection(data),
-        _buildDistributionBoardSection(data),
+        _buildBatteryStorageSection(repeatableData),
+        // _buildEquipotentialBondingSection(data),
+        _buildDistributionBoardSection(repeatableData),
         _buildMeterCabinetSection(data),
-        _buildProtectionDevicesSection(data),
-        _buildMeterInfoSection(data),
-        _buildSection14aSection(data),
+        _buildProtectionDevicesSection(repeatableData),
+        _buildMeterRegistrationSection(repeatableData),
         _buildHeatPumpSection(data),
         _buildCableRoutesSection(data),
+        _buildCleanlinessSection(data),
         _buildFinalAcceptanceSection(data),
         _buildRemarksSection(data),
         _buildSignaturesSection(data),
@@ -40,35 +141,49 @@ class AcProtocolPdfGenerator {
   }
 
   static pw.Widget _buildCustomerDataSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Kundendaten', [
+    return PdfGeneratorBase.buildSection('Customer Data', [
       PdfGeneratorBase.buildFieldRow('Name', PdfGeneratorBase.safeString(data['customerName'])),
-      PdfGeneratorBase.buildFieldRow('Straße', PdfGeneratorBase.safeString(data['street'])),
-      PdfGeneratorBase.buildFieldRow('Stadt', PdfGeneratorBase.safeString(data['city'])),
-      PdfGeneratorBase.buildFieldRow('PLZ', PdfGeneratorBase.safeString(data['zipCode'])),
-      PdfGeneratorBase.buildFieldRow('E-Mail', PdfGeneratorBase.safeString(data['email'])),
-      PdfGeneratorBase.buildFieldRow('Telefon', PdfGeneratorBase.safeString(data['phone'])),
-      PdfGeneratorBase.buildFieldRow('Installationsdatum', PdfGeneratorBase.safeString(data['installationDate'])),
-      PdfGeneratorBase.buildFieldRow('Installateur', PdfGeneratorBase.safeString(data['installerName'])),
-      PdfGeneratorBase.buildFieldRow('Partnerunternehmen', PdfGeneratorBase.safeString(data['partnerCompany'])),
+      PdfGeneratorBase.buildFieldRow('Street', PdfGeneratorBase.safeString(data['street'])),
+      PdfGeneratorBase.buildFieldRow('House Number', PdfGeneratorBase.safeString(data['houseNumber'])),
+      PdfGeneratorBase.buildFieldRow('City', PdfGeneratorBase.safeString(data['city'])),
+      PdfGeneratorBase.buildFieldRow('Zip Code', PdfGeneratorBase.safeString(data['zipCode'])),
+      PdfGeneratorBase.buildFieldRow('Email', PdfGeneratorBase.safeString(data['email'])),
+      PdfGeneratorBase.buildFieldRow('Phone', PdfGeneratorBase.safeString(data['phone'])),
+      PdfGeneratorBase.buildFieldRow('Installation Date', PdfGeneratorBase.safeString(data['installationDate'])),
+      PdfGeneratorBase.buildFieldRow('Installation Time', PdfGeneratorBase.safeString(data['installationTime'])),
+      PdfGeneratorBase.buildFieldRow('Installer', PdfGeneratorBase.safeString(data['installerName'])),
+      PdfGeneratorBase.buildFieldRow('Partner Company', PdfGeneratorBase.safeString(data['partnerCompany'])),
     ]);
   }
 
   static pw.Widget _buildInstallationDetailsSection(Map<String, dynamic> data) {
-    final inspectionCompleted = data['inspectionCompleted'] == true;
-    return PdfGeneratorBase.buildSection('Installationsdetails', [
-      PdfGeneratorBase.buildFieldRow('Typ', PdfGeneratorBase.safeString(data['installationType'])),
-      PdfGeneratorBase.buildFieldRow('Speicherhersteller', PdfGeneratorBase.safeString(data['storageManufacturer'])),
-      PdfGeneratorBase.buildFieldRow('Wallbox', data['wallboxInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Backup', data['backupInstalled'] == true ? 'Ja' : 'Nein'),
-      if (data['backupInstalled'] != true)
-        PdfGeneratorBase.buildFieldRow('Backup-Hinweis', PdfGeneratorBase.safeString(data['backupHint'])),
-      PdfGeneratorBase.buildFieldRow('Inspektion', inspectionCompleted ? 'Ja' : 'Nein'),
-      if (!inspectionCompleted)
-        PdfGeneratorBase.buildFieldRow('Inspektionsgrund', PdfGeneratorBase.safeString(data['inspectionReason'])),
-      PdfGeneratorBase.buildFieldRow('Erdungsstab', data['groundRodInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Privater Zähler', data['privateMeterInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Einweisung', data['supervisorIntroduced'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Überschuhe', data['shoeCoversWorn'] == true ? 'Ja' : 'Nein'),
+    final backupInstalled = data['backupInstalled'] == true || data['backupInstalled'] == 'yes';
+    final inspectionCompleted = data['inspectionCompleted'];
+    final inspectionNotDone = inspectionCompleted == false ||
+        inspectionCompleted == 'no' ||
+        inspectionCompleted == 'not_possible';
+
+    return PdfGeneratorBase.buildSection('Installation Details', [
+      PdfGeneratorBase.buildFieldRow('Type', PdfGeneratorBase.safeString(data['installationType'])),
+      PdfGeneratorBase.buildFieldRow('Storage Manufacturer', PdfGeneratorBase.safeString(data['storageManufacturer'])),
+      PdfGeneratorBase.buildFieldRow('Wallbox', data['wallboxInstalled'] == true ? 'Yes' : 'No'),
+
+      PdfGeneratorBase.buildFieldRow('Backup System Installed', backupInstalled ? 'Yes' : 'No'),
+    
+      PdfGeneratorBase.buildFieldRow(
+        'Inspection Completed',
+        inspectionCompleted == 'not_possible'
+            ? 'Not Possible'
+            : (inspectionCompleted == true || inspectionCompleted == 'yes' ? 'Yes' : 'No'),
+      ),
+      if (inspectionNotDone)
+        PdfGeneratorBase.buildFieldRow('Reason for No Inspection', PdfGeneratorBase.safeString(data['inspectionReason'])),
+
+      PdfGeneratorBase.buildFieldRow('Ground Rod Installed', _yesNo(data['groundRodInstalled'])),
+      PdfGeneratorBase.buildFieldRow('Private Intermediate Meter Installed', _yesNo(data['privateMeterInstalled'])),
+
+      PdfGeneratorBase.buildFieldRow('Briefing Conducted', data['supervisorIntroduced'] == true ? 'Yes' : 'No'),
+      PdfGeneratorBase.buildFieldRow('Shoe Covers Worn', data['shoeCoversWorn'] == true ? 'Yes' : 'No'),
     ]);
   }
 
@@ -76,178 +191,298 @@ class AcProtocolPdfGenerator {
     final inverters = repeatableData['inverter'] ?? [];
     final fields = <pw.Widget>[];
     if (inverters.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Wechselrichter', 'Keine Daten'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Inverter', 'No data'));
     } else {
       for (var i = 0; i < inverters.length; i++) {
         final inv = inverters[i];
         fields.add(pw.Text(
-          'Wechselrichter #${i + 1}',
+          'Inverter #${i + 1}',
           style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
         ));
-        fields.add(PdfGeneratorBase.buildFieldRow('Anzahl', PdfGeneratorBase.safeString(inv['inverterCount'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Marke', PdfGeneratorBase.safeString(inv['brand'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Modell', PdfGeneratorBase.safeString(inv['model'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Seriennummer', PdfGeneratorBase.safeString(inv['serialNumber'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Netztyp', PdfGeneratorBase.safeString(inv['networkType'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Korrekt installiert', inv['installedCorrectly'] == true ? 'Ja' : 'Nein'));
-        fields.add(PdfGeneratorBase.buildFieldRow('Feuerfeste Oberfläche', inv['mountedOnFireproofSurface'] == true ? 'Ja' : 'Nein'));
-        fields.add(PdfGeneratorBase.buildFieldRow('Herstellerstandards eingehalten', inv['manufacturerStandardsFollowed'] == true ? 'Ja' : 'Nein'));
-        fields.add(PdfGeneratorBase.buildPhotoField('Typenschild', inv['photoDataplate'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('AC-Netz', inv['photoAcGrid'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('AC-Backup', inv['photoAcBackup'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('Kommunikationsstecker', inv['photoCommunicationPlug'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('Drei Kommunikationsports', inv['photoThreeCommunicationPorts'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('Erdung links', inv['photoEarthingLeft'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('Erdung rechts', inv['photoEarthingRight'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('PLC / WLAN-Verstärker', inv['photoPlcOrWlanExtender'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('DC-Batteriekabel', inv['photoDcBatteryCables'] as String?));
-        fields.add(PdfGeneratorBase.buildPhotoField('Endmontage', inv['photoFinalInstall'] as String?));
+        fields.add(PdfGeneratorBase.buildFieldRow('Brand', PdfGeneratorBase.safeString(inv['brand'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Model', PdfGeneratorBase.safeString(inv['model'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Serial Number', PdfGeneratorBase.safeString(inv['serialNumber'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Network Type', PdfGeneratorBase.safeString(inv['networkType'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Installed Correctly', _yesNo(inv['installedCorrectly'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Mounted on Fireproof Surface', _yesNo(inv['mountedOnFireproofSurface'])));
+        fields.add(PdfGeneratorBase.buildFieldRow(
+          'Manufacturer Standards Followed',
+          _yesNo(inv['normsFollowed'] ?? inv['manufacturerStandardsFollowed']),
+        ));
+     
+        fields.add(PdfGeneratorBase.buildPhotoField('Data Plate', inv['photoDataplate'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('AC Grid', inv['photoAcGrid'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('AC Backup', inv['photoAcBackup'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Communication Plug', inv['photoCommunicationPlug'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Three Communication Ports', inv['photoThreeCommunicationPorts'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Earthing Left', inv['photoEarthingLeft'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Earthing Right', inv['photoEarthingRight'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('PLC / WLAN Extender', inv['photoPlcOrWlanExtender'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('DC Battery Cables', inv['photoDcBatteryCables'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Final Installation', inv['photoFinalInstall'] as String?));
         if (i < inverters.length - 1) {
           fields.add(pw.SizedBox(height: 6));
         }
       }
     }
-    return PdfGeneratorBase.buildSection('Wechselrichter', fields);
+    return PdfGeneratorBase.buildSection('Inverter', fields);
   }
 
-  static pw.Widget _buildBatteryStorageSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Batteriespeicher', [
-      PdfGeneratorBase.buildFieldRow('Marke', PdfGeneratorBase.safeString(data['batteryBrand'])),
-      PdfGeneratorBase.buildFieldRow('Modell', PdfGeneratorBase.safeString(data['batteryModel'])),
-      PdfGeneratorBase.buildFieldRow('Installierte Einheiten', PdfGeneratorBase.safeString(data['batteryCount'])),
-      PdfGeneratorBase.buildFieldRow('SID', PdfGeneratorBase.safeString(data['batterySid'])),
-      PdfGeneratorBase.buildFieldRow('Türme', PdfGeneratorBase.safeString(data['batteryTowers'])),
-      PdfGeneratorBase.buildFieldRow('Module/Turm', PdfGeneratorBase.safeString(data['batteryModulesPerTower'])),
-      PdfGeneratorBase.buildFieldRow('Seriennummern', PdfGeneratorBase.safeString(data['serialNumbers'])),
-      PdfGeneratorBase.buildFieldRow('Standards eingehalten', data['standardsFollowed'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildPhotoField('QR-Code', data['photoQrCode'] as String?),
-      PdfGeneratorBase.buildPhotoField('Anschlüsse', data['photoBatteryConnections'] as String?),
-      PdfGeneratorBase.buildPhotoField('EMS-Nummer', data['photoEmsNumber'] as String?),
-      PdfGeneratorBase.buildPhotoField('AC-Stecker offen', data['photoAcPlugOpen'] as String?),
-      PdfGeneratorBase.buildPhotoField('Einheit ohne Abdeckungen', data['photoBatteryWithoutCovers'] as String?),
-      PdfGeneratorBase.buildPhotoField('Einheit mit Abdeckungen', data['photoBatteryWithCovers'] as String?),
-      PdfGeneratorBase.buildPhotoField('Einheit aus der Distanz', data['photoBatteryFromDistance'] as String?),
-      PdfGeneratorBase.buildPhotoField('Batteriesockel nivelliert', data['photoBatteryBase'] as String?),
-      PdfGeneratorBase.buildPhotoField('Batterieerdung', data['photoBatteryEarthing'] as String?),
-      PdfGeneratorBase.buildPhotoField('Batterieturm Endmontage', data['photoBatteryTowerFinal'] as String?),
-    ]);
+  static pw.Widget _buildBatteryStorageSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+    final batteries = repeatableData['battery_storage'] ?? [];
+    final fields = <pw.Widget>[];
+    if (batteries.isEmpty) {
+      fields.add(PdfGeneratorBase.buildFieldRow('Battery Storage', 'No data'));
+    } else {
+      for (var i = 0; i < batteries.length; i++) {
+        final battery = batteries[i];
+        fields.add(pw.Text(
+          'Battery Storage #${i + 1}',
+          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+        ));
+        fields.add(PdfGeneratorBase.buildFieldRow('Brand', PdfGeneratorBase.safeString(battery['batteryBrand'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Model', PdfGeneratorBase.safeString(battery['batteryModel'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('SID', PdfGeneratorBase.safeString(battery['batterySid'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Towers', PdfGeneratorBase.safeString(battery['batteryTowers'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Modules per Tower', PdfGeneratorBase.safeString(battery['batteryModulesPerTower'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Serial Numbers', PdfGeneratorBase.safeString(battery['serialNumbers'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Manufacturer Standards Followed', _yesNo(battery['standardsFollowed'])));
+        
+        fields.add(PdfGeneratorBase.buildPhotoField('QR Code', battery['photoQrCode'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Connections', battery['photoBatteryConnections'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('EMS Number', battery['photoEmsNumber'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('AC Plug Open', battery['photoAcPlugOpen'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Unit Without Covers', battery['photoBatteryWithoutCovers'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Unit With Covers', battery['photoBatteryWithCovers'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Unit From Distance', battery['photoBatteryFromDistance'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Battery Base Levelled', battery['photoBatteryBase'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Battery Earthing', battery['photoBatteryEarthing'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Battery Tower Final Assembly', battery['photoBatteryTowerFinal'] as String?));
+        
+        if (i < batteries.length - 1) {
+          fields.add(pw.SizedBox(height: 6));
+        }
+      }
+    }
+    return PdfGeneratorBase.buildSection('Battery Storage', fields);
   }
 
-  static pw.Widget _buildEqualizationBarSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Potenzialausgleichsschiene', [
-      PdfGeneratorBase.buildFieldRow('Erdung angeschlossen', data['eqEarthingConnected'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('UK angeschlossen', data['eqUkConnected'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('DC-Überspannungsschutz', data['eqDcOvervoltageConnected'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Wechselrichter WR angeschlossen', data['eqInverterConnected'] == true ? 'Ja' : 'Nein'),
-    ]);
-  }
+//! IDK if they needs it or not 
+  // static pw.Widget _buildEquipotentialBondingSection(Map<String, dynamic> data) {
+  //   return PdfGeneratorBase.buildSection('Equipotential Bonding Bar', [
+  //     PdfGeneratorBase.buildFieldRow('Components Connected as Specified', _yesNo(data['componentsConnected'])),
+  //     PdfGeneratorBase.buildFieldRow('Earthing Connected', _yesNo(data['eqEarthingConnected'])),
+  //     PdfGeneratorBase.buildFieldRow('UK Connected', _yesNo(data['eqUkConnected'])),
+  //     PdfGeneratorBase.buildFieldRow('DC Surge Protection Connected', _yesNo(data['eqDcOvervoltageConnected'])),
+  //     PdfGeneratorBase.buildFieldRow('Inverter Connected', _yesNo(data['eqInverterConnected'])),
+  //     PdfGeneratorBase.buildPhotoField('Photo Equipotential Bonding', data['photoBonding'] as String?),
+  //   ]);
+  // }
 
-  static pw.Widget _buildDistributionBoardSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Verteilerkasten', [
-      PdfGeneratorBase.buildPhotoField('Verteilerkasten 1', data['photoDistBoard1'] as String?),
-      PdfGeneratorBase.buildPhotoField('Verteilerkasten 2', data['photoDistBoard2'] as String?),
-      PdfGeneratorBase.buildPhotoField('Verteilerkasten 3', data['photoDistBoard3'] as String?),
-    ]);
+  static pw.Widget _buildDistributionBoardSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+    final boards = repeatableData['distribution_board'] ?? [];
+    final fields = <pw.Widget>[];
+    
+    if (boards.isEmpty) {
+      fields.add(PdfGeneratorBase.buildFieldRow('Distribution Board', 'No data'));
+    } else {
+      for (var i = 0; i < boards.length; i++) {
+        final board = boards[i];
+        fields.add(pw.Text(
+          'Distribution Board #${i + 1}',
+          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+        ));
+        fields.add(PdfGeneratorBase.buildPhotoField('Photo', board['photoDistBoard'] as String?));
+fields.add(PdfGeneratorBase.buildFieldRow('Additional Details', PdfGeneratorBase.safeString(board['additionalDetails'])
+        ));        
+        if (i < boards.length - 1) {
+          fields.add(pw.SizedBox(height: 6));
+        }
+      }
+    }
+    return PdfGeneratorBase.buildSection('Distribution Board', fields);
   }
 
   static pw.Widget _buildMeterCabinetSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Zählerschrank', [
-      PdfGeneratorBase.buildFieldRow('Neuer Schrank', data['newCabinetInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Alle Komponenten', data['allComponentsInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Berührungsschutz', data['touchProtection'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('APZ-Verdrahtung angeschlossen', data['apzWiringConnected'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('APZ installiert', data['apzInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Energrid', data['energridInstalled'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Keine Änderungen am Bestandssystem', data['noModificationsToExistingSystem'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Netzstabilität gewährleistet', data['gridStabilityEnsured'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildPhotoField('PV-Aufkleber', data['photoPvLabel'] as String?),
-      PdfGeneratorBase.buildPhotoField('Neuer Schrank', data['photoNewCabinet'] as String?),
-      PdfGeneratorBase.buildPhotoField('Alter Schrank', data['photoOldCabinet'] as String?),
-      PdfGeneratorBase.buildPhotoField('SLS/NH', data['photoSlsOrNh'] as String?),
-      PdfGeneratorBase.buildPhotoField('AC-Überspannungsschutz', data['photoAcOvervoltage'] as String?),
+    return PdfGeneratorBase.buildSection('Meter Cabinet', [
+      PdfGeneratorBase.buildFieldRow('New Cabinet Installed', _yesNo(data['newCabinetInstalled'])),
+      PdfGeneratorBase.buildFieldRow('All Components Installed', _yesNo(data['allComponentsInstalled'])),
+      PdfGeneratorBase.buildFieldRow('Touch Protection', _yesNo(data['touchProtection'])),
+      PdfGeneratorBase.buildPhotoField('Photo Cabinet', data['photoCabinet'] as String?),
+      PdfGeneratorBase.buildFieldRow(
+        'APZ Wiring Present',
+        _yesNo(data['apzWiring'] ?? data['apzWiringConnected']),
+      ),
+      PdfGeneratorBase.buildFieldRow('APZ Installed', _yesNo(data['apzInstalled'])),
+      PdfGeneratorBase.buildPhotoField('New Fuse (Readable)', data['photoNewFuse'] as String?),
+      PdfGeneratorBase.buildPhotoField('Cable in APZ', data['photoApzCable'] as String?),
+      PdfGeneratorBase.buildPhotoField('APZ Wiring at Meter', data['photoApzWiringMeter'] as String?),
+      PdfGeneratorBase.buildFieldRow('Changes to Existing Electrical System', PdfGeneratorBase.safeString(data['existingSystemChanges'])),
+      // PdfGeneratorBase.buildFieldRow(
+      //   'PV Operation Does Not Affect Safe Power Supply',
+      //   _yesNo(data['safeOperation'] ?? data['gridStabilityEnsured']),
+      // ),
+      PdfGeneratorBase.buildFieldRow('EnerGrid or Equivalent Installed', _yesNo(data['energridInstalled'])),
+      PdfGeneratorBase.buildPhotoField('Photo EnerGrid', data['photoEnergrid'] as String?),
+      PdfGeneratorBase.buildPhotoField('PV Label', data['photoPvLabel'] as String?),
+      PdfGeneratorBase.buildPhotoField('New Cabinet', data['photoNewCabinet'] as String?),
+      PdfGeneratorBase.buildPhotoField('Old Cabinet', data['photoOldCabinet'] as String?),
+      PdfGeneratorBase.buildPhotoField('SLS / NH', data['photoSlsOrNh'] as String?),
+      PdfGeneratorBase.buildPhotoField('AC Surge Protection', data['photoAcOvervoltage'] as String?),
       PdfGeneratorBase.buildPhotoField('RCD', data['photoRcd'] as String?),
-      PdfGeneratorBase.buildPhotoField('Kabelweg zum neuen Schrank', data['photoCableRouteToNewCabinet'] as String?),
-      PdfGeneratorBase.buildPhotoField('APZ-Kabel innen', data['photoApzCableInside'] as String?),
-      PdfGeneratorBase.buildPhotoField('APZ-Zähleranschlüsse', data['photoApzMeterConnections'] as String?),
+      PdfGeneratorBase.buildPhotoField('Cable Route to New Cabinet', data['photoCableRouteToNewCabinet'] as String?),
+      PdfGeneratorBase.buildPhotoField('APZ Cable Inside', data['photoApzCableInside'] as String?),
+      PdfGeneratorBase.buildPhotoField('APZ Meter Connections', data['photoApzMeterConnections'] as String?),
     ]);
   }
 
-  static pw.Widget _buildProtectionDevicesSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Neue Schutzgeräte', [
-      PdfGeneratorBase.buildPhotoField('Schutzgerät 1', data['photoProtectionDevice1'] as String?),
-      PdfGeneratorBase.buildPhotoField('Schutzgerät 2', data['photoProtectionDevice2'] as String?),
-      PdfGeneratorBase.buildPhotoField('Schutzgerät 3', data['photoProtectionDevice3'] as String?),
-      PdfGeneratorBase.buildPhotoField('Schutzgerät 4', data['photoProtectionDevice4'] as String?),
-    ]);
+  static pw.Widget _buildProtectionDevicesSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+    final devices = repeatableData['protection_devices'] ?? [];
+    final fields = <pw.Widget>[];
+    
+    if (devices.isEmpty) {
+      fields.add(PdfGeneratorBase.buildFieldRow('New Protection Devices', 'No data'));
+    } else {
+      for (var i = 0; i < devices.length; i++) {
+        final device = devices[i];
+        fields.add(pw.Text(
+          'Protection Device #${i + 1}',
+          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+        ));
+        fields.add(PdfGeneratorBase.buildPhotoField('Photo', device['photoProtectionDevice'] as String?));
+        
+        if (i < devices.length - 1) {
+          fields.add(pw.SizedBox(height: 6));
+        }
+      }
+    }
+    return PdfGeneratorBase.buildSection('New Protection Devices', fields);
   }
 
-  static pw.Widget _buildMeterInfoSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Zählerinformationen', [
-      PdfGeneratorBase.buildFieldRow('Zählertyp', PdfGeneratorBase.safeString(data['meterType'])),
-      PdfGeneratorBase.buildFieldRow('Ausbau erforderlich', data['meterRemovalNeeded'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Austausch erforderlich', data['meterReplacementNeeded'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Neuer Zählertyp', PdfGeneratorBase.safeString(data['newMeterType'])),
-      PdfGeneratorBase.buildFieldRow('Fernsteuerung', data['remoteControl'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Zählerzusammenlegung', data['meterConsolidation'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Messkonzept', PdfGeneratorBase.safeString(data['measurementConcept'])),
-      PdfGeneratorBase.buildPhotoField('Zähler', data['photoMeter'] as String?),
-      PdfGeneratorBase.buildPhotoField('Zählerstände', data['photoMeterReadings'] as String?),
-    ]);
-  }
+static pw.Widget _buildMeterRegistrationSection(
+    Map<String, List<Map<String, dynamic>>> repeatableData,
+  ) {
+    final fields = <pw.Widget>[];
+    final registrations = repeatableData['meter_registration'] ?? [];
+    final existingMeters = repeatableData['existingMeters'] ?? [];
 
-  static pw.Widget _buildSection14aSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('§14a Vorbereitung', [
-      PdfGeneratorBase.buildPhotoField('§14a Vorbereitung', data['photoSection14a'] as String?),
-    ]);
+    // 1. Build Existing Meters (the ones already in your list)
+    if (existingMeters.isNotEmpty) {
+      for (var i = 0; i < existingMeters.length; i++) {
+        final meter = existingMeters[i];
+        fields.add(pw.Text('Existing Meter #${i + 1}', style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10)));
+        fields.add(PdfGeneratorBase.buildFieldRow('Meter Number', PdfGeneratorBase.safeString(meter['meterNumber'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Purpose', PdfGeneratorBase.safeString(meter['meterType'])));
+        fields.add(PdfGeneratorBase.buildPhotoField('Meter Photo', meter['photoMeter'] as String?));
+      }
+    }
+
+    // 2. Build New Meter Registrations (the repeatable items from YAML)
+    for (var i = 0; i < registrations.length; i++) {
+      final reg = registrations[i];
+      fields.add(pw.SizedBox(height: 8));
+      fields.add(pw.Text('Meter Registration #${i + 1}', style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10)));
+      
+      fields.add(PdfGeneratorBase.buildFieldRow('New Meter Type', PdfGeneratorBase.safeString(reg['newMeterType'])));
+      fields.add(PdfGeneratorBase.buildFieldRow('Remote Control Present', _yesNo(reg['remoteControlPrdesent'])));
+      
+      if (reg['remoteControlPrdesent'] == true || reg['remoteControlPrdesent'] == 'yes') {
+        fields.add(PdfGeneratorBase.buildPhotoField('Photo Remote Control', reg['photoRemoteControl'] as String?));
+      }
+      
+      fields.add(PdfGeneratorBase.buildFieldRow('Remove Remote Control', _yesNo(reg['removeRemoteControl'])));
+      fields.add(PdfGeneratorBase.buildFieldRow('Meter Consolidation', _yesNo(reg['meterConsolidation'])));
+      
+      if (reg['meterConsolidation'] == true || reg['meterConsolidation'] == 'yes') {
+        fields.add(PdfGeneratorBase.buildFieldRow('Consolidation Description', PdfGeneratorBase.safeString(reg['consolidationDescription'])));
+      }
+      
+      fields.add(PdfGeneratorBase.buildFieldRow('Remarks', PdfGeneratorBase.safeString(reg['meterRemarks'])));
+      fields.add(PdfGeneratorBase.buildFieldRow('Removal Required', _yesNo(reg['meterRemovalNeeded'])));
+      fields.add(PdfGeneratorBase.buildFieldRow('Replacement Required', _yesNo(reg['meterReplacementNeeded'])));
+      fields.add(PdfGeneratorBase.buildPhotoField('Meter Readings', reg['photoMeterReadings'] as String?));
+      fields.add(PdfGeneratorBase.buildFieldRow('Measurement Concept', PdfGeneratorBase.safeString(reg['measurementConcept'])));
+    }
+
+    return PdfGeneratorBase.buildSection('Meter Registration (IBN)', fields);
   }
 
   static pw.Widget _buildHeatPumpSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Wärmepumpenanfrage', [
-      PdfGeneratorBase.buildFieldRow('Wärmepumpe bei BSH angefragt', data['heatPumpRequested'] == true ? 'Ja' : 'Nein'),
+    final ordered = data['heatPumpOrdered'] ?? data['heatPumpRequested'];
+    final isOrdered = ordered == true || ordered == 'yes';
+    return PdfGeneratorBase.buildSection('Heat Pump Order', [
+      PdfGeneratorBase.buildFieldRow('Heat Pump Ordered from MAM Solarbau', _yesNo(ordered)),
+      if (isOrdered) ...[
+        PdfGeneratorBase.buildPhotoField('Sub-Distribution / ZK Integration', data['photoSubDistribution'] as String?),
+        PdfGeneratorBase.buildPhotoField('Heat Pump Fuses (Readable)', data['photoFusesHeatPump'] as String?),
+      ],
     ]);
   }
 
   static pw.Widget _buildCableRoutesSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Kabelwege', [
-      PdfGeneratorBase.buildFieldRow('Über 25m', data['routeOver25m'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Hinweise', PdfGeneratorBase.safeString(data['notes'])),
-      PdfGeneratorBase.buildPhotoField('Kabel 1', data['photoCable1'] as String?),
-      PdfGeneratorBase.buildPhotoField('Kabel 2', data['photoCable2'] as String?),
-      PdfGeneratorBase.buildPhotoField('Kabel 3', data['photoCable3'] as String?),
-      PdfGeneratorBase.buildPhotoField('Kabel 4', data['photoCable4'] as String?),
+    final over25m = data['routeOver25m'] == true || data['routeOver25m'] == 'yes';
+    return PdfGeneratorBase.buildSection('Cable Routes', [
+      PdfGeneratorBase.buildPhotoField('Full AC Cable Route', data['photoCableRoute'] as String?),
+      PdfGeneratorBase.buildFieldRow('Cable Route Over 25m', _yesNo(data['routeOver25m'])),
+      if (over25m)
+        PdfGeneratorBase.buildFieldRow('Additional Meters Installed', PdfGeneratorBase.safeString(data['additionalMeters'])),
+      PdfGeneratorBase.buildFieldRow('Notes', PdfGeneratorBase.safeString(data['notes'])),
+      PdfGeneratorBase.buildPhotoField('Cable 1', data['photoCable1'] as String?),
+      PdfGeneratorBase.buildPhotoField('Cable 2', data['photoCable2'] as String?),
+      PdfGeneratorBase.buildPhotoField('Cable 3', data['photoCable3'] as String?),
+      PdfGeneratorBase.buildPhotoField('Cable 4', data['photoCable4'] as String?),
+    ]);
+  }
+
+  static pw.Widget _buildCleanlinessSection(Map<String, dynamic> data) {
+    return PdfGeneratorBase.buildSection('Cleanliness', [
+      PdfGeneratorBase.buildFieldRow(
+        'Waste Removed in Own Vehicle, Site Left Clean',
+        _yesNo(data['siteCleanedUp']),
+      ),
     ]);
   }
 
   static pw.Widget _buildFinalAcceptanceSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Endabnahme', [
-      PdfGeneratorBase.buildFieldRow('System in Betrieb', data['systemOperational'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Kunde eingewiesen', data['customerInformed'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Rechnung genehmigt', data['invoiceApproved'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Aufräumen erledigt', data['cleanupDone'] == true ? 'Ja' : 'Nein'),
-      PdfGeneratorBase.buildFieldRow('Beigefügtes Messprotokoll', PdfGeneratorBase.safeString(data['measurementProtocol'])),
+    return PdfGeneratorBase.buildSection('Final Acceptance', [
+      PdfGeneratorBase.buildFieldRow('All Details Recorded and Discussed with Customer', _yesNo(data['detailsRecorded'])),
+      // PdfGeneratorBase.buildFieldRow('Measurement Protocol Attached', PdfGeneratorBase.safeString(data['measurementProtocol'])),
+      PdfGeneratorBase.buildFieldRow('Completion Date', PdfGeneratorBase.safeString(data['completionDate'])),
+      PdfGeneratorBase.buildFieldRow('Completion Time', PdfGeneratorBase.safeString(data['completionTime'])),
+      PdfGeneratorBase.buildFieldRow('System Operational', _yesNo(data['systemOperational'])),
+      PdfGeneratorBase.buildFieldRow('Customer Briefed', _yesNo(data['customerInformed'])),
+      PdfGeneratorBase.buildFieldRow('Invoice Approved', _yesNo(data['invoiceApproved'])),
     ]);
   }
 
   static pw.Widget _buildRemarksSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Bemerkungen', [
-      PdfGeneratorBase.buildFieldRow('Bemerkungen', PdfGeneratorBase.safeString(data['remarks'])),
+    return PdfGeneratorBase.buildSection('Remarks', [
+      PdfGeneratorBase.buildFieldRow('Remarks', PdfGeneratorBase.safeString(data['remarksGeneral'])),
     ]);
   }
 
   static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Unterschriften', [
-      PdfGeneratorBase.buildFieldRow('Ort', PdfGeneratorBase.safeString(data['signatureLocation'])),
-      PdfGeneratorBase.buildSignatureField('Kunde', data['customerSignature'] as String?),
+    return PdfGeneratorBase.buildSection('Signatures', [
+      PdfGeneratorBase.buildFieldRow('Customer Full Name', PdfGeneratorBase.safeString(data['customerFullName'])),
+      PdfGeneratorBase.buildSignatureField('Customer / Representative Signature', data['customerSignature'] as String?),
       PdfGeneratorBase.buildDisplayTextField(
-        'Vom Anlagenbetreiber und Installationsbetrieb wird erklärt, dass die oben genannte Anlage technisch betriebsbereit i.S.d. § 3 Nr. 30 EEG (2021) ist, an dem das AC- und DC-Abnahmeprotokoll unterzeichnet vorliegen.',
+        'The plant operator and installation company declare that the above-mentioned system is technically ready for operation within the meaning of § 3 No. 30 EEG (2021) on the date on which the AC and DC acceptance protocols are signed.',
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'Die Widerspruchsfrist beträgt 14 Tage, nach Ablauf der Frist gilt das Abnahmeprotokoll als bestätigt.',
+        'The objection period is 14 days; after this period the acceptance protocol is considered confirmed.',
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'Der ausführende Elektroinstallateur bestätigt mit seiner Unterschrift die elektrische Anlage nach den aktuell gültigen DIN-VDE Normen sowie TAB und TAR installiert, gemessen und abgenommen zu haben.',
+        'The executing electrical installer confirms with their signature that the electrical system has been installed, measured and accepted in accordance with the currently applicable DIN-VDE standards as well as TAB and TAR.',
       ),
-      PdfGeneratorBase.buildSignatureField('Installateur', data['installerSignature'] as String?),
+      PdfGeneratorBase.buildSignatureField('Electrician / On-Site Partner Signature', data['installerSignature'] as String?),
     ]);
+  }
+
+  /// Helper: converts bool, 'yes'/'no', or null to 'Yes' / 'No'
+  static String _yesNo(dynamic value) {
+    if (value == true || value == 'yes') return 'Yes';
+    if (value == false || value == 'no') return 'No';
+    if (value == 'not_possible') return 'Not Possible';
+    return '-';
   }
 }

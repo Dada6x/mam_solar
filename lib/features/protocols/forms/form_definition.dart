@@ -4,6 +4,7 @@ enum FieldType {
   date,
   time,
   checkbox,
+  radio,
   dropdown,
   photo,
   signature,
@@ -56,6 +57,7 @@ class FormFieldDef {
   final String? showIfField;
   final String? showIfOperator;
   final String? showIfValue;
+  final List<String>? showIfValues;
   final String? labelDe;
   final String? labelAr;
   final List<String>? acceptedFormats;
@@ -69,6 +71,7 @@ class FormFieldDef {
     this.showIfField,
     this.showIfOperator,
     this.showIfValue,
+    this.showIfValues,
     this.labelDe,
     this.labelAr,
     this.acceptedFormats,

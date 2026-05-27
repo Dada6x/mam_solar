@@ -121,6 +121,34 @@ class FormFieldRenderer extends StatelessWidget {
           onChanged: (v) => onChanged(v),
         );
 
+      case FieldType.radio: {
+        final options = field.dropdownOptions ?? [];
+        final selected = value as String?;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              '$labelText$requiredMark',
+              style: const TextStyle(fontSize: 13, color: AppColors.labelGrey),
+            ),
+            ...options.map((opt) {
+              return RadioListTile<String>(
+                title: Text(
+                  opt.replaceAll('_', ' '),
+                  style: const TextStyle(fontSize: 13),
+                ),
+                value: opt,
+                groupValue: selected,
+                activeColor: AppColors.primaryGreen,
+                contentPadding: EdgeInsets.zero,
+                dense: true,
+                onChanged: (v) => onChanged(v),
+              );
+            }),
+          ],
+        );
+      }
+
       case FieldType.dropdown:
         final options = field.dropdownOptions ?? [];
         return DropdownButtonFormField<String>(
@@ -197,19 +225,22 @@ class FormFieldRenderer extends StatelessWidget {
 
     final currentValue = formData?[field.showIfField];
 
-    if (field.showIfValue == 'unchecked') {
-      final isChecked = currentValue == true || currentValue == 'true';
-      return field.showIfOperator == '==' ? !isChecked : isChecked;
+    bool evaluateSingle(String operator, String compareValue) {
+      if (compareValue == 'unchecked') {
+        final isChecked = currentValue == true || currentValue == 'true';
+        return operator == '==' ? !isChecked : isChecked;
+      }
+      final currentStr = currentValue?.toString() ?? '';
+      if (operator == '==') return currentStr == compareValue;
+      if (operator == '!=') return currentStr != compareValue;
+      return true;
     }
 
-    final currentStr = currentValue?.toString() ?? '';
-
-    if (field.showIfOperator == '==') {
-      return currentStr == field.showIfValue;
-    } else if (field.showIfOperator == '!=') {
-      return currentStr != field.showIfValue;
+    // OR conditions: if showIfValues is set, any match is sufficient
+    if (field.showIfValues != null && field.showIfValues!.isNotEmpty) {
+      return field.showIfValues!.any((v) => evaluateSingle(field.showIfOperator!, v));
     }
 
-    return true;
+    return evaluateSingle(field.showIfOperator!, field.showIfValue!);
   }
 }

@@ -3,12 +3,30 @@ import 'package:mam_solar/core/utils/date_formatter.dart';
 import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class DamageReportPdfGenerator {
+  static const _expectedFlatKeys = [
+    'damageType', 'causedByPartner', 'companyLiability',
+    'injuredName', 'street', 'zipCode', 'city', 'phone', 'email',
+    'incidentDate', 'incidentTime', 'secondPersonInvolved',
+    'initialSituation', 'incidentSequence',
+    'minimizationPossible', 'minimizationNotes',
+    'insuranceNotes',
+    'remarks', 'employeeName',
+    'damagedPartySignature', 'employeeSignature',
+  ];
+
+  static const _expectedRepeatableKeys = {
+    'affected_devices': ['deviceName', 'deviceBrand', 'devicePhoto', 'damageDescription'],
+  };
+
   static pw.Document generate({
     required int protocolId,
     required String customerName,
     required Map<String, dynamic> data,
     required Map<String, List<Map<String, dynamic>>> repeatableData,
   }) {
+    PdfGeneratorBase.logExpectedFields(data, 'DamageReportPdfGenerator', _expectedFlatKeys);
+    PdfGeneratorBase.logExpectedRepeatableFields(repeatableData, 'DamageReportPdfGenerator', _expectedRepeatableKeys);
+
     final date = DateFormatter.formatDate(DateTime.now());
     final protocolNumber = DateFormatter.protocolNumber(
       'DR', DateTime.now(), protocolId,

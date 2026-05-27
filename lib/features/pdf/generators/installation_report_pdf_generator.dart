@@ -3,12 +3,26 @@ import 'package:mam_solar/core/utils/date_formatter.dart';
 import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class InstallationReportPdfGenerator {
+  static const _expectedFlatKeys = [
+    'customerName', 'street', 'city', 'zipCode', 'email', 'phone',
+    'installationDate', 'installerName', 'partnerCompany',
+    'installationType', 'storageManufacturer',
+    'wallboxInstalled', 'backupInstalled', 'groundRodInstalled', 'privateMeterInstalled',
+    'newCabinetInstalled', 'allComponentsInstalled', 'touchProtection',
+    'apzInstalled', 'energridInstalled',
+    'photoNewCabinet', 'photoOldCabinet',
+    'remarks',
+    'customerSignature', 'installerSignature',
+  ];
+
   static pw.Document generate({
     required int protocolId,
     required String customerName,
     required Map<String, dynamic> data,
     required Map<String, List<Map<String, dynamic>>> repeatableData,
   }) {
+    PdfGeneratorBase.logExpectedFields(data, 'InstallationReportPdfGenerator', _expectedFlatKeys);
+
     final date = DateFormatter.formatDate(DateTime.now());
     final protocolNumber = DateFormatter.protocolNumber(
       'IR', DateTime.now(), protocolId,

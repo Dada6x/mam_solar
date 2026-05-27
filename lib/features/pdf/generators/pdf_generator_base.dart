@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
+import 'package:logger/logger.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:mam_solar/core/utils/date_formatter.dart';
@@ -283,5 +284,51 @@ class PdfGeneratorBase {
   static String safeString(dynamic value) {
     if (value == null) return '';
     return value.toString();
+  }
+
+  // ---------------------------
+  // FIELD LOGGING
+  // ---------------------------
+  static final Logger _pdfLog = Logger();
+
+  /// Logs expected fields vs actual data. Call within each generator.
+  static void logExpectedFields(Map<String, dynamic> data, String generatorName, List<String> expectedFlatKeys) {
+    _pdfLog.i('=== $generatorName: Expected vs Actual Fields ===');
+    final present = <String>[];
+    final missing = <String>[];
+    for (final key in expectedFlatKeys) {
+      if (data.containsKey(key) && data[key] != null && data[key].toString().trim().isNotEmpty) {
+        present.add(key);
+      } else {
+        missing.add(key);
+      }
+    }
+    _pdfLog.i('$generatorName: ${present.length}/${expectedFlatKeys.length} fields present');
+    if (missing.isNotEmpty) {
+      _pdfLog.w('$generatorName: MISSING fields (${missing.length}): $missing');
+    }
+    // Log all unknown keys (present in data but not in expected list)
+    final unexpected = data.keys.where((k) => !expectedFlatKeys.contains(k) && k != '_repeatable').toList();
+    if (unexpected.isNotEmpty) {
+      _pdfLog.i('$generatorName: Extra fields in data (${unexpected.length}): $unexpected');
+    }
+  }
+
+  /// Logs expected vs actual repeatable data.
+  static void logExpectedRepeatableFields(Map<String, List<Map<String, dynamic>>> repeatableData, String generatorName, Map<String, List<String>> expectedRepeatableKeys) {
+    _pdfLog.i('=== $generatorName: Expected vs Actual Repeatable Fields ===');
+    for (final entry in expectedRepeatableKeys.entries) {
+      final sectionId = entry.key;
+      final expectedKeys = entry.value;
+      final items = repeatableData[sectionId] ?? [];
+      _pdfLog.i('$sectionId: ${items.length} items, expected per item: ${expectedKeys.length} keys');
+      for (var i = 0; i < items.length; i++) {
+        final item = items[i];
+        final missingInItem = expectedKeys.where((k) => item[k] == null || item[k].toString().trim().isEmpty).toList();
+        if (missingInItem.isNotEmpty) {
+          _pdfLog.w('$sectionId[$i]: MISSING keys: $missingInItem');
+        }
+      }
+    }
   }
 }

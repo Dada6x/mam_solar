@@ -281,7 +281,7 @@ class ProtocolMdParser {
       }
 
       // options line
-      if (line.startsWith('options:') && lastField != null && lastField!.type == FieldType.dropdown) {
+      if (line.startsWith('options:') && lastField != null && (lastField!.type == FieldType.dropdown || lastField!.type == FieldType.radio)) {
         final idx = currentFields!.indexOf(lastField!);
         if (idx >= 0) {
           final opts = line.substring('options:'.length).split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
@@ -294,6 +294,7 @@ class ProtocolMdParser {
             showIfField: lastField!.showIfField,
             showIfOperator: lastField!.showIfOperator,
             showIfValue: lastField!.showIfValue,
+            showIfValues: lastField!.showIfValues,
             labelDe: lastField!.labelDe,
             labelAr: lastField!.labelAr,
             acceptedFormats: lastField!.acceptedFormats,
@@ -318,6 +319,7 @@ class ProtocolMdParser {
             showIfField: lastField!.showIfField,
             showIfOperator: lastField!.showIfOperator,
             showIfValue: lastField!.showIfValue,
+            showIfValues: lastField!.showIfValues,
             labelDe: lastField!.labelDe,
             labelAr: lastField!.labelAr,
             acceptedFormats: formats,
@@ -331,14 +333,26 @@ class ProtocolMdParser {
       // show_if line
       if (line.startsWith('show_if:') && lastField != null) {
         final expr = line.substring('show_if:'.length).trim();
-        final eqMatch = RegExp(r'^(\S+)\s*==\s*(.+)$').firstMatch(expr);
-        final neqMatch = RegExp(r'^(\S+)\s*!=\s*(.+)$').firstMatch(expr);
-        final match = eqMatch ?? neqMatch;
-        if (match != null) {
-          final showFieldId = match.group(1)!.trim();
-          final op = eqMatch != null ? '==' : '!=';
-          final showVal = match.group(2)!.trim().replaceAll('"', '').replaceAll("'", '');
 
+        // Split by OR (case-insensitive, padded with spaces)
+        final orParts = expr.split(RegExp(r'\s+OR\s+', caseSensitive: false));
+
+        String? showFieldId;
+        String? op;
+        final values = <String>[];
+
+        for (final part in orParts) {
+          final eqMatch = RegExp(r'^(\S+)\s*==\s*(.+)$').firstMatch(part.trim());
+          final neqMatch = RegExp(r'^(\S+)\s*!=\s*(.+)$').firstMatch(part.trim());
+          final match = eqMatch ?? neqMatch;
+          if (match != null) {
+            showFieldId = match.group(1)!.trim();
+            op = eqMatch != null ? '==' : '!=';
+            values.add(match.group(2)!.trim().replaceAll('"', '').replaceAll("'", ''));
+          }
+        }
+
+        if (showFieldId != null && values.isNotEmpty) {
           final idx = currentFields!.indexOf(lastField!);
           if (idx >= 0) {
             final updated = FormFieldDef(
@@ -349,7 +363,8 @@ class ProtocolMdParser {
               dropdownOptions: lastField!.dropdownOptions,
               showIfField: showFieldId,
               showIfOperator: op,
-              showIfValue: showVal,
+              showIfValue: values.first,
+              showIfValues: values.length > 1 ? values : null,
               labelDe: lastField!.labelDe,
               labelAr: lastField!.labelAr,
               acceptedFormats: lastField!.acceptedFormats,
@@ -415,6 +430,8 @@ class ProtocolMdParser {
         return FieldType.time;
       case 'checkbox':
         return FieldType.checkbox;
+      case 'radio':
+        return FieldType.radio;
       case 'dropdown':
         return FieldType.dropdown;
       case 'photo':

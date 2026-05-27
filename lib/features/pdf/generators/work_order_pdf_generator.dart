@@ -3,12 +3,29 @@ import 'package:mam_solar/core/utils/date_formatter.dart';
 import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class WorkOrderPdfGenerator {
+  static const _expectedFlatKeys = [
+    'fullName', 'street', 'zipCity', 'email',
+    'description', 'workDetail',
+    'workCompleted', 'photoWork1', 'photoWork2', 'completionDate',
+    'remarks',
+    'customerSignature', 'technicianSignature',
+  ];
+
+  static const _expectedRepeatableKeys = {
+    'materials': ['quantity', 'material'],
+    'travel': ['departure', 'destination'],
+    'working_hours': ['date', 'techName', 'startTime', 'endTime'],
+  };
+
   static pw.Document generate({
     required int protocolId,
     required String customerName,
     required Map<String, dynamic> data,
     required Map<String, List<Map<String, dynamic>>> repeatableData,
   }) {
+    PdfGeneratorBase.logExpectedFields(data, 'WorkOrderPdfGenerator', _expectedFlatKeys);
+    PdfGeneratorBase.logExpectedRepeatableFields(repeatableData, 'WorkOrderPdfGenerator', _expectedRepeatableKeys);
+
     final date = DateFormatter.formatDate(DateTime.now());
     final protocolNumber = DateFormatter.protocolNumber(
       'WO', DateTime.now(), protocolId,

@@ -3,7 +3,7 @@ protocol: ac_acceptance
 title: AC Acceptance Protocol
 title_de: AC-Abnahmeprotokoll
 title_ar: بروتوكول قبول التيار المتردد
-version: 3.0
+version: 4.2
 company: MAM Solarbau
 ---
 
@@ -13,207 +13,259 @@ section_id: customer_data
 
 - customerName | text | required | Customer Name | Kundenname | اسم العميل
 - street | text | required | Street | Straße | الشارع
-- houseNumber | text | required | House Number | Hausnummer | رقم المنزل
-- zipCode | text | required | ZIP Code | PLZ | الرمز البريدي
+- houseNumber | text | | House Number | Hausnummer | رقم المنزل
 - city | text | required | City | Stadt | المدينة
+- zipCode | text | required | ZIP Code | PLZ | الرمز البريدي
 - email | email | required | Email | E-Mail | البريد الإلكتروني
 - phone | text | required | Phone | Telefon | الهاتف
 - installationDate | date | required | Installation Date | Installationsdatum | تاريخ التركيب
 - installationTime | time | required | Installation Time | Installationszeit | وقت التركيب
-- installerName | text | required | Installer Name | Name Monteur/Vorarbeiter | اسم المثبت/مشرف الموقع
-- partnerCompany | text | | Partner Company | Name Partnerunternehmen | الشركة الشريكة
+- installerName | text | required | Installer Name | Installateur / Monteur | اسم المثبت
+- partnerCompany | text | | Partner Company | Partnerfirma | الشركة الشريكة
 
-## Installation Type | Anlagentyp | نوع التركيب
+---
 
-section_id: installation_type
+## Installation Details | Installationsdetails | تفاصيل التركيب
 
-- backupInstalled | checkbox | required | Backup System Installed? | Backup-System installiert? | هل نظام النسخ الاحتياطي مثبت؟
-<!-- TODO make ti show if its not checked  -->
-- backupHint | textarea | | Hint / Notes | Hinweis | تلميح / ملاحظات
-show_if: backupInstalled == unchecked
-- inspectionCompleted | checkbox | required | Inspection Completed? | Prüfung durchgeführt? | هل اكتمل التفتيش؟
+section_id: installation_details
 
-- inspectionReason | textarea | required | Reason | Begründung | السبب
-show_if: inspectionCompleted == unchecked
-<!-- TODO make ti show if its not checked  -->
+- installationType | dropdown | required | Installation Type | Installationstyp | نوع التركيب
+  options: solar_pv, solar_pv_battery, solar_pv_wallbox
 
-- groundRodInstalled | checkbox | | Ground Rod Installed? | Erdspieß verbaut? | هل قضيب التأريض مثبت؟
+- storageManufacturer | text | | Storage Manufacturer | Speicherhersteller | الشركة المصنعة للتخزين
+- wallboxInstalled | checkbox | | Wallbox Installed | Wallbox installiert | شاحن الحائط مثبت
+- backupInstalled | checkbox | | Backup Installed | Backup installiert | النسخ الاحتياطي مثبت
+- inspectionCompleted | checkbox | | Inspection Completed | Prüfung durchgeführt | تم التفتيش
+- inspectionReason | textarea | | Reason if not inspected | Grund wenn nicht geprüft | سبب عدم التفتيش
+  show_if: inspectionCompleted == false
 
-- privateMeterInstalled | checkbox | | Private Meter Installed? | Privater Zwischenzähler verbaut? | هل العداد الخاص مثبت؟
+- groundRodInstalled | checkbox | | Ground Rod Installed | Erdungsstab installiert | قضيب التأريض مثبت
+- privateMeterInstalled | checkbox | | Private Meter Installed | Zwischenzähler installiert | العداد الخاص مثبت
+- supervisorIntroduced | checkbox | | Supervisor Introduced | Aufsicht eingewiesen | وجود مشرف
+- shoeCoversWorn | checkbox | | Shoe Covers Worn | Schuhüberzieher getragen | ارتداء أغطية الأحذية
 
-## Inverter | Wechselrichter | العاكس
+---
+
+## Inverter | Wechselrichter | الانفرتر
 
 section_id: inverter
+repeatable: true
+min: 1
+max: 5
 
-- inverterCount | dropdown | required | Number of Inverters | Anzahl Wechselrichter | عدد العاكسات
-  options: 1, 2, 3, 4, 5
-- mountedOnFireproofSurface | checkbox | | Inverter mounted on fireproof surface (tiles, stone, concrete, calcium silicate) | Wechselrichter auf brandsicherem Untergrund montiert (Fliesen, Stein, Beton, Calciumsilikatplatte) | العاكس مثبت على سطح مقاوم للحريق (بلاط، حجر، خرسانة، سيليكات الكالسيوم)
-- normsFollowed | checkbox | | Manufacturer specifications followed (thermal clearances etc.) | Herstellervorgaben eingehalten (thermische Abstände etc.) | تم اتباع مواصفات الشركة المصنعة (المسافات الحرارية وما إلى ذلك)
-- fusesPerSpec | checkbox | required | Fuses and cable cross-sections per manufacturer installation guide? | Absicherungen und Leitungsquerschnitte nach Herstellervorgaben? | هل المنصهرات ومقاطع الكابلات وفقًا لمواصفات الشركة المصنعة؟
-options: yes, no
-<!-- TODO make ti show if its not checked  -->
-- fusesRemark | textarea | required | Remark | Bemerkung | ملاحظة
-  show_if: fusesPerSpec == no
+- brand | text | required | Brand | Marke | الماركة
+- model | text | | Model | Modell | الطراز
+- serialNumber | text | required | Serial Number | Seriennummer | الرقم التسلسلي
+- networkType | dropdown | required | Network Type | Netzwerktyp | نوع الشبكة
+  options: wlan, powerline, ethernet
 
-## Battery Storage | Speicher | تخزين البطارية
+- installedCorrectly | checkbox | | Installed Correctly | Richtig installiert | مثبت بشكل صحيح
+- mountedOnFireproofSurface | checkbox | | Mounted on Fireproof Surface | Auf feuerfestem Untergrund montiert | مثبت على سطح مقاوم للحريق
+
+- photoDataplate | photo | | Photo - Dataplate | Foto - Typenschild | صورة - لوحة البيانات
+- photoAcGrid | photo | | Photo - AC Grid Connection | Foto - AC Netzanschluss | صورة - اتصال شبكة AC
+- photoAcBackup | photo | | Photo - AC Backup Connection | Foto - AC Backup Anschluss | صورة - اتصال AC الاحتياطي
+- photoCommunicationPlug | photo | | Photo - Communication Plug | Foto - Kommunikationsanschluss | صورة - منفذ الاتصال
+- photoThreeCommunicationPorts | photo | | Photo - Three Communication Ports | Foto - Drei Kommunikationsanschlüsse | صورة - منافذ الاتصال الثلاثة
+- photoEarthingLeft | photo | | Photo - Left Earthing | Foto - Erdung links | صورة - التأريض الأيسر
+- photoEarthingRight | photo | | Photo - Right Earthing | Foto - Erdung rechts | صورة - التأريض الأيمن
+- photoPlcOrWlanExtender | photo | | Photo - PLC or WLAN Extender | Foto - PLC oder WLAN Verstärker | صورة - PLC أو مقوي WLAN
+- photoDcBatteryCables | photo | | Photo - DC Battery Cables | Foto - DC Batteriekabel | صورة - كابلات بطارية DC
+- photoFinalInstall | photo | | Photo - Final Installation | Foto - Endinstallation | صورة - التركيب النهائي
+
+- manufacturerStandardsFollowed | checkbox | | Manufacturer Standards Followed | Herstellerstandards eingehalten | تم اتباع معايير الشركة المصنعة
+
+<!-- TODO add them later -->
+
+<!-- - firmwareVersion | text | | Firmware Version | Firmware Version | إصدار البرنامج -->
+<!-- - monitoringActivated | checkbox | | Monitoring Activated | Monitoring aktiviert | تفعيل المراقبة -->
+<!-- - commissioningDate | date | | Commissioning Date | Inbetriebnahmedatum | تاريخ التشغيل الأول -->
+<!-- - gridCodeCompliant | checkbox | | Grid Code Compliance | Netzkonformität erfüllt | مطابقة معايير الشبكة -->
+<!-- - rcdTestPassed | checkbox | | RCD Test Passed | FI-Test bestanden | نجاح اختبار RCD -->
+
+---
+
+## Battery Storage | Batteriespeicher | تخزين البطارية
 
 section_id: battery_storage
-optional_section: true
+repeatable: true
+min: 1
+max: 5
 
-- batteryTowers | dropdown | required | Number of Battery Towers | Anzahl Batterietürme | عدد أبراج البطارية
-  options: 1, 2, 3,4,5,6,7,8
-- normsFollowed | checkbox | | Manufacturer specifications followed (thermal clearances etc.) | Herstellervorgaben eingehalten (thermische Abstände etc.) | تم اتباع مواصفات الشركة المصنعة
+- batteryBrand | text | | Battery Brand | Batteriemarke | العلامة التجارية للبطارية
+- batteryModel | text | | Battery Model | Batteriemodell | طراز البطارية
+- batterySid | text | | SID | SID | SID
+- batteryTowers | number | | Battery Towers | Batterietürme | أبراج البطارية
+- batteryModulesPerTower | number | | Modules per Tower | Module pro Turm | الوحدات لكل برج
+- serialNumbers | textarea | | Serial Numbers | Seriennummern | الأرقام التسلسلية
+- standardsFollowed | checkbox | | Standards Followed | Normen eingehalten | تم اتباع المعايير
 
-## Equipotential Bonding | Potentialausgleichsschiene | قضيب موازنة الجهد
+- photoQrCode | photo | | Photo - QR Code | Foto - QR-Code | صورة - رمز QR
+- photoBatteryConnections | photo | | Photo - Battery Connections | Foto - Batterieanschlüsse | صورة - توصيلات البطارية
+- photoEmsNumber | photo | | Photo - EMS Number | Foto - EMS Nummer | صورة - رقم EMS
+- photoAcPlugOpen | photo | | Photo - Open AC Plug | Foto - Offener AC Stecker | صورة - قابس AC المفتوح
+- photoBatteryWithoutCovers | photo | | Photo - Battery Without Covers | Foto - Batterie ohne Abdeckung | صورة - البطارية بدون أغطية
+- photoBatteryWithCovers | photo | | Photo - Battery With Covers | Foto - Batterie mit Abdeckung | صورة - البطارية مع الأغطية
+- photoBatteryFromDistance | photo | | Photo - Battery From Distance | Foto - Batterie aus der Entfernung | صورة - البطارية من مسافة
+- photoBatteryBase | photo | | Photo - Battery Base | Foto - Batteriesockel | صورة - قاعدة البطارية
+- photoBatteryEarthing | photo | | Photo - Battery Earthing | Foto - Batterie Erdung | صورة - تأريض البطارية
+- photoBatteryTowerFinal | photo | | Photo - Final Battery Tower | Foto - Finaler Batterieturm | صورة - البرج النهائي للبطارية
 
-section_id: equipotential_bonding
-
-- componentsConnected | checkbox | required | Components connected as per specification | Komponenten angeschlossen wie vorgegeben | المكونات متصلة وفقًا للمواصفات
-
-- photoBonding | photo | required | Photo - Equipotential Bonding | Foto - Potentialausgleich | صورة - موازنة الجهد
+---
 
 ## Meter Cabinet | Zählerschrank | خزانة العداد
 
 section_id: meter_cabinet
 
-- touchProtection | checkbox | | Touch Protection for new components | Berührungsschutz für neu installierte Betriebsmittel | حماية اللمس للمكونات الجديدة
+- newCabinetInstalled | checkbox | | New Cabinet Installed | Neuer Schrank installiert | تم تركيب خزانة جديدة
+- allComponentsInstalled | checkbox | | All Components Installed | Alle Komponenten installiert | تم تركيب جميع المكونات
+- apzInstalled | checkbox | | APZ Installed | APZ installiert | تم تركيب APZ
+- energridInstalled | checkbox | | EnerGrid Installed | EnerGrid installiert | تم تركيب EnerGrid
+- touchProtection | checkbox | | Touch Protection Installed | Berührungsschutz installiert | تم تركيب الحماية من اللمس
+- apzWiring | checkbox | | APZ Wiring Completed | APZ Verdrahtung abgeschlossen | تم إنهاء توصيلات APZ
+- existingSystemChanges | checkbox | | Existing System Modified | Änderungen am Bestandssystem | تم تعديل النظام الحالي
+- gridStabilityEnsured | checkbox | | Grid Stability Ensured | Netzstabilität sichergestellt | تم ضمان استقرار الشبكة
 
-- photoCabinet | photo | required | Photo - Cabinet | Bild Verteilerkasten | صورة - خزانة التوزيع
+- photoNewFuse | photo | | Photo - New Fuse | Foto - Neue Sicherung | صورة - الفيوز الجديد
+- photoApzCable | photo | | Photo - APZ Cable | Foto - APZ Kabel | صورة - كابل APZ
+- photoApzWiringMeter | photo | | Photo - APZ Wiring Meter | Foto - APZ Verdrahtung Zähler | صورة - توصيلات APZ للعداد
+- photoEnergrid | photo | | Photo - EnerGrid | Foto - EnerGrid | صورة - EnerGrid
+- photoPvLabel | photo | | Photo - PV Label | Foto - PV Beschriftung | صورة - ملصق PV
+- photoNewCabinet | photo | | Photo - New Cabinet | Foto - Neuer Schrank | صورة - الخزانة الجديدة
+- photoOldCabinet | photo | | Photo - Old Cabinet | Foto - Alter Schrank | صورة - الخزانة القديمة
+- photoSlsOrNh | photo | | Photo - SLS or NH Fuse | Foto - SLS oder NH Sicherung | صورة - فيوز SLS أو NH
+- photoAcOvervoltage | photo | | Photo - AC Overvoltage Protection | Foto - AC Überspannungsschutz | صورة - حماية زيادة الجهد AC
+- photoRcd | photo | | Photo - RCD | Foto - FI-Schalter | صورة - قاطع RCD
+- photoCableRouteToNewCabinet | photo | | Photo - Cable Route to New Cabinet | Foto - Kabelweg zum neuen Schrank | صورة - مسار الكابل إلى الخزانة الجديدة
+- photoApzCableInside | photo | | Photo - APZ Cable Inside | Foto - APZ Kabel innen | صورة - كابل APZ الداخلي
+- photoApzMeterConnections | photo | | Photo - APZ Meter Connections | Foto - APZ Zähleranschlüsse | صورة - توصيلات عداد APZ
 
-- apzWiring | radio | required | APZ Wiring present? | APZ Verdrahtung vorhanden? | هل أسلاك APZ موجودة؟
-  options: yes, no
-- apzInstalled | radio | required | APZ Installed? | APZ installiert? | هل APZ مثبت؟
-  options: yes, no
+- photoCabinet | photo | required | Cabinet Photo | Schrank Foto | صورة الخزانة
 
 ---
 
-- photoNewFuse | photo | required | Photo - New fuse (legible!) | Bild der neu verbauten Absicherung (lesbar!) | صورة - المنصهر الجديد (مقروء!)
-- photoApzCable | photo | required | Photo - Cable in APZ | Bild der Leitung im APZ | صورة - الكابل في APZ
-- photoApzWiringMeter | photo | required | Photo - APZ wiring at meter | Bild APZ Verdrahtung am Zähler | صورة - أسلاك APZ في العداد
+## Distribution Board | Endabnahme | لوحة التوزيع
+
+section_id: distribution_board
+repeatable: true
+min: 1
+max: 5
+
+- photoDistBoard | photo | | Photo - Distribution Board | Foto - Verteilerschrank | صورة - لوحة التوزيع
+- additionalDetails | textarea | | Additional Details | Zusätzliche Details | تفاصيل إضافية
 
 ---
 
-- existingSystemChanges | radio | required | Changes to existing electrical system? | Änderungen an bestehender Elektroanlage? | هل تم إجراء تغييرات على النظام الكهربائي الحالي؟
-  options: none, changes_made
-- safeOperation | checkbox | | PV operation does not impair safe power supply within existing system | PV-Betrieb beeinträchtigt nicht die sichere Stromversorgung der bestehenden Anlage | تشغيل PV لا يضعف الإمداد الآمن للكهرباء
-- energridInstalled | radio | required | EnerGrid or comparable installed? | EnerGrid oder vergleichbar? | هل EnerGrid أو ما يماثله مثبت؟
-  options: yes, no
+## Protection Devices | Schutzeinrichtungen | أجهزة الحماية
+
+section_id: protection_devices
+repeatable: true
+min: 1
+max: 5
+
+- photoProtectionDevice | photo | | Photo - Protection Device | Foto - Schutzeinrichtung | صورة - جهاز الحماية
+<!-- TODO add them three to the protocol -->
+- noChangesMade | checkbox | | No Changes Have Been Made | Keine Änderungen vorgenommen | لم يتم إجراء أي تغييرات
+- systemStabilityTested | checkbox | | Solar System Does Not Affect Stability and Security | Netzstabilität und Sicherheit geprüft | تم التأكد أن النظام الشمسي لا يؤثر على استقرار وأمان النظام
+- enerGridUsed | checkbox | | EnerGrid Used | EnerGrid verwendet | تم استخدام EnerGrid
 
 ---
 
-- photoEnergrid | photo | required | Photo - EnerGrid | Foto - EnerGrid | صورة - EnerGrid
-
-## Meter Registration (IBN) | Ein- und Ausbaumeldung IBN | تسجيل العداد
+## Meter Registration (IBN) | Zählerregistrierung (IBN) | تسجيل العداد (IBN)
 
 section_id: meter_registration
+repeatable: true
+min: 1
+max: 5
 
-### Existing Meters | Vorhandene Zähler | العدادات الموجودة
-
-- existingMeters | repeatable | required | Existing Meters | Vorhandene Zähler | العدادات الموجودة
-  min: 1
-  max: 10
-  fields:
-  - meterNumber | text | required | Meter Number | Zählernummer | رقم العداد
-  - meterType | text | | Purpose | Zweck | الغرض
-  - photo | photo | required | Photo | Foto | صورة
-
-### New Meter | Neuer Zähler | عداد جديد
-
-- newMeterType | dropdown | required | Type of new meter | Typ des neuen Zählers | نوع العداد الجديد
-  options: three_point, ehz
-- remoteControlPresent | checkbox | required | Remote control receiver present? | Rundsteuerempfänger vorhanden? | هل مستقبل التحكم عن بعد موجود؟
-  options: yes, no
-  <!-- TODO make ti show if its not checked  -->
-- photoRemoteControl | photo | required | Photo - Remote Control Receiver | Bild des Rundsteuerempfängers | صورة - مستقبل التحكم عن بعد
-  show_if: remoteControlPresent == yes
-- removeRemoteControl | checkbox | required | Must remote control be removed? | Muss Rundsteuerempfänger ausgebaut werden? | هل يجب إزالة مستقبل التحكم عن بعد؟
-  options: yes, no
-  <!-- TODO make ti show if its not checked  -->
-- meterConsolidation | checkbox | required | Meter Consolidation needed? | Zählerzusammenlegung erforderlich? | هل دمج العدادات مطلوب؟
-  options: yes, no
-- consolidationDescription | textarea | required | Description of consolidation | Beschreibung der Zählerzusammenlegung | وصف دمج العدادات
-  show_if: meterConsolidation == yes
-- meterRemarks | textarea | | Other remarks about meters | Sonstige Anmerkungen zu den Zählern | ملاحظات أخرى حول العدادات
-
-### Measurement Concept | Messkonzept | مفهوم القياس
-
-- measurementConcept | dropdown | required | Measurement Concept | Welches Messkonzept wurde aufgebaut? | ما هو مفهوم القياس؟
-  options: excess_feed_in, full_feed_in, heat_pump_cascade, other
+- meterNumber | text | | Meter Number | Zählernummer | رقم العداد
+- meterType | text | | Current Meter Type | Aktueller Zählertyp | نوع العداد الحالي
+- photoMeter | photo | | Photo - Current Meter | Foto - Aktueller Zähler | صورة - العداد الحالي
+- existingMeters | text | | Existing Meters | Vorhandene Zähler | العدادات الموجودة
+- newMeterType | text | | New Meter Type | Neuer Zählertyp | نوع العداد الجديد
+- remoteControlPrdesent | checkbox | | Remote Control Present | Rundsteuerempfänger vorhanden | جهاز التحكم موجود
+- photoRemoteControl | photo | | Photo - Remote Control | Foto - Rundsteuerempfänger | صورة - جهاز التحكم
+- removeRemoteControl | checkbox | | Remove Remote Control | Rundsteuerempfänger entfernen | إزالة جهاز التحكم
+- meterConsolidation | checkbox | | Meter Consolidation | Zählerzusammenlegung | دمج العدادات
+- consolidationDescription | textarea | | Consolidation Description | Beschreibung Zusammenlegung | وصف الدمج
+- meterRemarks | textarea | | Meter Remarks | Bemerkungen zum Zähler | ملاحظات العداد
+- meterRemovalNeeded | checkbox | | Meter Removal Needed | Zählerausbau erforderlich | يتطلب إزالة العداد
+- meterReplacementNeeded | checkbox | | Meter Replacement Needed | Zählerwechsel erforderlich | يتطلب استبدال العداد
+- photoMeterReadings | photo | | Photo - Meter Readings | Foto - Zählerstände | صورة - قراءات العداد
+- measurementConcept | text | | Measurement Concept | Messkonzept | مفهوم القياس
 
 ---
 
-- photoPrep14a | photo | required | Photos - Preparation §14a | Bilder Vorbereitung §14a | صور - التحضير §14a
+## Cable Routes | Kabelwege | مسارات الكابل
+
+section_id: cable_routes
+
+- routeOver25m | radio | | Cable Route Over 25m? | Kabelweg über 25m? | هل مسار الكابل أكثر من 25 متر؟
+  options: yes, no
+
+- additionalMeters | number | | Additional Installed Cable Length (m) | Zusätzlich verbaute Meter | عدد الأمتار الإضافية المركبة
+  show_if: routeOver25m == yes
+
+- notes | textarea | | Notes | Notizen | ملاحظات
+
+- photoCableRoute | photo | required | Photos of Entire AC Cable Route | Bilder des gesamten AC Kabelwegs | صور لمسار كابل AC بالكامل
   multiple: true
+
+- photoCable1 | photo | | Photo - Cable 1 | Foto - Kabel 1 | صورة - الكابل 1
+- photoCable2 | photo | | Photo - Cable 2 | Foto - Kabel 2 | صورة - الكابل 2
+- photoCable3 | photo | | Photo - Cable 3 | Foto - Kabel 3 | صورة - الكابل 3
+
+---
 
 ## Heat Pump Order | Wärmepumpenauftrag | طلب المضخة الحرارية
 
 section_id: heat_pump
 optional_section: true
 
-- heatPumpOrdered | checkbox | required | Heat pump ordered through MAM Solarbau? | Wärmepumpe bei MAM Solarbau beauftragt? | هل تم طلب المضخة الحرارية عبر MAM Solarbau؟
+- heatPumpOrdered | radio | required | Heat Pump Ordered Through MAM Solarbau? | Wärmepumpe bei MAM Solarbau beauftragt? | هل تم طلب المضخة الحرارية عبر MAM Solarbau؟
   options: yes, no
-- photoSubDistribution | photo | required | Photo - Sub-distribution / ZK integration from distance (with covers) | Unterverteilung/ZK Einbindung aus größerer Entfernung (mit Abdeckungen) | صورة - التوزيع الفرعي / دمج ZK من مسافة (مع الأغطية)
+
+- photoSubDistribution | photo | required | Photo - Sub-distribution / ZK Integration from Distance | Unterverteilung / ZK Einbindung aus größerer Entfernung | صورة - التوزيع الفرعي / دمج ZK من مسافة
   show_if: heatPumpOrdered == yes
-- photoFusesHeatPump | photo | required | Photo - Fuses for heat pump (without covers, legible) | Sicherungen für Wärmepumpenabsicherung leserlich fotografiert (ohne Abdeckungen) | صورة - منصهرات المضخة الحرارية (بدون أغطية، مقروءة)
+
+- photoFusesHeatPump | photo | required | Photo - Heat Pump Fuses (Legible) | Sicherungen Wärmepumpe leserlich | صورة - منصهرات المضخة الحرارية واضحة
   show_if: heatPumpOrdered == yes
 
-## Cable Routes | Kabelwege | مسارات الكابل
-
-section_id: cable_routes
-
-- photoCableRoute | photo | required | Photos of entire AC cable route | Bilder des gesamten AC Kabelwegs | صور لمسار كابل AC بالكامل
-  multiple: true
-- routeOver25m | checkbox | | Cable route over 25m? | Kabelweg über 25m? | مسار الكابل أكثر من 25 م؟
-  options: yes, no
-  <!-- TODO make ti show if its not checked  -->
-
-- additionalMeters | number | required | How many additional meters were installed? | Wie viel Meter wurden zusätzlich verbaut? | كم متر إضافي تم تركيبه؟
-  show_if: routeOver25m == yes
+---
 
 ## Cleanliness | Sauberkeit | النظافة
 
 section_id: cleanliness
 
-- siteCleanedUp | checkbox | required | Waste was loaded into own vehicle, site left clean as found | Abfall im eigenen Fahrzeug, Baustelle ordentlich/reinlich verlassen | تم تحميل النفايات في السيارة الخاصة، تم ترك الموقع نظيفًا كما كان
+- siteCleanedUp | checkbox | required | Waste Loaded Into Own Vehicle and Site Left Clean | Abfall im eigenen Fahrzeug entsorgt und Baustelle sauber verlassen | تم تحميل النفايات وترك الموقع نظيفًا
 
-## Final Acceptance | Abschluss des Abnahmeprotokolls | إكمال بروتوكول القبول
+---
+
+## Final Acceptance | Endabnahme | القبول النهائي
 
 section_id: final_acceptance
 
-- detailsRecorded | checkbox | required | Electrician has recorded all details, discussed and explained with customer. System operational and ready for invoicing. | Alle Details sorgfältig eingetragen, mit dem Kunden besprochen und erklärt. Anlage betriebsbereit und zur Rechnungsstellung freigegeben. | تم تسجيل جميع التفاصيل ومناقشتها مع العميل. النظام جاهز للتشغيل والفوترة.
-<!-- TODO add a file for this  -->
-- measurementProtocol | file | required | Attach Measurement Protocol | Messprotokoll anhängen | إرفاق بروتوكول القياس
-accepted_formats: pdf, jpg, png
+- systemOperational | checkbox | required | System Operational | Anlage betriebsbereit | النظام يعمل
+- customerInformed | checkbox | required | Customer Informed | Kunde informiert | تم إعلام العميل
+- invoiceApproved | checkbox | required | Invoice Approved | Rechnung freigegeben | تمت الموافقة على الفاتورة
+- detailsRecorded | checkbox | required | All Details Recorded and Discussed with Customer | Alle Details erfasst und mit dem Kunden besprochen | تم تسجيل جميع التفاصيل ومناقشتها مع العميل
+- completionDate | date | required | Completion Date | Abschlussdatum | تاريخ الانتهاء
+- completionTime | time | required | Completion Time | Abschlusszeit | وقت الانتهاء
 
-- completionDateTime | datetime | required | Date and Time | Datum und Uhrzeit | التاريخ والوقت
+---
 
-- completionDate | date | required | Completion Date | Abschlussdatum | تاريخ الإنجاز
-- completionTime | time | required | Completion Time | Abschlusszeit | وقت الإنجاز
+## Remarks | Bemerkungen | ملاحظات
 
-- remarks | textarea | | Remarks | Bemerkungen | ملاحظات
+section_id: remarks
 
-## Customer Signature | Unterschrift des Kunden/Bevollmächtigten | توقيع العميل/الممثل
+- remarksGeneral | textarea | | Remarks | Bemerkungen | ملاحظات
 
-section_id: customer_signature
+---
 
-- signatureLocation | text | required | Location | Ort | الموقع
-- signatureTime | time | required | Time | Zeitpunkt | الوقت
-  default: current_time
-- signedBy | text | required | Signed by | Unterschrift von | موقع من قبل
-- customerSignature | signature | required | Customer or Authorized
-  Representative Signature | Unterschrift des Kunden oder Bevollmächtigen | توقيع العميل أو الممثل المعتمد
+## Signatures | Unterschriften | التوقيعات
 
-- customerFullName | text | required | Customer First and Last Name | Vor- und Nachname Kunde | الاسم الكامل للعميل
-- representativeFullName | text | | Representative First and Last Name | Vor- und Nachname Bevollmächtigter | الاسم الكامل للممثل
-  show_if: signedBy == authorized_representative
+section_id: signatures
 
-## Installer Signature | Unterschrift des Elektrikers/Partners | توقيع الكهربائي/الشريك
-
-section_id: installer_signature
-
-<!-- TODO add a display text thats not required to do anything or input anything just for reading -->
-
-- legalDeclaration | display_text | | Declaration: Operator and installer declare that the system shown above and in the documentation is technically operational on the day on which the AC and DC acceptance protocols are signed (§ 3 No. 30 EEG 2021). | Vom Anlagenbetreiber und Installationsbetrieb wird erklärt, dass die oben genannte Anlage technisch betriebsbereit i.S.d. § 3 Nr. 30 EEG (2021) ist, an dem das AC- und DC-Abnahmeprotokoll unterzeichnet vorliegen. | إقرار: يصرح المشغل والمثبت بأن النظام جاهز للتشغيل تقنيًا في يوم توقيع بروتوكولات القبول AC و DC.
-- objectionPeriod | display_text | | Objection period is 14 days; after expiration, the acceptance protocol is considered confirmed. | Die Widerspruchsfrist beträgt 14 Tage, nach Ablauf der Frist gilt das Abnahmeprotokoll als bestätigt. | فترة الاعتراض 14 يومًا، وبعد انتهائها يعتبر بروتوكول القبول مؤكدًا.
-- installerDeclaration | display_text | | The installer confirms with his signature that the electrical system has been installed, measured and accepted according to current DIN-VDE standards as well as TAB and TAR. | Der ausführende Elektroinstallateur bestätigt mit seiner Unterschrift die elektrische Anlage nach den aktuell gültigen DIN-VDE Normen sowie TAB und TAR installiert, gemessen und abgenommen zu haben. | يؤكد المثبت بتوقيعه أن النظام الكهربائي تم تركيبه وقياسه وقبوله وفقًا لمعايير DIN-VDE الحالية وكذلك TAB و TAR.
-- installerSignature | signature | required | Installer / Partner On-Site Signature | Unterschrift des Elektrikers/Partners vor Ort | توقيع الكهربائي / الشريك في الموقع
+- customerFullName | text | required | Customer Full Name | Kundenvollname | الاسم الكامل للعميل
+- customerSignature | signature | required | Customer Signature | Unterschrift Kunde | توقيع العميل
+- installerSignature | signature | required | Installer Signature | Unterschrift Installateur | توقيع المثبت
