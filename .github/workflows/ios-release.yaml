@@ -1,4 +1,4 @@
-name: Flutter iOS Release (IPA)
+name: Flutter iOS Release (Real IPA)
 
 on:
   push:
@@ -13,46 +13,83 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      # --------------------
+      # -------------------------
       # Checkout
-      # --------------------
+      # -------------------------
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # --------------------
+      # -------------------------
       # Flutter setup
-      # --------------------
+      # -------------------------
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      # --------------------
-      # Dependencies
-      # --------------------
+      # -------------------------
+      # Install dependencies
+      # -------------------------
       - name: Install dependencies
         run: flutter pub get
 
-      # --------------------
-      # Build IPA (IMPORTANT)
-      # --------------------
-      - name: Build IPA
-        run: flutter build ipa --release --no-codesign
+      # -------------------------
+      # Install CocoaPods
+      # -------------------------
+      - name: Install Pods
+        run: |
+          cd ios
+          pod install
 
-      # --------------------
-      # Find and rename IPA
-      # --------------------
+      # -------------------------
+      # Build iOS archive (SAFE + RELIABLE)
+      # -------------------------
+      - name: Build iOS Archive
+        run: |
+          flutter build ios --release --no-codesign
+
+      # -------------------------
+      # Create IPA using Xcode export
+      # -------------------------
+      - name: Create IPA
+        run: |
+          mkdir -p build/ipa
+
+          xcodebuild -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -archivePath build/Runner.xcarchive \
+            archive
+
+          xcodebuild -exportArchive \
+            -archivePath build/Runner.xcarchive \
+            -exportPath build/ipa \
+            -exportOptionsPlist ios/ExportOptions.plist
+
+      # -------------------------
+      # Find IPA safely
+      # -------------------------
       - name: Locate IPA
         run: |
-          find build/ios/ipa -name "*.ipa"
-          cp build/ios/ipa/*.ipa MyApp-${{ github.ref_name }}.ipa
+          echo "Searching for IPA..."
+          ls -R build/ipa
 
-      # --------------------
+          IPA_PATH=$(find build/ipa -name "*.ipa" | head -n 1)
+
+          if [ -z "$IPA_PATH" ]; then
+            echo "❌ IPA not found — export failed"
+            exit 1
+          fi
+
+          echo "Found IPA: $IPA_PATH"
+          cp "$IPA_PATH" MyApp-${{ github.ref_name }}.ipa
+
+      # -------------------------
       # Create GitHub Release
-      # --------------------
+      # -------------------------
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
@@ -60,9 +97,13 @@ jobs:
           tag_name: ${{ github.ref_name }}
           files: MyApp-${{ github.ref_name }}.ipa
           body: |
-            ## 📱 iOS IPA Build
+            ## 📱 iOS Build (REAL IPA)
 
-            ### Install:
-            - Use Sideloadly or AltStore
-            - Drag & install the `.ipa`
-            - Trust developer in iOS settings
+            ### Install options:
+            - Sideloadly
+            - AltStore
+            - Any IPA installer
+
+            ### Notes:
+            - This is a real exported IPA (not xcarchive)
+            - Built via Xcode export for reliability
