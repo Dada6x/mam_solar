@@ -49,6 +49,37 @@ class FormFieldRenderer extends StatelessWidget {
           onChanged: onChanged,
         );
 
+      case FieldType.datetime:
+        final displayValue = value as String? ?? '';
+        return TextFormField(
+          readOnly: true,
+          controller: TextEditingController(text: displayValue),
+          decoration: InputDecoration(
+            labelText: '$labelText$requiredMark',
+            labelStyle: const TextStyle(fontSize: 13),
+            suffixIcon: const Icon(Icons.calendar_month, size: 18),
+          ),
+          onTap: () async {
+            final date = await showDatePicker(
+              context: context,
+              initialDate: DateTime.now(),
+              firstDate: DateTime(2000),
+              lastDate: DateTime(2100),
+            );
+            if (date == null) return;
+            if (!context.mounted) return;
+            final time = await showTimePicker(
+              context: context,
+              initialTime: TimeOfDay.now(),
+            );
+            if (time == null) return;
+            final formatted =
+                '${date.day.toString().padLeft(2, '0')}.${date.month.toString().padLeft(2, '0')}.${date.year}'
+                ' ${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+            onChanged(formatted);
+          },
+        );
+
       case FieldType.number:
         return TextFormField(
           initialValue: value as String? ?? '',
@@ -110,10 +141,7 @@ class FormFieldRenderer extends StatelessWidget {
 
       case FieldType.checkbox:
         return CheckboxListTile(
-          title: Text(
-            labelText,
-            style: const TextStyle(fontSize: 14),
-          ),
+          title: Text(labelText, style: const TextStyle(fontSize: 14)),
           value: value == true,
           activeColor: AppColors.primaryGreen,
           controlAffinity: ListTileControlAffinity.leading,
@@ -121,33 +149,37 @@ class FormFieldRenderer extends StatelessWidget {
           onChanged: (v) => onChanged(v),
         );
 
-      case FieldType.radio: {
-        final options = field.dropdownOptions ?? [];
-        final selected = value as String?;
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              '$labelText$requiredMark',
-              style: const TextStyle(fontSize: 13, color: AppColors.labelGrey),
-            ),
-            ...options.map((opt) {
-              return RadioListTile<String>(
-                title: Text(
-                  opt.replaceAll('_', ' '),
-                  style: const TextStyle(fontSize: 13),
+      case FieldType.radio:
+        {
+          final options = field.dropdownOptions ?? [];
+          final selected = value as String?;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                '$labelText$requiredMark',
+                style: const TextStyle(
+                  fontSize: 13,
+                  color: AppColors.labelGrey,
                 ),
-                value: opt,
-                groupValue: selected,
-                activeColor: AppColors.primaryGreen,
-                contentPadding: EdgeInsets.zero,
-                dense: true,
-                onChanged: (v) => onChanged(v),
-              );
-            }),
-          ],
-        );
-      }
+              ),
+              ...options.map((opt) {
+                return RadioListTile<String>(
+                  title: Text(
+                    opt.replaceAll('_', ' '),
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                  value: opt,
+                  groupValue: selected,
+                  activeColor: AppColors.primaryGreen,
+                  contentPadding: EdgeInsets.zero,
+                  dense: true,
+                  onChanged: (v) => onChanged(v),
+                );
+              }),
+            ],
+          );
+        }
 
       case FieldType.dropdown:
         final options = field.dropdownOptions ?? [];
@@ -209,7 +241,11 @@ class FormFieldRenderer extends StatelessWidget {
           padding: const EdgeInsets.symmetric(vertical: 8),
           child: Text(
             labelText,
-            style: const TextStyle(fontSize: 13, color: AppColors.labelGrey, fontStyle: FontStyle.italic),
+            style: const TextStyle(
+              fontSize: 13,
+              color: AppColors.labelGrey,
+              fontStyle: FontStyle.italic,
+            ),
           ),
         );
 
@@ -219,7 +255,9 @@ class FormFieldRenderer extends StatelessWidget {
   }
 
   bool _evaluateShowIf() {
-    if (field.showIfField == null || field.showIfOperator == null || field.showIfValue == null) {
+    if (field.showIfField == null ||
+        field.showIfOperator == null ||
+        field.showIfValue == null) {
       return true;
     }
 
@@ -238,7 +276,9 @@ class FormFieldRenderer extends StatelessWidget {
 
     // OR conditions: if showIfValues is set, any match is sufficient
     if (field.showIfValues != null && field.showIfValues!.isNotEmpty) {
-      return field.showIfValues!.any((v) => evaluateSingle(field.showIfOperator!, v));
+      return field.showIfValues!.any(
+        (v) => evaluateSingle(field.showIfOperator!, v),
+      );
     }
 
     return evaluateSingle(field.showIfOperator!, field.showIfValue!);

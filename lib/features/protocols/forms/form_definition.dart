@@ -6,6 +6,7 @@ enum FieldType {
   checkbox,
   radio,
   dropdown,
+  datetime,  
   photo,
   signature,
   textarea,

@@ -44,7 +44,12 @@ class ProtocolMdParser {
   /// Returns list of available protocol types by scanning
   /// both assets/protocols/ and the documents override folder.
   static Future<List<String>> availableTypes() async {
-    final types = <String>{'ac_acceptance', 'work_order', 'damage_report', 'installation_report'};
+    final types = <String>{
+      'ac_acceptance',
+      'work_order',
+      'damage_report',
+      'installation_report',
+    };
 
     try {
       final dir = await getApplicationDocumentsDirectory();
@@ -62,7 +67,10 @@ class ProtocolMdParser {
   }
 
   /// Saves an .md string to the documents override folder.
-  static Future<void> saveOverride(String protocolType, String mdContent) async {
+  static Future<void> saveOverride(
+    String protocolType,
+    String mdContent,
+  ) async {
     final dir = await getApplicationDocumentsDirectory();
     final overrideDir = Directory('${dir.path}/protocols');
     if (!overrideDir.existsSync()) overrideDir.createSync(recursive: true);
@@ -105,7 +113,10 @@ class ProtocolMdParser {
   }
 
   static String _scanVersion(String source) {
-    final match = RegExp(r'^version:\s*(.+)$', multiLine: true).firstMatch(source);
+    final match = RegExp(
+      r'^version:\s*(.+)$',
+      multiLine: true,
+    ).firstMatch(source);
     return match?.group(1)?.trim() ?? '0';
   }
 
@@ -169,20 +180,23 @@ class ProtocolMdParser {
 
     void _finalizeSection() {
       if (currentSectionId != null && currentFields != null) {
-        sections.add(FormSection(
-          id: currentSectionId!,
-          labelKey: currentSectionLabel ?? currentSectionId!,
-          fields: List.from(currentFields!),
-          isRepeatable: currentRepeatable,
-          minRepeat: currentMin,
-          maxRepeat: currentMax,
-          merged: currentMerged,
-          fieldPages: currentFieldPages != null && currentFieldPages!.length > 1
-              ? List.from(currentFieldPages!)
-              : const [],
-          labelDe: currentSectionLabelDe,
-          labelAr: currentSectionLabelAr,
-        ));
+        sections.add(
+          FormSection(
+            id: currentSectionId!,
+            labelKey: currentSectionLabel ?? currentSectionId!,
+            fields: List.from(currentFields!),
+            isRepeatable: currentRepeatable,
+            minRepeat: currentMin,
+            maxRepeat: currentMax,
+            merged: currentMerged,
+            fieldPages:
+                currentFieldPages != null && currentFieldPages!.length > 1
+                ? List.from(currentFieldPages!)
+                : const [],
+            labelDe: currentSectionLabelDe,
+            labelAr: currentSectionLabelAr,
+          ),
+        );
       }
       currentFields = null;
       currentFieldPages = null;
@@ -200,7 +214,11 @@ class ProtocolMdParser {
     for (final rawLine in bodyLines) {
       final line = rawLine.trim();
 
-      if (line.isEmpty || (line.startsWith('#') && !line.startsWith('##') && !line.startsWith('+ ##'))) continue;
+      if (line.isEmpty ||
+          (line.startsWith('#') &&
+              !line.startsWith('##') &&
+              !line.startsWith('+ ##')))
+        continue;
 
       // merged section heading
       if (line.startsWith('+ ## ')) {
@@ -241,7 +259,9 @@ class ProtocolMdParser {
         continue;
       }
       if (line.startsWith('repeatable:')) {
-        currentRepeatable = _parseBool(line.substring('repeatable:'.length).trim());
+        currentRepeatable = _parseBool(
+          line.substring('repeatable:'.length).trim(),
+        );
         continue;
       }
       if (line.startsWith('min:')) {
@@ -255,7 +275,11 @@ class ProtocolMdParser {
 
       // field line
       if (line.startsWith('- ')) {
-        final fieldParts = line.substring(2).split('|').map((s) => s.trim()).toList();
+        final fieldParts = line
+            .substring(2)
+            .split('|')
+            .map((s) => s.trim())
+            .toList();
         if (fieldParts.length >= 4) {
           final fieldId = fieldParts[0];
           final fieldType = _parseFieldType(fieldParts[1]);
@@ -281,10 +305,18 @@ class ProtocolMdParser {
       }
 
       // options line
-      if (line.startsWith('options:') && lastField != null && (lastField!.type == FieldType.dropdown || lastField!.type == FieldType.radio)) {
+      if (line.startsWith('options:') &&
+          lastField != null &&
+          (lastField!.type == FieldType.dropdown ||
+              lastField!.type == FieldType.radio)) {
         final idx = currentFields!.indexOf(lastField!);
         if (idx >= 0) {
-          final opts = line.substring('options:'.length).split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+          final opts = line
+              .substring('options:'.length)
+              .split(',')
+              .map((s) => s.trim())
+              .where((s) => s.isNotEmpty)
+              .toList();
           final updated = FormFieldDef(
             id: lastField!.id,
             labelKey: lastField!.labelKey,
@@ -307,7 +339,12 @@ class ProtocolMdParser {
 
       // accepted_formats line
       if (line.startsWith('accepted_formats:') && lastField != null) {
-        final formats = line.substring('accepted_formats:'.length).split(',').map((s) => s.trim()).where((s) => s.isNotEmpty).toList();
+        final formats = line
+            .substring('accepted_formats:'.length)
+            .split(',')
+            .map((s) => s.trim())
+            .where((s) => s.isNotEmpty)
+            .toList();
         final idx = currentFields!.indexOf(lastField!);
         if (idx >= 0) {
           final updated = FormFieldDef(
@@ -342,13 +379,19 @@ class ProtocolMdParser {
         final values = <String>[];
 
         for (final part in orParts) {
-          final eqMatch = RegExp(r'^(\S+)\s*==\s*(.+)$').firstMatch(part.trim());
-          final neqMatch = RegExp(r'^(\S+)\s*!=\s*(.+)$').firstMatch(part.trim());
+          final eqMatch = RegExp(
+            r'^(\S+)\s*==\s*(.+)$',
+          ).firstMatch(part.trim());
+          final neqMatch = RegExp(
+            r'^(\S+)\s*!=\s*(.+)$',
+          ).firstMatch(part.trim());
           final match = eqMatch ?? neqMatch;
           if (match != null) {
             showFieldId = match.group(1)!.trim();
             op = eqMatch != null ? '==' : '!=';
-            values.add(match.group(2)!.trim().replaceAll('"', '').replaceAll("'", ''));
+            values.add(
+              match.group(2)!.trim().replaceAll('"', '').replaceAll("'", ''),
+            );
           }
         }
 
@@ -379,10 +422,14 @@ class ProtocolMdParser {
 
     _finalizeSection();
 
-    if (sections.isEmpty && source.trim().isNotEmpty &&
+    if (sections.isEmpty &&
+        source.trim().isNotEmpty &&
         !source.trim().startsWith('---') &&
         !source.contains('\n## ')) {
-      return errorResult(typeKey, 'Malformed protocol definition: no valid sections found');
+      return errorResult(
+        typeKey,
+        'Malformed protocol definition: no valid sections found',
+      );
     }
 
     return ParsedProtocol(
@@ -444,6 +491,8 @@ class ProtocolMdParser {
         return FieldType.file;
       case 'display_text':
         return FieldType.displayText;
+      case 'datetime':
+        return FieldType.datetime;
       default:
         return FieldType.text;
     }
@@ -454,7 +503,11 @@ class ProtocolMdParser {
   }
 
   /// Replaces all occurrences of [oldField] with [newField] in [pages].
-  static void _syncFieldToPages(FormFieldDef oldField, FormFieldDef newField, List<List<FormFieldDef>>? pages) {
+  static void _syncFieldToPages(
+    FormFieldDef oldField,
+    FormFieldDef newField,
+    List<List<FormFieldDef>>? pages,
+  ) {
     if (pages == null) return;
     for (final page in pages) {
       for (int i = 0; i < page.length; i++) {
