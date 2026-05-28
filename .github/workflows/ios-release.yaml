@@ -3,48 +3,67 @@ name: Flutter iOS Release
 on:
   push:
     tags:
-      - 'v*' # triggers on tags like v1.0.0, v1.2.3
+      - 'v*'
 
 permissions:
-  contents: write   # 👈 REQUIRED for creating releases
+  contents: write
 
 jobs:
   build-ios:
     runs-on: macos-latest
 
-
     steps:
+      # -----------------------
+      # Checkout repo (important for tags)
+      # -----------------------
       - name: Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
+      # -----------------------
+      # Setup Flutter (FIXED)
+      # -----------------------
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: '' # match your flutter version
-          channel: 'stable'
+          channel: stable
           cache: true
 
+      # -----------------------
+      # Install dependencies
+      # -----------------------
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build unsigned .ipa
+      # -----------------------
+      # Build iOS IPA (unsigned)
+      # -----------------------
+      - name: Build unsigned IPA
         run: flutter build ipa --release --no-codesign
 
-      # Rename for clarity
-      - name: Package xcarchive
+      # -----------------------
+      # Package build output
+      # -----------------------
+      - name: Package XCArchive
         run: |
           cd build/ios/archive
           zip -r ../../../MyApp-${{ github.ref_name }}.zip Runner.xcarchive
 
+      # -----------------------
+      # Create GitHub Release
+      # -----------------------
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          files: MyApp-${{ github.ref_name }}.zip
           name: Release ${{ github.ref_name }}
+          tag_name: ${{ github.ref_name }}
+          files: MyApp-${{ github.ref_name }}.zip
           body: |
-            ## Install instructions
-            1. Download the `.zip` file below
+            ## 📱 iOS Build
+
+            ### Install steps:
+            1. Download the `.zip`
             2. Extract it
-            3. Install [Sideloadly](https://sideloadly.io/) 
-            4. Drag the `.xcarchive` into Sideloadly and hit Start
-            5. Trust the app: Settings → General → VPN & Device Management
+            3. Use Sideloadly to install the `.xcarchive`
+            4. Trust developer in iOS settings
