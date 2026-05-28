@@ -94,20 +94,11 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
       final sections = parsed.sections;
 
       if (existing == null) {
-        final now = DateTime.now().millisecondsSinceEpoch;
-        final newProtocol = ProtocolModel(
-          type: type,
-          createdAt: now,
-          updatedAt: now,
-          status: 'draft',
-          jsonData: '{}',
-        );
-        final id = await _protocolRepo.insertProtocol(newProtocol);
-        _log.i('Created new protocol #$id (type: $type)');
+        _log.i('New protocol (type: $type) — no DB insert until first save');
         emit(state.copyWith(
           isLoading: false,
           protocolType: type,
-          protocolId: id,
+          protocolId: 0,
           sections: sections,
           formData: formData,
           repeatableData: repeatableData,
@@ -166,18 +157,38 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   }
 
   Future<void> _onSaveDraft(SaveDraft event, Emitter<ProtocolState> emit) async {
-    if (state.protocolId == 0) return;
     emit(state.copyWith(isSaving: true, error: null));
     try {
-      _log.i('Saving draft protocol #${state.protocolId}: ${state.formData.length} fields');
+      int protocolId = state.protocolId;
+
+      // First save — insert a new row
+      if (protocolId == 0) {
+        final now = DateTime.now().millisecondsSinceEpoch;
+        final newProtocol = ProtocolModel(
+          type: state.protocolType ?? '',
+          createdAt: now,
+          updatedAt: now,
+          status: 'draft',
+          jsonData: '{}',
+        );
+        protocolId = await _protocolRepo.insertProtocol(newProtocol);
+        _log.i('Inserted new protocol #$protocolId');
+      }
+
+      _log.i('Saving draft protocol #$protocolId: ${state.formData.length} fields');
       final data = Map<String, dynamic>.from(state.formData);
       if (state.repeatableData.isNotEmpty) {
         data['_repeatable'] = state.repeatableData.map(
           (k, v) => MapEntry(k, v.map((e) => Map<String, dynamic>.from(e)).toList()),
         );
       }
-      await _protocolRepo.updateJsonData(state.protocolId, data);
-      emit(state.copyWith(isSaving: false, isDirty: false, saveMessage: 'autosaved'));
+      await _protocolRepo.updateJsonData(protocolId, data);
+      emit(state.copyWith(
+        isSaving: false,
+        isDirty: false,
+        protocolId: protocolId,
+        saveMessage: 'autosaved',
+      ));
     } catch (e) {
       _log.e('Save draft failed', error: e);
       emit(state.copyWith(isSaving: false, error: 'saveFailed'));
@@ -187,7 +198,23 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
   Future<void> _onGeneratePdf(GeneratePdf event, Emitter<ProtocolState> emit) async {
     emit(state.copyWith(pdfGenerating: true, error: null));
     try {
-      _log.i('=== PDF Generation Start for protocol #${state.protocolId} ===');
+      int protocolId = state.protocolId;
+
+      // First save — insert a new row if never saved
+      if (protocolId == 0) {
+        final now = DateTime.now().millisecondsSinceEpoch;
+        final newProtocol = ProtocolModel(
+          type: state.protocolType ?? '',
+          createdAt: now,
+          updatedAt: now,
+          status: 'draft',
+          jsonData: '{}',
+        );
+        protocolId = await _protocolRepo.insertProtocol(newProtocol);
+        _log.i('Inserted new protocol #$protocolId before PDF generation');
+      }
+
+      _log.i('=== PDF Generation Start for protocol #$protocolId ===');
       _log.i('Form fields present: ${state.formData.length}');
       for (final entry in state.formData.entries) {
         _log.i('  $entry.key = ${entry.value}');
@@ -204,8 +231,20 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           (k, v) => MapEntry(k, v.map((e) => Map<String, dynamic>.from(e)).toList()),
         );
       }
-      await _protocolRepo.updateJsonData(state.protocolId, data);
-      emit(state.copyWith(pdfGenerating: false, isDirty: false, pdfPath: 'preview'));
+      await _protocolRepo.updateJsonData(protocolId, data);
+
+      // Invalidate cached pdfPath so PdfBloc regenerates instead of showing stale PDF
+      final existing = await _protocolRepo.getProtocol(protocolId);
+      if (existing != null && existing.pdfPath != null) {
+        await _protocolRepo.updateProtocol(existing.copyWith(pdfPath: null));
+      }
+
+      emit(state.copyWith(
+        pdfGenerating: false,
+        isDirty: false,
+        protocolId: protocolId,
+        pdfPath: 'preview',
+      ));
     } catch (e) {
       _log.e('PDF generation failed', error: e);
       emit(state.copyWith(pdfGenerating: false, error: e.toString()));

@@ -66,7 +66,7 @@ class _DynamicFormView extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        if (state.isLoading) {
+        if (state.isLoading || (state.sections.isEmpty && state.error == null)) {
           return Scaffold(
             appBar: AppBar(title: Text(AppLocalizations.of(context)!.loading)),
             body: const Center(child: CircularProgressIndicator()),
@@ -79,17 +79,6 @@ class _DynamicFormView extends StatelessWidget {
               title: Text(AppLocalizations.of(context)!.errorGeneric),
             ),
             body: Center(child: Text(state.error!)),
-          );
-        }
-
-        if (state.protocolId == 0) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(AppLocalizations.of(context)!.errorGeneric),
-            ),
-            body: Center(
-              child: Text(AppLocalizations.of(context)!.protocolNotInitialized),
-            ),
           );
         }
 
@@ -138,6 +127,7 @@ class _DynamicFormView extends StatelessWidget {
               },
             ),
             actions: [
+              //TODO MAKE IT ONLY SAVE THE DRIFT WHEN THIS BUTTON IS CLICKED 
               IconButton(
                 icon: const Icon(Icons.save),
                 onPressed: () =>
