@@ -1,109 +1,42 @@
-name: Flutter iOS Release (Real IPA)
+name: iOS-ipa-build
 
 on:
-  push:
-    tags:
-      - 'v*'
-
-permissions:
-  contents: write
+  workflow_dispatch:
 
 jobs:
   build-ios:
+    name: 🎉 iOS Build
     runs-on: macos-latest
-
     steps:
-      # -------------------------
-      # Checkout
-      # -------------------------
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v3
+
+      - uses: subosito/flutter-action@v2
         with:
-          fetch-depth: 0
+          channel: 'stable'
+          architecture: x64
+      - run: flutter pub get
+      
 
-      # -------------------------
-      # Flutter setup
-      # -------------------------
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
+      - run: pod repo update
+        working-directory: ios
+
+      - run: flutter build ios --release --no-codesign
+
+      - run: mkdir Payload
+        working-directory: build/ios/iphoneos
+
+      - run: mv Runner.app/ Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Zip output
+        run: zip -qq -r -9 FlutterIpaExport.ipa Payload
+        working-directory: build/ios/iphoneos
+
+      - name: Upload binaries to release
+        uses: svenstaro/upload-release-action@v2
         with:
-          channel: stable
-          cache: true
-
-      # -------------------------
-      # Install dependencies
-      # -------------------------
-      - name: Install dependencies
-        run: flutter pub get
-
-      # -------------------------
-      # Install CocoaPods
-      # -------------------------
-      - name: Install Pods
-        run: |
-          cd ios
-          pod install
-
-      # -------------------------
-      # Build iOS archive (SAFE + RELIABLE)
-      # -------------------------
-      - name: Build iOS Archive
-        run: |
-          flutter build ios --release --no-codesign
-
-      # -------------------------
-      # Create IPA using Xcode export
-      # -------------------------
-      - name: Create IPA
-        run: |
-          mkdir -p build/ipa
-
-          xcodebuild -workspace ios/Runner.xcworkspace \
-            -scheme Runner \
-            -configuration Release \
-            -archivePath build/Runner.xcarchive \
-            archive
-
-          xcodebuild -exportArchive \
-            -archivePath build/Runner.xcarchive \
-            -exportPath build/ipa \
-            -exportOptionsPlist ios/ExportOptions.plist
-
-      # -------------------------
-      # Find IPA safely
-      # -------------------------
-      - name: Locate IPA
-        run: |
-          echo "Searching for IPA..."
-          ls -R build/ipa
-
-          IPA_PATH=$(find build/ipa -name "*.ipa" | head -n 1)
-
-          if [ -z "$IPA_PATH" ]; then
-            echo "❌ IPA not found — export failed"
-            exit 1
-          fi
-
-          echo "Found IPA: $IPA_PATH"
-          cp "$IPA_PATH" MyApp-${{ github.ref_name }}.ipa
-
-      # -------------------------
-      # Create GitHub Release
-      # -------------------------
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release ${{ github.ref_name }}
-          tag_name: ${{ github.ref_name }}
-          files: MyApp-${{ github.ref_name }}.ipa
-          body: |
-            ## 📱 iOS Build (REAL IPA)
-
-            ### Install options:
-            - Sideloadly
-            - AltStore
-            - Any IPA installer
-
-            ### Notes:
-            - This is a real exported IPA (not xcarchive)
-            - Built via Xcode export for reliability
+          repo_token: ${{ secrets.GITHUB_TOKEN }}
+          file: build/ios/iphoneos/FlutterIpaExport.ipa
+          tag: v1.0
+          overwrite: true
+          body: "This is first release"
