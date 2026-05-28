@@ -279,6 +279,14 @@ static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
     PdfGeneratorBase.buildSignatureField('Customer', data['customerSignature'] as String?),
     PdfGeneratorBase.buildSignatureField('MAM Solarbau', data['companySignature'] as String?),
     PdfGeneratorBase.buildFieldRow('Signing Technician', PdfGeneratorBase.safeString(data['signerName'])),
+    PdfGeneratorBase.buildDisplayTextField('The plant operator and installation company declare that the above-mentioned system is technically ready for operation within the meaning of § 3 No. 30 EEG (2021) on the date on which the AC and DC acceptance protocols are signed.',
+      ),
+      PdfGeneratorBase.buildDisplayTextField(
+        'The objection period is 14 days; after this period the acceptance protocol is considered confirmed.',
+      ),
+      PdfGeneratorBase.buildDisplayTextField(
+        'The executing electrical installer confirms with their signature that the electrical system has been installed, measured and accepted in accordance with the currently applicable DIN-VDE standards as well as TAB and TAR.',
+      ),
     // PdfGeneratorBase.buildFieldRow('Email Sent To', PdfGeneratorBase.safeString(data['emailSentTo'])),
   ]);
 }
