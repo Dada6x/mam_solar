@@ -72,8 +72,7 @@ section_id: roof
   fields:
   - dormersPresent | radio | | Dormers present? | Gauben vorhanden? | نوافذ علوية موجودة؟
     options: yes, no
-  - photosRoofAngles | photo | | Photos of roof from different angles | Bilder der Dachfläche aus verschiedenen Winkeln | صور للسقف من زوايا مختلفة
-    multiple: true
+  - photosRoofAngles | multiphoto | | Photos of roof from different angles | Bilder der Dachfläche aus verschiedenen Winkeln | صور للسقف من زوايا مختلفة
     min: 3
   - photoEaveFront | photo | | Eave height front view with dimensions | Traufhöhe Frontansicht mit Bemaßung | ارتفاع الإفريز من الأمام مع الأبعاد
   - photoEaveLeft | photo | | Eave height left | Traufhöhe links | ارتفاع الإفريز الأيسر
@@ -85,8 +84,7 @@ section_id: roof
     options: yes, no
   - photoUndersideVerge | photo | | Photo of roof underside / verge | Bild der Dachunterseite Ortgang | صورة الجانب السفلي للسقف
   - vergeOverhangCm | number | | Verge overhang in cm | Dachüberstand Ortgang in cm | بروز الحافة بالسم
-  - photosRoofInside | photo | | Photos of roof from inside | Bild Dachfläche von Innen | صور للسقف من الداخل
-    multiple: true
+  - photosRoofInside | multiphoto | | Photos of roof from inside | Bild Dachfläche von Innen | صور للسقف من الداخل
     min: 3
   - photoRafterWidth | photo | | Rafter width with scale | Sparrenbreite mit Maßstab | عرض العارضة مع مقياس
   - rafterWidthCm | number | | Rafter width in cm | Sparrenbreite in cm | عرض العارضة بالسم
@@ -120,8 +118,7 @@ section_id: roof
 
 section_id: dc_cable_route
 
-- photoDcCableRoute | photo | | Photos of planned cable route from inverter/storage to PV modules (lines in BLUE, mark breakthroughs) | Bilder geplanter Kabelweg von Wechselrichter/Speicher zu PV Modulen (Leitungen in BLAU, Durchbrüche kennzeichnen) | صور لمسار الكابل المخطط من العاكس/التخزين إلى وحدات PV (الخطوط باللون الأزرق، حدد الفتحات)
-  multiple: true
+- photoDcCableRoute | multiphoto | | Photos of planned cable route from inverter/storage to PV modules (lines in BLUE, mark breakthroughs) | Bilder geplanter Kabelweg von Wechselrichter/Speicher zu PV Modulen (Leitungen in BLAU, Durchbrüche kennzeichnen) | صور لمسار الكابل المخطط من العاكس/التخزين إلى وحدات PV (الخطوط باللون الأزرق، حدد الفتحات)
   min: 2
 - dcCableLengthMeters | number | | Cable length in m | Länge Kabelweg in m | طول الكابل بالمتر
 
@@ -131,8 +128,7 @@ section_id: electrical
 
 ### HAK (House Connection Box) | Hausanschlusskasten | صندوق توصيل المنزل
 
-- photoHak | photo | | Photo HAK opened (1m distance) | Bild des Hausanschlusskastens geöffnet (1m Abstand) | صورة HAK مفتوحة (مسافة 1م)
-  multiple: true
+- photoHak | multiphoto | | Photo HAK opened (1m distance) | Bild des Hausanschlusskastens geöffnet (1m Abstand) | صورة HAK مفتوحة (مسافة 1م)
 - hakFuseAmps | number | | Fuse (Amps) | Absicherung | المنصهر (أمبير)
 - hakHousingMaterial | dropdown | | HAK Housing Material | HAK Gehäusematerial | مادة هيكل HAK
   options: metal, non_metal
@@ -143,14 +139,12 @@ section_id: electrical
 
 ### Way to Meter Cabinet | Weg zum Zählerkasten | الطريق إلى خزانة العداد
 
-- photosWayToMeter | photo | | Photos way to meter cabinet | Bilder Weg zum Zählerkasten | صور الطريق إلى خزانة العداد
-  multiple: true
+- photosWayToMeter | multiphoto | | Photos way to meter cabinet | Bilder Weg zum Zählerkasten | صور الطريق إلى خزانة العداد
 
 ### Meter Cabinet (Existing) | Zählerschrank Bestand | خزانة العداد الموجودة
 
 - photoMeterCabinet | photo | | Photo of meter cabinet (all covers open + 1m distance) | Bild des Zählerschranks (alle Abdeckungen öffnen + 1m Abstand) | صورة خزانة العداد (جميع الأغطية مفتوحة + مسافة 1م)
-- photosZkDetails | photo | | Detail photos of ZK | Bilder ZK | صور تفصيلية لـ ZK
-  multiple: true
+- photosZkDetails | multiphoto | | Detail photos of ZK | Bilder ZK | صور تفصيلية لـ ZK
 - typeLabelPresent | radio | | Type label present? | Typenschild ZK vorhanden? | لوحة النوع موجودة؟
   options: yes, no
 - photoTypeLabel | photo | | Photo of type label | Bild des vorhandenen Typenschildes | صورة لوحة النوع
@@ -187,10 +181,8 @@ section_id: electrical
 ### Optional Meter Cabinet | Optionaler Zählerschrank | خزانة العداد الاختيارية
 
 - photoOptionalZkLocation | photo | | Photo of optional ZK location (room height min. 2.10m, wall width min. 1m, 1.50m distance to obstacles, no wood) | Bild des Montageorts des optionalen Zählerschranks (Raumhöhe mind. 2,10m, Wandbreite mind. 1m, Abstand zum nächsten Hindernis 1,50m, nicht auf Holz) | صورة موقع ZK الاختياري
-- photosCableHakToOptionalZk | photo | | Photos cable route HAK → optional ZK | Bilder Kabelweg HAK zum optionalen ZK | صور مسار الكابل HAK إلى ZK الاختياري
-  multiple: true
-- photosCableExistingZkToOptionalZk | photo | | Photos cable route existing ZK → optional ZK | Bilder Kabelweg ZK Bestand zu ZK optional | صور مسار الكابل من ZK الموجود إلى ZK الاختياري
-  multiple: true
+- photosCableHakToOptionalZk | multiphoto | | Photos cable route HAK → optional ZK | Bilder Kabelweg HAK zum optionalen ZK | صور مسار الكابل HAK إلى ZK الاختياري
+- photosCableExistingZkToOptionalZk | multiphoto | | Photos cable route existing ZK → optional ZK | Bilder Kabelweg ZK Bestand zu ZK optional | صور مسار الكابل من ZK الموجود إلى ZK الاختياري
 
 ## 4. Signal Measurement | Pegelmessung | قياس الإشارة
 
@@ -216,8 +208,7 @@ section_id: signal_measurement
 
 section_id: storage_inverter
 
-- photosInstallLocation | photo | | Photos of storage/inverter location with dimensions (H/B) | Bilder des Montageorts mit Bemaßung (H/B) | صور موقع التركيب مع الأبعاد
-  multiple: true
+- photosInstallLocation | multiphoto | | Photos of storage/inverter location with dimensions (H/B) | Bilder des Montageorts mit Bemaßung (H/B) | صور موقع التركيب مع الأبعاد
   min: 2
 - storageOnFireproofSurface | radio | | Storage on fireproof surface? | Speicher auf brandschutzsicherem Untergrund? | التخزين على سطح مقاوم للحريق؟
   options: yes, no
@@ -227,10 +218,8 @@ section_id: storage_inverter
 - storageLocation | dropdown | | Storage location | Speicherstandort | موقع التخزين
   options: optimal, basement, garage, outdoor_protected, other
 - distanceInverterToZk | number | | Distance inverter/storage to sub-distribution/ZK in m | Entfernung WR/Speicher zum ZK in m | المسافة من العاكس/التخزين إلى ZK
-- photosCableInverterToExistingZk | photo | | Photos planned cable route WR/Storage → existing ZK (lines in RED) | Bilder Kabelweg WR/Speicher zum ZK Bestand (Linien in ROT) | صور مسار الكابل من WR/التخزين إلى ZK الموجود
-  multiple: true
-- photosCableInverterToOptionalZk | photo | | Photos planned cable route WR/Storage → optional ZK | Bilder Kabelweg WR/Speicher zum ZK optional | صور مسار الكابل من WR/التخزين إلى ZK الاختياري
-  multiple: true
+- photosCableInverterToExistingZk | multiphoto | | Photos planned cable route WR/Storage → existing ZK (lines in RED) | Bilder Kabelweg WR/Speicher zum ZK Bestand (Linien in ROT) | صور مسار الكابل من WR/التخزين إلى ZK الموجود
+- photosCableInverterToOptionalZk | multiphoto | | Photos planned cable route WR/Storage → optional ZK | Bilder Kabelweg WR/Speicher zum ZK optional | صور مسار الكابل من WR/التخزين إلى ZK الاختياري
 
 ## 6. Earthing | Erdung | التأريض
 
@@ -243,8 +232,7 @@ section_id: earthing
 - distanceEarthingToStorage | number | | Distance earthing to storage in m | Entfernung Erdung zum Speicher in m | المسافة من التأريض إلى التخزين
 - distanceEarthingToExistingZk | number | | Distance earthing to existing ZK in m | Entfernung Erdung zum ZK Bestand in m | المسافة من التأريض إلى ZK الموجود
 - distanceEarthingToOptionalZk | number | | Distance earthing to optional ZK in m | Entfernung Erdung zum ZK optional in m | المسافة من التأريض إلى ZK الاختياري
-- photosEarthingCableRoute | photo | | Photos planned cable route earthing → WR/Storage | Bilder Kabelweg Haupterdung zum WR/Speicher | صور مسار كابل التأريض
-  multiple: true
+- photosEarthingCableRoute | multiphoto | | Photos planned cable route earthing → WR/Storage | Bilder Kabelweg Haupterdung zum WR/Speicher | صور مسار كابل التأريض
 
 ## 7. Internet Connection | Internetanschluss | اتصال الإنترنت
 
@@ -257,8 +245,7 @@ section_id: internet
   show_if: internetAvailable == yes
 - distanceRouterToStorage | number | | Distance router to storage in m | Entfernung Router zum Speicher in m | المسافة من الراوتر إلى التخزين
   show_if: internetAvailable == yes
-- photosRouterCableRoute | photo | | Photos planned cable route router → WR/Storage | Bilder Leitungsweg Router zum WR/Speicher | صور مسار الكابل من الراوتر
-  multiple: true
+- photosRouterCableRoute | multiphoto | | Photos planned cable route router → WR/Storage | Bilder Leitungsweg Router zum WR/Speicher | صور مسار الكابل من الراوتر
   show_if: internetAvailable == yes
 - photoRouterTypeLabel | photo | | Photo of router type label | Bild Typenschild des Routers | صورة لوحة نوع الراوتر
   show_if: internetAvailable == yes
@@ -274,8 +261,7 @@ optional_section: true
   show_if: wallboxOrdered == yes
 - distanceWallboxToZk | number | | Distance wallbox to ZK in m | Entfernung Wallbox zum ZK in m | المسافة من الشاحن إلى ZK
   show_if: wallboxOrdered == yes
-- photosWallboxCable | photo | | Photos cable route wallbox | Bilder Kabelweg Wallbox | صور مسار كابل الشاحن
-  multiple: true
+- photosWallboxCable | multiphoto | | Photos cable route wallbox | Bilder Kabelweg Wallbox | صور مسار كابل الشاحن
   show_if: wallboxOrdered == yes
 
 ## 9. Blackout Package | Blackout Paket | حزمة انقطاع الكهرباء
@@ -287,8 +273,7 @@ optional_section: true
   options: yes, no
 - photoNubLocation | photo | | Photo of NUB location | Bild des Montageorts des NUB | صورة موقع NUB
   show_if: blackoutOrdered == yes
-- photosNubCableRoute | photo | | Photos cable route NUB → ZK | Bilder Kabelweg NUB zum ZK | صور مسار كابل NUB
-  multiple: true
+- photosNubCableRoute | multiphoto | | Photos cable route NUB → ZK | Bilder Kabelweg NUB zum ZK | صور مسار كابل NUB
   show_if: blackoutOrdered == yes
 
 ## 10. Organizational | Organisatorisches | تنظيمي
@@ -325,8 +310,7 @@ section_id: special_notes
 - customerCablingWish | dropdown | | Customer wants cabling in: | Kunde wünscht Leitungsverlegung in: | يرغب العميل في وضع الكابل في:
   options: cable_duct, surface_mounted, flush_mounted, conduit
 - techRemarks | textarea | | Further remarks of survey technician | Weitere Anmerkungen des Aufmaßtechnikers | ملاحظات إضافية من فني المسح
-- photosSpecial | photo | | Optional photos of specifics | Optional Bilder der Besonderheiten | صور اختيارية للخصوصيات
-  multiple: true
+- photosSpecial | multiphoto | | Optional photos of specifics | Optional Bilder der Besonderheiten | صور اختيارية للخصوصيات
 
 ## 12. Heat Pump | Wärmepumpe | المضخة الحرارية
 

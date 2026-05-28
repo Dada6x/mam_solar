@@ -438,7 +438,7 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
           ),
         );
         fields.add(
-          PdfGeneratorBase.buildPhotoField('Image', e['image'] as String?),
+          PdfGeneratorBase.buildPhotoField('Image', e['image']),
         );
         if (i < entries.length - 1) fields.add(pw.SizedBox(height: 4));
       }

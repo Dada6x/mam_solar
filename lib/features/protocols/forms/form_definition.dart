@@ -8,6 +8,7 @@ enum FieldType {
   dropdown,
   datetime,  
   photo,
+  multiphoto,
   signature,
   textarea,
   repeatable,
@@ -62,6 +63,7 @@ class FormFieldDef {
   final String? labelDe;
   final String? labelAr;
   final List<String>? acceptedFormats;
+  final bool multiple;
 
   const FormFieldDef({
     required this.id,
@@ -76,6 +78,7 @@ class FormFieldDef {
     this.labelDe,
     this.labelAr,
     this.acceptedFormats,
+    this.multiple = false,
   });
 
   String localizedLabel(String languageCode) {

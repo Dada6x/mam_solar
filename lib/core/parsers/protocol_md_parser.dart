@@ -330,6 +330,7 @@ class ProtocolMdParser {
             labelDe: lastField!.labelDe,
             labelAr: lastField!.labelAr,
             acceptedFormats: lastField!.acceptedFormats,
+            multiple: lastField!.multiple,
           );
           currentFields![idx] = updated;
           _syncFieldToPages(lastField!, updated, currentFieldPages);
@@ -360,6 +361,35 @@ class ProtocolMdParser {
             labelDe: lastField!.labelDe,
             labelAr: lastField!.labelAr,
             acceptedFormats: formats,
+            multiple: lastField!.multiple,
+          );
+          currentFields![idx] = updated;
+          _syncFieldToPages(lastField!, updated, currentFieldPages);
+        }
+        continue;
+      }
+
+      // multiple line
+      if (line.startsWith('multiple:') && lastField != null) {
+        final isMultiple = _parseBool(line.substring('multiple:'.length).trim());
+        final idx = currentFields!.indexOf(lastField!);
+        if (idx >= 0) {
+          final updated = FormFieldDef(
+            id: lastField!.id,
+            labelKey: lastField!.labelKey,
+            type: isMultiple && lastField!.type == FieldType.photo
+                ? FieldType.multiphoto
+                : lastField!.type,
+            required: lastField!.required,
+            dropdownOptions: lastField!.dropdownOptions,
+            showIfField: lastField!.showIfField,
+            showIfOperator: lastField!.showIfOperator,
+            showIfValue: lastField!.showIfValue,
+            showIfValues: lastField!.showIfValues,
+            labelDe: lastField!.labelDe,
+            labelAr: lastField!.labelAr,
+            acceptedFormats: lastField!.acceptedFormats,
+            multiple: isMultiple,
           );
           currentFields![idx] = updated;
           _syncFieldToPages(lastField!, updated, currentFieldPages);
@@ -411,6 +441,7 @@ class ProtocolMdParser {
               labelDe: lastField!.labelDe,
               labelAr: lastField!.labelAr,
               acceptedFormats: lastField!.acceptedFormats,
+              multiple: lastField!.multiple,
             );
             currentFields![idx] = updated;
             _syncFieldToPages(lastField!, updated, currentFieldPages);
@@ -483,6 +514,8 @@ class ProtocolMdParser {
         return FieldType.dropdown;
       case 'photo':
         return FieldType.photo;
+      case 'multiphoto':
+        return FieldType.multiphoto;
       case 'signature':
         return FieldType.signature;
       case 'textarea':

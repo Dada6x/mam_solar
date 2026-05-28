@@ -213,10 +213,32 @@ class PdfGeneratorBase {
   // ---------------------------
   // PHOTO FIELD
   // ---------------------------
-  static pw.Widget buildPhotoField(String label, String? imagePath) {
-    final image = _imageFromPath(imagePath);
+  static pw.Widget buildPhotoField(String label, dynamic value) {
+    if (value == null) {
+      return buildFieldRow(label, '[Photo not found]');
+    }
 
-    if (image == null) {
+    List<String> paths;
+    if (value is List) {
+      paths = value.cast<String>().where((p) => p.isNotEmpty).toList();
+    } else if (value is String && value.isNotEmpty) {
+      paths = [value];
+    } else {
+      return buildFieldRow(label, '[Photo not found]');
+    }
+
+    final images = paths.map((p) {
+      final img = _imageFromPath(p);
+      if (img == null) return null;
+      return pw.Column(
+        children: [
+          pw.Image(img, width: 120, height: 80, fit: pw.BoxFit.cover),
+          pw.SizedBox(height: 4),
+        ],
+      );
+    }).whereType<pw.Widget>().toList();
+
+    if (images.isEmpty) {
       return buildFieldRow(label, '[Photo not found]');
     }
 
@@ -228,7 +250,7 @@ class PdfGeneratorBase {
           style: pw.TextStyle(font: _font, fontSize: 9, color: _labelGray),
         ),
         pw.SizedBox(height: 4),
-        pw.Image(image, width: 120, height: 80, fit: pw.BoxFit.cover),
+        ...images,
         pw.SizedBox(height: 8),
       ],
     );

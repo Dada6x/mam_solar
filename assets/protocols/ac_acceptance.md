@@ -208,13 +208,7 @@ section_id: cable_routes
 
 - notes | textarea | | Notes | Notizen | ملاحظات
 
-- photoCableRoute | photo | | Photos of Entire AC Cable Route | Bilder des gesamten AC Kabelwegs | صور لمسار كابل AC بالكامل
-  multiple: true
-<!-- TODO make it repatable for the images ? -->
-- photoCable1 | photo | | Photo - Cable 1 | Foto - Kabel 1 | صورة - الكابل 1
-- photoCable2 | photo | | Photo - Cable 2 | Foto - Kabel 2 | صورة - الكابل 2
-- photoCable3 | photo | | Photo - Cable 3 | Foto - Kabel 3 | صورة - الكابل 3
-
+- photoCableRoute | multiphoto | | Photos of Entire AC Cable Route | Bilder des gesamten AC Kabelwegs | صور لمسار كابل AC بالكامل
 ---
 
 ## Heat Pump Order | Wärmepumpenauftrag | طلب المضخة الحرارية

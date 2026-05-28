@@ -179,7 +179,7 @@ class WorkOrderPdfGenerator {
 
     // Flat meter photo (outside the repeatable block in the MD)
     fields.add(pw.SizedBox(height: 6));
-    fields.add(PdfGeneratorBase.buildPhotoField('Meter Photo', data['photoMeter'] as String?));
+    fields.add(PdfGeneratorBase.buildPhotoField('Meter Photo', data['photoMeter']));
 
     return PdfGeneratorBase.buildSection('Meter Readings', fields);
   }
@@ -205,7 +205,7 @@ class WorkOrderPdfGenerator {
         if (description.isNotEmpty) {
           fields.add(PdfGeneratorBase.buildFieldRow('Description', description));
         }
-        fields.add(PdfGeneratorBase.buildPhotoField('Photo', p['photo'] as String?));
+        fields.add(PdfGeneratorBase.buildPhotoField('Photo', p['photo']));
         if (i < photos.length - 1) fields.add(pw.SizedBox(height: 6));
       }
     }
@@ -259,7 +259,7 @@ static pw.Widget _buildAdditionalInfoSection(Map<String, List<Map<String, dynami
       ));
       
       fields.add(PdfGeneratorBase.buildFieldRow('Note', PdfGeneratorBase.safeString(item['note'])));
-      fields.add(PdfGeneratorBase.buildPhotoField('Image', item['image'] as String?));
+      fields.add(PdfGeneratorBase.buildPhotoField('Image', item['image']));
       
       if (i < infoList.length - 1) {
         fields.add(pw.SizedBox(height: 6));

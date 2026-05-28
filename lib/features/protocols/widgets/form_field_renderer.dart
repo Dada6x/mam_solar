@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
 import 'package:mam_solar/features/protocols/widgets/file_field_widget.dart';
+import 'package:mam_solar/features/protocols/widgets/multi_photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
 
@@ -208,6 +209,13 @@ class FormFieldRenderer extends StatelessWidget {
           onChanged: onChanged,
         );
 
+      case FieldType.multiphoto:
+        return MultiPhotoCaptureFieldWidget(
+          label: labelText,
+          imagePaths: toPhotoList(value),
+          onChanged: (v) => onChanged(v),
+        );
+
       case FieldType.signature:
         return SignatureFieldWidget(
           label: labelText,
@@ -282,5 +290,11 @@ class FormFieldRenderer extends StatelessWidget {
     }
 
     return evaluateSingle(field.showIfOperator!, field.showIfValue!);
+  }
+
+  static List<String> toPhotoList(dynamic value) {
+    if (value is List) return value.cast<String>().toList();
+    if (value is String && value.isNotEmpty) return [value];
+    return [];
   }
 }

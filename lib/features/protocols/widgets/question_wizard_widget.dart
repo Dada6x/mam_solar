@@ -5,6 +5,7 @@ import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/features/protocols/bloc/protocol_bloc.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
 import 'package:mam_solar/features/protocols/widgets/form_field_renderer.dart';
+import 'package:mam_solar/features/protocols/widgets/multi_photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
 import 'package:mam_solar/features/settings/bloc/settings_bloc.dart';
@@ -581,6 +582,12 @@ class _RepeatItemCard extends StatelessWidget {
           imagePath: value as String?,
           onChanged: (v) => onFieldChanged(field.id, v),
         );
+      case FieldType.multiphoto:
+        return MultiPhotoCaptureFieldWidget(
+          label: labelText,
+          imagePaths: FormFieldRenderer.toPhotoList(value),
+          onChanged: (v) => onFieldChanged(field.id, v),
+        );
       default:
         return FormFieldRenderer(
           field: field,
@@ -684,6 +691,12 @@ class _FieldGroupPage extends StatelessWidget {
         return PhotoCaptureFieldWidget(
           label: labelText,
           imagePath: value as String?,
+          onChanged: (v) => onFieldChanged(field.id, v),
+        );
+      case FieldType.multiphoto:
+        return MultiPhotoCaptureFieldWidget(
+          label: labelText,
+          imagePaths: FormFieldRenderer.toPhotoList(value),
           onChanged: (v) => onFieldChanged(field.id, v),
         );
       default:

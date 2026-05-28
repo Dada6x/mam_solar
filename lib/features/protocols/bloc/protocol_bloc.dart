@@ -218,6 +218,13 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     } catch (_) {}
   }
 
+  bool _isValueFilled(dynamic val) {
+    if (val == null) return false;
+    if (val is String && val.trim().isEmpty) return false;
+    if (val is List && val.isEmpty) return false;
+    return true;
+  }
+
   bool areRequiredFieldsFilled() {
     for (final section in state.sections) {
       for (final field in section.fields) {
@@ -225,13 +232,11 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
             final allFilled = items.isNotEmpty && items.every((item) {
-              final val = item[field.id];
-              return val != null && !(val is String && val.trim().isEmpty);
+              return _isValueFilled(item[field.id]);
             });
             if (!allFilled) return false;
           } else {
-            final val = state.formData[field.id];
-            if (val == null || (val is String && val.trim().isEmpty)) {
+            if (!_isValueFilled(state.formData[field.id])) {
               return false;
             }
           }
@@ -249,13 +254,11 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
             final allFilled = items.isNotEmpty && items.every((item) {
-              final val = item[field.id];
-              return val != null && !(val is String && val.trim().isEmpty);
+              return _isValueFilled(item[field.id]);
             });
             if (!allFilled) missing.add(field.labelKey);
           } else {
-            final val = state.formData[field.id];
-            if (val == null || (val is String && val.trim().isEmpty)) {
+            if (!_isValueFilled(state.formData[field.id])) {
               missing.add(field.labelKey);
             }
           }
