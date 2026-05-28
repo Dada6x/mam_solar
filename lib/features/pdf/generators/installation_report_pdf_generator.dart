@@ -493,32 +493,30 @@ class InstallationReportPdfGenerator {
 
 
 // additional info 
-
 static pw.Widget _buildAdditionalInfoSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
   final infoList = repeatableData['additional_info'] ?? [];
   final fields = <pw.Widget>[];
 
   if (infoList.isEmpty) {
-    fields.add(PdfGeneratorBase.buildFieldRow('Additional Info', 'No data'));
+    fields.add(PdfGeneratorBase.buildFieldRow('Zusatzinformationen', 'Keine Daten'));
   } else {
     for (var i = 0; i < infoList.length; i++) {
       final item = infoList[i];
       fields.add(pw.Text(
-        'Additional Info #${i + 1}',
+        'Zusatzinfo #${i + 1}',
         style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
       ));
       
-      fields.add(PdfGeneratorBase.buildFieldRow('Note', PdfGeneratorBase.safeString(item['note'])));
-      fields.add(PdfGeneratorBase.buildPhotoField('Image', item['image']));
+      fields.add(PdfGeneratorBase.buildFieldRow('Hinweis', PdfGeneratorBase.safeString(item['note'])));
+      fields.add(PdfGeneratorBase.buildPhotoField('Bild', item['image']));
       
       if (i < infoList.length - 1) {
         fields.add(pw.SizedBox(height: 6));
       }
     }
   }
-  return PdfGeneratorBase.buildSection('Additional Info', fields);
+  return PdfGeneratorBase.buildSection('Zusatzinformationen', fields);
 }
-
 
   // 13. Final Acceptance
   static pw.Widget _buildFinalAcceptanceSection(Map<String, dynamic> data) {

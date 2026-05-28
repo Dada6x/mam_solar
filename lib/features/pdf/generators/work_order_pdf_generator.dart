@@ -4,20 +4,14 @@ import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class WorkOrderPdfGenerator {
   static const _expectedFlatKeys = [
-    // Customer Data
     'fullName', 'street','city', 'zipCity', 'email', 'phone',
-    // Work Description
     'description', 'workDetail',
-    // Completion
     'workCompleted',
-    'reason', 'nextAppointment', 'whatIsMissing', // show_if: workCompleted == no
+    'reason', 'nextAppointment', 'whatIsMissing',
     'completionDate',
-    // Meter Readings (flat photo)
     'photoMeter',
-    // Remarks
     'remarks',
     'note','image'
-    // Signatures
     'customerFullName','customerSignature', 'companySignature', 'signerName', 'emailSentTo',
   ];
 
@@ -45,7 +39,7 @@ class WorkOrderPdfGenerator {
     );
 
     return PdfGeneratorBase.createDocument(
-      title: 'Work Order',
+      title: 'Arbeitsauftrag',
       protocolNumber: protocolNumber,
       customerName: customerName,
       date: date,
@@ -65,36 +59,36 @@ class WorkOrderPdfGenerator {
     );
   }
 
-  // ── Customer Data ──────────────────────────────────────────────────────────
+  // ── Kundendaten ────────────────────────────────────────────────────────────
 
   static pw.Widget _buildCustomerDataSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Customer Data', [
+    return PdfGeneratorBase.buildSection('Kundendaten', [
       PdfGeneratorBase.buildFieldRow('Name', PdfGeneratorBase.safeString(data['fullName'])),
-      PdfGeneratorBase.buildFieldRow('Street', PdfGeneratorBase.safeString(data['street'])),
-      PdfGeneratorBase.buildFieldRow('City', PdfGeneratorBase.safeString(data['city'])),
-      PdfGeneratorBase.buildFieldRow('ZIP/City', PdfGeneratorBase.safeString(data['zipCity'])),
-      PdfGeneratorBase.buildFieldRow('Email', PdfGeneratorBase.safeString(data['email'])),
-      PdfGeneratorBase.buildFieldRow('Phone', PdfGeneratorBase.safeString(data['phone'])),
+      PdfGeneratorBase.buildFieldRow('Straße', PdfGeneratorBase.safeString(data['street'])),
+      PdfGeneratorBase.buildFieldRow('Stadt', PdfGeneratorBase.safeString(data['city'])),
+      PdfGeneratorBase.buildFieldRow('PLZ/Ort', PdfGeneratorBase.safeString(data['zipCity'])),
+      PdfGeneratorBase.buildFieldRow('E-Mail', PdfGeneratorBase.safeString(data['email'])),
+      PdfGeneratorBase.buildFieldRow('Telefon', PdfGeneratorBase.safeString(data['phone'])),
     ]);
   }
 
-  // ── Work Description ───────────────────────────────────────────────────────
+  // ── Arbeitsbeschreibung ────────────────────────────────────────────────────
 
   static pw.Widget _buildWorkDescriptionSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Work Description', [
-      PdfGeneratorBase.buildFieldRow('Description', PdfGeneratorBase.safeString(data['description'])),
-      PdfGeneratorBase.buildFieldRow('Detail', PdfGeneratorBase.safeString(data['workDetail'])),
+    return PdfGeneratorBase.buildSection('Arbeitsbeschreibung', [
+      PdfGeneratorBase.buildFieldRow('Beschreibung', PdfGeneratorBase.safeString(data['description'])),
+      PdfGeneratorBase.buildFieldRow('Details', PdfGeneratorBase.safeString(data['workDetail'])),
     ]);
   }
 
-  // ── Materials ──────────────────────────────────────────────────────────────
+  // ── Materialien ────────────────────────────────────────────────────────────
 
   static pw.Widget _buildMaterialsSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final materials = repeatableData['materials'] ?? [];
     final fields = <pw.Widget>[];
 
     if (materials.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Materials', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Materialien', 'Keine'));
     } else {
       for (var i = 0; i < materials.length; i++) {
         final m = materials[i];
@@ -102,62 +96,62 @@ class WorkOrderPdfGenerator {
         final unit = PdfGeneratorBase.safeString(m['unit']);
         final qtyWithUnit = unit.isNotEmpty ? '$qty $unit' : qty;
 
-        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Qty', qtyWithUnit));
+        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Menge', qtyWithUnit));
         fields.add(PdfGeneratorBase.buildFieldRow('Material', PdfGeneratorBase.safeString(m['material'])));
         if (i < materials.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
-    return PdfGeneratorBase.buildSection('Materials', fields);
+    return PdfGeneratorBase.buildSection('Materialien', fields);
   }
 
-  // ── Vehicle / Travel ───────────────────────────────────────────────────────
+  // ── Fahrzeug / Fahrt ───────────────────────────────────────────────────────
 
   static pw.Widget _buildVehicleTravelSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final travels = repeatableData['travel'] ?? [];
     final fields = <pw.Widget>[];
 
     if (travels.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Travel', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Fahrt', 'Keine'));
     } else {
       for (var i = 0; i < travels.length; i++) {
         final t = travels[i];
-        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} License Plate', PdfGeneratorBase.safeString(t['licensePlate'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Departure', PdfGeneratorBase.safeString(t['departure'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Destination', PdfGeneratorBase.safeString(t['destination'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Kilometers', PdfGeneratorBase.safeString(t['kilometers'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Kennzeichen', PdfGeneratorBase.safeString(t['licensePlate'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Abfahrt', PdfGeneratorBase.safeString(t['departure'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Ziel', PdfGeneratorBase.safeString(t['destination'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Kilometer', PdfGeneratorBase.safeString(t['kilometers'])));
         if (i < travels.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
-    return PdfGeneratorBase.buildSection('Vehicle / Travel', fields);
+    return PdfGeneratorBase.buildSection('Fahrzeug / Fahrt', fields);
   }
 
-  // ── Working Hours ──────────────────────────────────────────────────────────
+  // ── Arbeitsstunden ─────────────────────────────────────────────────────────
 
   static pw.Widget _buildWorkingHoursSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final hours = repeatableData['working_hours'] ?? [];
     final fields = <pw.Widget>[];
 
     if (hours.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Hours', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Stunden', 'Keine'));
     } else {
       for (var i = 0; i < hours.length; i++) {
         final h = hours[i];
         fields.add(pw.Text(
-          'Day #${i + 1}',
+          'Tag #${i + 1}',
           style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
         ));
-        fields.add(PdfGeneratorBase.buildFieldRow('Date', PdfGeneratorBase.safeString(h['date'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Technician', PdfGeneratorBase.safeString(h['techName'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Start', PdfGeneratorBase.safeString(h['startTime'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('End', PdfGeneratorBase.safeString(h['endTime'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Duration', PdfGeneratorBase.safeString(h['duration']))); 
+        fields.add(PdfGeneratorBase.buildFieldRow('Datum', PdfGeneratorBase.safeString(h['date'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Techniker', PdfGeneratorBase.safeString(h['techName'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Beginn', PdfGeneratorBase.safeString(h['startTime'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Ende', PdfGeneratorBase.safeString(h['endTime'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Dauer', PdfGeneratorBase.safeString(h['duration'])));
         if (i < hours.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
-    return PdfGeneratorBase.buildSection('Working Hours', fields);
+    return PdfGeneratorBase.buildSection('Arbeitsstunden', fields);
   }
 
-  // ── Meter Readings ─────────────────────────────────────────────────────────
+  // ── Zählerstände ──────────────────────────────────────────────────────────
 
   static pw.Widget _buildMeterReadingsSection(
     Map<String, dynamic> data,
@@ -167,31 +161,30 @@ class WorkOrderPdfGenerator {
     final fields = <pw.Widget>[];
 
     if (readings.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Readings', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Ablesungen', 'Keine'));
     } else {
       for (var i = 0; i < readings.length; i++) {
         final r = readings[i];
-        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Meter No.', PdfGeneratorBase.safeString(r['meterNumber'])));
-        fields.add(PdfGeneratorBase.buildFieldRow('Reading (kWh)', PdfGeneratorBase.safeString(r['reading'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('#${i + 1} Zählernr.', PdfGeneratorBase.safeString(r['meterNumber'])));
+        fields.add(PdfGeneratorBase.buildFieldRow('Ablesung (kWh)', PdfGeneratorBase.safeString(r['reading'])));
         if (i < readings.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
 
-    // Flat meter photo (outside the repeatable block in the MD)
     fields.add(pw.SizedBox(height: 6));
-    fields.add(PdfGeneratorBase.buildPhotoField('Meter Photo', data['photoMeter']));
+    fields.add(PdfGeneratorBase.buildPhotoField('Zählerfoto', data['photoMeter']));
 
-    return PdfGeneratorBase.buildSection('Meter Readings', fields);
+    return PdfGeneratorBase.buildSection('Zählerstände', fields);
   }
 
-  // ── Work Photos ────────────────────────────────────────────────────────────
+  // ── Arbeitsfotos ───────────────────────────────────────────────────────────
 
   static pw.Widget _buildWorkPhotosSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
     final photos = repeatableData['work_photos'] ?? [];
     final fields = <pw.Widget>[];
 
     if (photos.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Photos', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Fotos', 'Keine'));
     } else {
       for (var i = 0; i < photos.length; i++) {
         final p = photos[i];
@@ -199,95 +192,92 @@ class WorkOrderPdfGenerator {
         final description = PdfGeneratorBase.safeString(p['description']);
 
         fields.add(pw.Text(
-          'Photo #${i + 1}${category.isNotEmpty ? ' — $category' : ''}',
+          'Foto #${i + 1}${category.isNotEmpty ? ' — $category' : ''}',
           style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
         ));
         if (description.isNotEmpty) {
-          fields.add(PdfGeneratorBase.buildFieldRow('Description', description));
+          fields.add(PdfGeneratorBase.buildFieldRow('Beschreibung', description));
         }
-        fields.add(PdfGeneratorBase.buildPhotoField('Photo', p['photo']));
+        fields.add(PdfGeneratorBase.buildPhotoField('Foto', p['photo']));
         if (i < photos.length - 1) fields.add(pw.SizedBox(height: 6));
       }
     }
-    return PdfGeneratorBase.buildSection('Work Photos', fields);
+    return PdfGeneratorBase.buildSection('Arbeitsfotos', fields);
   }
 
-  // ── Completion ─────────────────────────────────────────────────────────────
+  // ── Abschluss ──────────────────────────────────────────────────────────────
 
   static pw.Widget _buildCompletionSection(Map<String, dynamic> data) {
-    // MD uses 'yes'/'no' strings (radio), not booleans
     final workCompleted = data['workCompleted']?.toString().toLowerCase();
     final isCompleted = workCompleted == 'yes';
     final fields = <pw.Widget>[
-      PdfGeneratorBase.buildFieldRow('Work Completed', isCompleted ? 'Yes' : 'No'),
-      PdfGeneratorBase.buildFieldRow('Completion Date', PdfGeneratorBase.safeString(data['completionDate'])),
+      PdfGeneratorBase.buildFieldRow('Arbeit abgeschlossen', isCompleted ? 'Ja' : 'Nein'),
+      PdfGeneratorBase.buildFieldRow('Abschlussdatum', PdfGeneratorBase.safeString(data['completionDate'])),
     ];
 
-    // show_if: workCompleted == no
     if (!isCompleted) {
       fields.addAll([
-        PdfGeneratorBase.buildFieldRow('Reason (not completed)', PdfGeneratorBase.safeString(data['reason'])),
-        PdfGeneratorBase.buildFieldRow('Next Appointment', PdfGeneratorBase.safeString(data['nextAppointment'])),
-        PdfGeneratorBase.buildFieldRow('What is missing', PdfGeneratorBase.safeString(data['whatIsMissing'])),
+        PdfGeneratorBase.buildFieldRow('Grund (nicht abgeschlossen)', PdfGeneratorBase.safeString(data['reason'])),
+        PdfGeneratorBase.buildFieldRow('Nächster Termin', PdfGeneratorBase.safeString(data['nextAppointment'])),
+        PdfGeneratorBase.buildFieldRow('Was fehlt', PdfGeneratorBase.safeString(data['whatIsMissing'])),
       ]);
     }
 
-    return PdfGeneratorBase.buildSection('Completion', fields);
+    return PdfGeneratorBase.buildSection('Abschluss', fields);
   }
 
-  // ── Remarks ────────────────────────────────────────────────────────────────
+  // ── Bemerkungen ────────────────────────────────────────────────────────────
 
   static pw.Widget _buildRemarksSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Remarks', [
-      PdfGeneratorBase.buildFieldRow('Remarks', PdfGeneratorBase.safeString(data['remarks'])),
+    return PdfGeneratorBase.buildSection('Bemerkungen', [
+      PdfGeneratorBase.buildFieldRow('Bemerkungen', PdfGeneratorBase.safeString(data['remarks'])),
     ]);
   }
 
+  // ── Zusatzinformationen ────────────────────────────────────────────────────
 
-static pw.Widget _buildAdditionalInfoSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
-  final infoList = repeatableData['additional_info'] ?? [];
-  final fields = <pw.Widget>[];
+  static pw.Widget _buildAdditionalInfoSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+    final infoList = repeatableData['additional_info'] ?? [];
+    final fields = <pw.Widget>[];
 
-  if (infoList.isEmpty) {
-    fields.add(PdfGeneratorBase.buildFieldRow('Additional Info', 'No data'));
-  } else {
-    for (var i = 0; i < infoList.length; i++) {
-      final item = infoList[i];
-      fields.add(pw.Text(
-        'Additional Info #${i + 1}',
-        style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
-      ));
-      
-      fields.add(PdfGeneratorBase.buildFieldRow('Note', PdfGeneratorBase.safeString(item['note'])));
-      fields.add(PdfGeneratorBase.buildPhotoField('Image', item['image']));
-      
-      if (i < infoList.length - 1) {
-        fields.add(pw.SizedBox(height: 6));
+    if (infoList.isEmpty) {
+      fields.add(PdfGeneratorBase.buildFieldRow('Zusatzinformationen', 'Keine Daten'));
+    } else {
+      for (var i = 0; i < infoList.length; i++) {
+        final item = infoList[i];
+        fields.add(pw.Text(
+          'Zusatzinfo #${i + 1}',
+          style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+        ));
+
+        fields.add(PdfGeneratorBase.buildFieldRow('Hinweis', PdfGeneratorBase.safeString(item['note'])));
+        fields.add(PdfGeneratorBase.buildPhotoField('Bild', item['image']));
+
+        if (i < infoList.length - 1) {
+          fields.add(pw.SizedBox(height: 6));
+        }
       }
     }
+    return PdfGeneratorBase.buildSection('Zusatzinformationen', fields);
   }
-  return PdfGeneratorBase.buildSection('Additional Info', fields);
-}
 
+  // ── Unterschriften ─────────────────────────────────────────────────────────
 
-
-  // ── Signatures ─────────────────────────────────────────────────────────────
-
-static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
-  return PdfGeneratorBase.buildSection('Signatures', [
-    PdfGeneratorBase.buildFieldRow('Customer Full Name', PdfGeneratorBase.safeString(data['customerFullName'])),
-    PdfGeneratorBase.buildSignatureField('Customer', data['customerSignature'] as String?),
-    PdfGeneratorBase.buildSignatureField('MAM Solarbau', data['companySignature'] as String?),
-    PdfGeneratorBase.buildFieldRow('Signing Technician', PdfGeneratorBase.safeString(data['signerName'])),
-    PdfGeneratorBase.buildDisplayTextField('The plant operator and installation company declare that the above-mentioned system is technically ready for operation within the meaning of § 3 No. 30 EEG (2021) on the date on which the AC and DC acceptance protocols are signed.',
+  static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
+    return PdfGeneratorBase.buildSection('Unterschriften', [
+      PdfGeneratorBase.buildFieldRow('Vollständiger Name des Kunden', PdfGeneratorBase.safeString(data['customerFullName'])),
+      PdfGeneratorBase.buildSignatureField('Kunde', data['customerSignature'] as String?),
+      PdfGeneratorBase.buildSignatureField('MAM Solarbau', data['companySignature'] as String?),
+      PdfGeneratorBase.buildFieldRow('Unterzeichnender Techniker', PdfGeneratorBase.safeString(data['signerName'])),
+      PdfGeneratorBase.buildDisplayTextField(
+        'Der Anlagenbetreiber und das Installationsunternehmen erklären, dass die oben genannte Anlage am Datum der Unterzeichnung der AC- und DC-Abnahmeprotokolle technisch betriebsbereit im Sinne von § 3 Nr. 30 EEG (2021) ist.',
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'The objection period is 14 days; after this period the acceptance protocol is considered confirmed.',
+        'Die Einspruchsfrist beträgt 14 Tage; nach Ablauf dieser Frist gilt das Abnahmeprotokoll als bestätigt.',
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'The executing electrical installer confirms with their signature that the electrical system has been installed, measured and accepted in accordance with the currently applicable DIN-VDE standards as well as TAB and TAR.',
+        'Der ausführende Elektroinstallateur bestätigt mit seiner Unterschrift, dass die Elektroanlage gemäß den aktuell geltenden DIN-VDE-Normen sowie TAB und TAR installiert, gemessen und abgenommen wurde.',
       ),
-    // PdfGeneratorBase.buildFieldRow('Email Sent To', PdfGeneratorBase.safeString(data['emailSentTo'])),
-  ]);
-}
+    ]);
+  }
 }

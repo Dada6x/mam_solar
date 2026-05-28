@@ -80,7 +80,7 @@ class DamageReportPdfGenerator {
     );
 
     return PdfGeneratorBase.createDocument(
-      title: 'Damage Report',
+      title: 'Schadensprotokoll',
       protocolNumber: protocolNumber,
       customerName: customerName,
       date: date,
@@ -100,92 +100,91 @@ class DamageReportPdfGenerator {
     );
   }
 
-  // ── Damage Declaration ────────────────────────────────────────────────────
+  // ── Schadensmeldung ───────────────────────────────────────────────────────
 
-static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
-  final causedByPartner = data['causedByPartner'] == true || data['causedByPartner'] == 'yes';
-  final companyLiability = data['companyLiability'] == true || data['companyLiability'] == 'yes';
+  static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
+    final causedByPartner = data['causedByPartner'] == true || data['causedByPartner'] == 'yes';
+    final companyLiability = data['companyLiability'] == true || data['companyLiability'] == 'yes';
 
-  return PdfGeneratorBase.buildSection('Damage Declaration', [
-    PdfGeneratorBase.buildFieldRow(
-      'Damage Type',
-      PdfGeneratorBase.safeString(data['damageType']),
-    ),
-    if (data['damageTypeOther'] != null && (data['damageTypeOther'] as String).isNotEmpty)
+    return PdfGeneratorBase.buildSection('Schadensmeldung', [
       PdfGeneratorBase.buildFieldRow(
-        'Other (Damage Type)',
-        PdfGeneratorBase.safeString(data['damageTypeOther']),
+        'Schadensart',
+        PdfGeneratorBase.safeString(data['damageType']),
       ),
-    PdfGeneratorBase.buildFieldRow(
-      'Caused by Partner',
-      causedByPartner ? 'Yes' : 'No',
-    ),
-    if (causedByPartner)
+      if (data['damageTypeOther'] != null && (data['damageTypeOther'] as String).isNotEmpty)
+        PdfGeneratorBase.buildFieldRow(
+          'Sonstige (Schadensart)',
+          PdfGeneratorBase.safeString(data['damageTypeOther']),
+        ),
       PdfGeneratorBase.buildFieldRow(
-        'Partner Company Name',
-        PdfGeneratorBase.safeString(data['partnerCompanyName']),
+        'Durch Partner verursacht',
+        causedByPartner ? 'Ja' : 'Nein',
       ),
-    PdfGeneratorBase.buildFieldRow(
-      'Company Liability',
-      companyLiability ? 'Yes' : 'No',
-    ),
-    if (companyLiability) ...[
+      if (causedByPartner)
+        PdfGeneratorBase.buildFieldRow(
+          'Name des Partnerunternehmens',
+          PdfGeneratorBase.safeString(data['partnerCompanyName']),
+        ),
       PdfGeneratorBase.buildFieldRow(
-        'Insurance Policy Number',
-        PdfGeneratorBase.safeString(data['insurancePolicyNumber']),
+        'Unternehmenshaftung',
+        companyLiability ? 'Ja' : 'Nein',
       ),
-      PdfGeneratorBase.buildFieldRow(
-        'Claim Number',
-        PdfGeneratorBase.safeString(data['claimNumber']),
-      ),
-    ],
-  ]);
-}
+      if (companyLiability) ...[
+        PdfGeneratorBase.buildFieldRow(
+          'Versicherungsscheinnummer',
+          PdfGeneratorBase.safeString(data['insurancePolicyNumber']),
+        ),
+        PdfGeneratorBase.buildFieldRow(
+          'Schadennummer',
+          PdfGeneratorBase.safeString(data['claimNumber']),
+        ),
+      ],
+    ]);
+  }
 
-
-  // ── Injured Party ─────────────────────────────────────────────────────────
+  // ── Geschädigte Person ────────────────────────────────────────────────────
 
   static pw.Widget _buildInjuredPartySection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Injured Party', [
+    return PdfGeneratorBase.buildSection('Geschädigte Person', [
       PdfGeneratorBase.buildFieldRow(
         'Name',
         PdfGeneratorBase.safeString(data['injuredName']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Address',
+        'Adresse',
         '${PdfGeneratorBase.safeString(data['street'])} ${PdfGeneratorBase.safeString(data['houseNumber'])}'
             .trim(),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'ZIP Code',
+        'PLZ',
         PdfGeneratorBase.safeString(data['zipCode']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'City',
+        'Stadt',
         PdfGeneratorBase.safeString(data['city']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Phone',
+        'Telefon',
         PdfGeneratorBase.safeString(data['phone']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Email',
+        'E-Mail',
         PdfGeneratorBase.safeString(data['email']),
       ),
     ]);
   }
 
-  // ── Second Injured Party ──────────────────────────────────────────────────
+  // ── Zweite geschädigte Person ─────────────────────────────────────────────
 
   static pw.Widget _buildSecondPartySection(Map<String, dynamic> data) {
     final involved =
         data['secondPersonInvolved'] == true ||
         data['secondPersonInvolved'] == 'yes';
 
-    return PdfGeneratorBase.buildSection('Second Injured Party', [
+    return PdfGeneratorBase.buildSection('Zweite geschädigte Person', [
       PdfGeneratorBase.buildFieldRow(
-        'Second Person Involved',
-        involved ? 'Yes' : 'No',
+        'Zweite Person beteiligt',
+        involved ? 'Ja' : 'Nein',
       ),
       if (involved) ...[
         PdfGeneratorBase.buildFieldRow(
@@ -193,54 +192,53 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
           PdfGeneratorBase.safeString(data['secondName']),
         ),
         PdfGeneratorBase.buildFieldRow(
-          'Street',
+          'Straße',
           PdfGeneratorBase.safeString(data['secondStreet']),
         ),
         PdfGeneratorBase.buildFieldRow(
-          'ZIP / City',
+          'PLZ / Ort',
           PdfGeneratorBase.safeString(data['secondZipCity']),
         ),
         PdfGeneratorBase.buildFieldRow(
-          'Phone',
+          'Telefon',
           PdfGeneratorBase.safeString(data['secondPhone']),
         ),
         PdfGeneratorBase.buildFieldRow(
-          'Email',
+          'E-Mail',
           PdfGeneratorBase.safeString(data['secondEmail']),
         ),
       ],
     ]);
   }
 
-  // ── Damage Description ────────────────────────────────────────────────────
+  // ── Schadensbeschreibung ──────────────────────────────────────────────────
 
   static pw.Widget _buildDamageDescriptionSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Damage Description', [
+    return PdfGeneratorBase.buildSection('Schadensbeschreibung', [
       PdfGeneratorBase.buildFieldRow(
-        'Date',
+        'Datum',
         PdfGeneratorBase.safeString(data['incidentDate']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Time',
+        'Uhrzeit',
         PdfGeneratorBase.safeString(data['incidentTime']),
       ),
-
       PdfGeneratorBase.buildFieldRow(
-        'Initial Situation',
+        'Ausgangssituation',
         PdfGeneratorBase.safeString(data['initialSituation']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Incident Sequence',
+        'Schadenshergang',
         PdfGeneratorBase.safeString(data['incidentSequence']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Affected Items / People (Summary)',
+        'Betroffene Gegenstände / Personen (Zusammenfassung)',
         PdfGeneratorBase.safeString(data['affectedSummary']),
       ),
     ]);
   }
 
-  // ── Witnesses ─────────────────────────────────────────────────────────────
+  // ── Zeugen ────────────────────────────────────────────────────────────────
 
   static pw.Widget _buildWitnessesSection(
     Map<String, List<Map<String, dynamic>>> repeatableData,
@@ -249,13 +247,13 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
     final fields = <pw.Widget>[];
 
     if (witnesses.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Witnesses', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Zeugen', 'Keine'));
     } else {
       for (var i = 0; i < witnesses.length; i++) {
         final w = witnesses[i];
         fields.add(
           pw.Text(
-            'Witness #${i + 1}',
+            'Zeuge #${i + 1}',
             style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
           ),
         );
@@ -267,19 +265,19 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Phone',
+            'Telefon',
             PdfGeneratorBase.safeString(w['witnessPhone']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Email',
+            'E-Mail',
             PdfGeneratorBase.safeString(w['witnessEmail']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Statement',
+            'Aussage',
             PdfGeneratorBase.safeString(w['witnessStatement']),
           ),
         );
@@ -287,10 +285,10 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
       }
     }
 
-    return PdfGeneratorBase.buildSection('Witnesses', fields);
+    return PdfGeneratorBase.buildSection('Zeugen', fields);
   }
 
-  // ── Affected Devices ──────────────────────────────────────────────────────
+  // ── Betroffene Geräte ─────────────────────────────────────────────────────
 
   static pw.Widget _buildAffectedDevicesSection(
     Map<String, List<Map<String, dynamic>>> repeatableData,
@@ -299,13 +297,13 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
     final fields = <pw.Widget>[];
 
     if (devices.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Devices', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Geräte', 'Keine'));
     } else {
       for (var i = 0; i < devices.length; i++) {
         final d = devices[i];
         fields.add(
           pw.Text(
-            'Device #${i + 1}',
+            'Gerät #${i + 1}',
             style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
           ),
         );
@@ -317,55 +315,55 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Brand',
+            'Marke',
             PdfGeneratorBase.safeString(d['brand']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Model',
+            'Modell',
             PdfGeneratorBase.safeString(d['model']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Serial Number',
+            'Seriennummer',
             PdfGeneratorBase.safeString(d['serialNumber']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Purchase Date',
+            'Kaufdatum',
             PdfGeneratorBase.safeString(d['purchaseDate']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Estimated Value (EUR)',
+            'Geschätzter Wert (EUR)',
             PdfGeneratorBase.safeString(d['estimatedValue']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Damage Description',
+            'Schadensbeschreibung',
             PdfGeneratorBase.safeString(d['damageDescription']),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildPhotoField(
-            'Overview Photo',
+            'Übersichtsfoto',
             d['photoOverview'] as String?,
           ),
         );
         fields.add(
           PdfGeneratorBase.buildPhotoField(
-            'Detail Photo',
+            'Detailfoto',
             d['photoDetail'] as String?,
           ),
         );
         fields.add(
           PdfGeneratorBase.buildPhotoField(
-            'Type Label / Serial Number',
+            'Typenschild / Seriennummer',
             d['photoTypeLabel'] as String?,
           ),
         );
@@ -373,46 +371,46 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
       }
     }
 
-    return PdfGeneratorBase.buildSection('Affected Devices', fields);
+    return PdfGeneratorBase.buildSection('Betroffene Geräte', fields);
   }
 
-  // ── Damage Minimization ───────────────────────────────────────────────────
+  // ── Schadensminimierung ───────────────────────────────────────────────────
 
   static pw.Widget _buildMinimizationSection(Map<String, dynamic> data) {
     final possible =
         data['minimizationPossible'] == true ||
         data['minimizationPossible'] == 'yes';
 
-    return PdfGeneratorBase.buildSection('Damage Minimization', [
+    return PdfGeneratorBase.buildSection('Schadensminimierung', [
       PdfGeneratorBase.buildFieldRow(
-        'Minimization Possible',
-        possible ? 'Yes' : 'No',
+        'Minimierung möglich',
+        possible ? 'Ja' : 'Nein',
       ),
       if (possible)
         PdfGeneratorBase.buildFieldRow(
-          'Actions Taken',
+          'Ergriffene Maßnahmen',
           PdfGeneratorBase.safeString(data['minimizationActionsTaken']),
         )
       else
         PdfGeneratorBase.buildFieldRow(
-          'Reason Not Possible',
+          'Grund nicht möglich',
           PdfGeneratorBase.safeString(data['minimizationNotPossibleReason']),
         ),
     ]);
   }
 
-  // ── Remarks ───────────────────────────────────────────────────────────────
+  // ── Bemerkungen ───────────────────────────────────────────────────────────
 
   static pw.Widget _buildRemarksSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Remarks', [
+    return PdfGeneratorBase.buildSection('Bemerkungen', [
       PdfGeneratorBase.buildFieldRow(
-        'Remarks',
+        'Bemerkungen',
         PdfGeneratorBase.safeString(data['remarks']),
       ),
     ]);
   }
 
-  // ── Additional Info ───────────────────────────────────────────────────────
+  // ── Zusatzinformationen ───────────────────────────────────────────────────
 
   static pw.Widget _buildAdditionalInfoSection(
     Map<String, List<Map<String, dynamic>>> repeatableData,
@@ -421,60 +419,60 @@ static pw.Widget _buildDamageDeclarationSection(Map<String, dynamic> data) {
     final fields = <pw.Widget>[];
 
     if (entries.isEmpty) {
-      fields.add(PdfGeneratorBase.buildFieldRow('Additional Info', 'None'));
+      fields.add(PdfGeneratorBase.buildFieldRow('Zusatzinformationen', 'Keine'));
     } else {
       for (var i = 0; i < entries.length; i++) {
         final e = entries[i];
         fields.add(
           pw.Text(
-            'Entry #${i + 1}',
+            'Eintrag #${i + 1}',
             style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
           ),
         );
         fields.add(
           PdfGeneratorBase.buildFieldRow(
-            'Note',
+            'Hinweis',
             PdfGeneratorBase.safeString(e['note']),
           ),
         );
         fields.add(
-          PdfGeneratorBase.buildPhotoField('Image', e['image']),
+          PdfGeneratorBase.buildPhotoField('Bild', e['image']),
         );
         if (i < entries.length - 1) fields.add(pw.SizedBox(height: 4));
       }
     }
 
-    return PdfGeneratorBase.buildSection('Additional Information', fields);
+    return PdfGeneratorBase.buildSection('Zusatzinformationen', fields);
   }
 
-  // ── Signatures ────────────────────────────────────────────────────────────
+  // ── Unterschriften ────────────────────────────────────────────────────────
 
   static pw.Widget _buildSignaturesSection(Map<String, dynamic> data) {
-    return PdfGeneratorBase.buildSection('Signatures', [
+    return PdfGeneratorBase.buildSection('Unterschriften', [
       PdfGeneratorBase.buildFieldRow(
-        'Damaged Party Full Name',
+        'Vollständiger Name der geschädigten Partei',
         PdfGeneratorBase.safeString(data['damagedPartyFullName']),
       ),
       PdfGeneratorBase.buildSignatureField(
-        'Damaged Party Signature',
+        'Unterschrift der geschädigten Partei',
         data['damagedPartySignature'] as String?,
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Employee Full Name',
+        'Vollständiger Name des Mitarbeiters',
         PdfGeneratorBase.safeString(data['employeeFullName']),
       ),
       PdfGeneratorBase.buildSignatureField(
-        'MAM Solarbau Employee Signature',
+        'Unterschrift MAM Solarbau Mitarbeiter',
         data['employeeSignature'] as String?,
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'The plant operator and installation company declare that the above-mentioned system is technically ready for operation within the meaning of § 3 No. 30 EEG (2021) on the date on which the AC and DC acceptance protocols are signed.',
+        'Der Anlagenbetreiber und das Installationsunternehmen erklären, dass die oben genannte Anlage am Datum der Unterzeichnung der AC- und DC-Abnahmeprotokolle technisch betriebsbereit im Sinne von § 3 Nr. 30 EEG (2021) ist.',
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'The objection period is 14 days; after this period the acceptance protocol is considered confirmed.',
+        'Die Einspruchsfrist beträgt 14 Tage; nach Ablauf dieser Frist gilt das Abnahmeprotokoll als bestätigt.',
       ),
       PdfGeneratorBase.buildDisplayTextField(
-        'The executing electrical installer confirms with their signature that the electrical system has been installed, measured and accepted in accordance with the currently applicable DIN-VDE standards as well as TAB and TAR.',
+        'Der ausführende Elektroinstallateur bestätigt mit seiner Unterschrift, dass die Elektroanlage gemäß den aktuell geltenden DIN-VDE-Normen sowie TAB und TAR installiert, gemessen und abgenommen wurde.',
       ),
     ]);
   }
