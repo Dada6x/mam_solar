@@ -6,3 +6,6 @@ in ac acceptance
 - make it dont print the data that is not presnt like images or texts or anything just print the data he got 
 
 
+release
+patch 
+bundletool or applestore for aab
