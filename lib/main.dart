@@ -8,7 +8,6 @@ import 'package:mam_solar/core/theme/app_theme.dart';
 import 'package:mam_solar/core/services/injection.dart';
 import 'package:mam_solar/features/settings/bloc/settings_bloc.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
-import 'package:device_preview/device_preview.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,12 +19,7 @@ void main() async {
 
   await initDependencies();
 
-  runApp(
-    DevicePreview(
-      enabled: true, // set false for release automatically if you want
-      builder: (context) => const MamSolarApp(),
-    ),
-  );
+  runApp(MamSolarApp());
 }
 
 class MamSolarApp extends StatefulWidget {
