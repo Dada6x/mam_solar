@@ -104,9 +104,9 @@ section_id: completion
   show_if: workCompleted == no
 - whatIsMissing | textarea | | What is missing | Was fehlt noch | ما الذي لا يزال مفقودًا
   show_if: workCompleted == no
-- completionDate | date | required | Date of Completion | Datum der Fertigstellung | تاريخ الإكمال
+- completionDate | date | | Date of Completion | Datum der Fertigstellung | تاريخ الإكمال
   show_if: workCompleted == yes
-- completionTime | time | required | Time of Completion | Uhrzeit der Fertigstellung | وقت الإكمال
+- completionTime | time | | Time of Completion | Uhrzeit der Fertigstellung | وقت الإكمال
   show_if: workCompleted == yes
 
 ## Remarks | Sonstige Bemerkungen | ملاحظات أخرى
@@ -115,6 +115,18 @@ section_id: remarks
 optional_section: true
 
 - remarks | textarea | | Remarks | Bemerkungen | ملاحظات
+
+## Additional info | additional | معلومات اضافية
+
+section_id: additional_info
+repeatable: true
+min: 1
+max: 10
+
+- note | textarea | | Remarks | Bemerkungen | ملاحظة
+- image | photo| | | image| image | صورة
+
+---
 
 ## Signatures | Unterschriften | التوقيعات
 

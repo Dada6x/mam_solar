@@ -74,34 +74,43 @@ class AcProtocolPdfGenerator {
     'installerSignature',
   ];
 
-  static const _expectedRepeatableKeys = {
-    'inverter': [
-      'inverterCount', 'brand', 'model', 'serialNumber', 'networkType',
-      'installedCorrectly', 'mountedOnFireproofSurface', 'normsFollowed',
-      'fusesPerSpec', 'fusesRemark',
-      'manufacturerStandardsFollowed',
-      'photoDataplate', 'photoAcGrid', 'photoAcBackup', 'photoCommunicationPlug',
-      'photoThreeCommunicationPorts', 'photoEarthingLeft', 'photoEarthingRight',
-      'photoPlcOrWlanExtender', 'photoDcBatteryCables', 'photoFinalInstall',
-    ],
-    'batteryStorage': [
-      'batteryBrand', 'batteryModel', 'batterySid',
-      'batteryTowers', 'batteryModulesPerTower', 'serialNumbers',
-      'standardsFollowed',
-      'photoQrCode', 'photoBatteryConnections', 'photoEmsNumber', 'photoAcPlugOpen',
-      'photoBatteryWithoutCovers', 'photoBatteryWithCovers', 'photoBatteryFromDistance',
-      'photoBatteryBase', 'photoBatteryEarthing', 'photoBatteryTowerFinal',
-    ],
-    'distributionBoard': [
-      'photoDistBoard',
-    ],
-    'protectionDevice': [
-      'photoProtectionDevice',
-    ],
-    'existingMeters': [
-      'meterNumber', 'meterType', 'photoMeter',
-    ],
-  };
+static const _expectedRepeatableKeys = {
+  'inverter': [
+    'inverterCount', 'brand', 'model', 'serialNumber', 'networkType',
+    'installedCorrectly', 'mountedOnFireproofSurface', 'normsFollowed',
+    'fusesPerSpec', 'fusesRemark',
+    'manufacturerStandardsFollowed',
+    'photoDataplate', 'photoAcGrid', 'photoAcBackup', 'photoCommunicationPlug',
+    'photoThreeCommunicationPorts', 'photoEarthingLeft', 'photoEarthingRight',
+    'photoPlcOrWlanExtender', 'photoDcBatteryCables', 'photoFinalInstall',
+  ],
+  'battery_storage': [
+    'batteryBrand', 'batteryModel', 'batterySid',
+    'batteryTowers', 'batteryModulesPerTower', 'serialNumbers',
+    'standardsFollowed',
+    'photoQrCode', 'photoBatteryConnections', 'photoEmsNumber', 'photoAcPlugOpen',
+    'photoBatteryWithoutCovers', 'photoBatteryWithCovers', 'photoBatteryFromDistance',
+    'photoBatteryBase', 'photoBatteryEarthing', 'photoBatteryTowerFinal',
+  ],
+  'distribution_board': [
+    'photoDistBoard', 'additionalDetails',
+  ],
+  'protection_devices': [
+    'photoProtectionDevice', 'noChangesMade', 'systemStabilityTested', 'enerGridUsed',
+  ],
+  'existingMeters': [
+    'meterNumber', 'meterType', 'photoMeter',
+  ],
+  'meter_registration': [
+    'newMeterType', 'remoteControlPrdesent', 'photoRemoteControl',
+    'removeRemoteControl', 'meterConsolidation', 'consolidationDescription',
+    'meterRemarks', 'meterRemovalNeeded', 'meterReplacementNeeded',
+    'photoMeterReadings', 'measurementConcept',
+  ],
+  'additional_info': [
+    'note', 'image',
+  ],
+};
 
   static pw.Document generate({
     required int protocolId,

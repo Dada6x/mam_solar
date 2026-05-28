@@ -16,6 +16,7 @@ class WorkOrderPdfGenerator {
     'photoMeter',
     // Remarks
     'remarks',
+    'note','image'
     // Signatures
     'customerFullName','customerSignature', 'companySignature', 'signerName', 'emailSentTo',
   ];
@@ -26,6 +27,7 @@ class WorkOrderPdfGenerator {
     'working_hours': ['date', 'techName', 'startTime', 'endTime', 'duration'],
     'meter_readings': ['meterNumber', 'reading'],
     'work_photos': ['category', 'photo', 'description'],
+    'additional_info': ['note', 'image'],
   };
 
   static pw.Document generate({
@@ -57,6 +59,7 @@ class WorkOrderPdfGenerator {
         _buildWorkPhotosSection(repeatableData),
         _buildCompletionSection(data),
         _buildRemarksSection(data),
+        _buildAdditionalInfoSection(repeatableData),
         _buildSignaturesSection(data),
       ],
     );
@@ -239,6 +242,34 @@ class WorkOrderPdfGenerator {
       PdfGeneratorBase.buildFieldRow('Remarks', PdfGeneratorBase.safeString(data['remarks'])),
     ]);
   }
+
+
+static pw.Widget _buildAdditionalInfoSection(Map<String, List<Map<String, dynamic>>> repeatableData) {
+  final infoList = repeatableData['additional_info'] ?? [];
+  final fields = <pw.Widget>[];
+
+  if (infoList.isEmpty) {
+    fields.add(PdfGeneratorBase.buildFieldRow('Additional Info', 'No data'));
+  } else {
+    for (var i = 0; i < infoList.length; i++) {
+      final item = infoList[i];
+      fields.add(pw.Text(
+        'Additional Info #${i + 1}',
+        style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
+      ));
+      
+      fields.add(PdfGeneratorBase.buildFieldRow('Note', PdfGeneratorBase.safeString(item['note'])));
+      fields.add(PdfGeneratorBase.buildPhotoField('Image', item['image'] as String?));
+      
+      if (i < infoList.length - 1) {
+        fields.add(pw.SizedBox(height: 6));
+      }
+    }
+  }
+  return PdfGeneratorBase.buildSection('Additional Info', fields);
+}
+
+
 
   // ── Signatures ─────────────────────────────────────────────────────────────
 
