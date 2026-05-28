@@ -1,4 +1,4 @@
-name: Flutter iOS Release
+name: Flutter iOS Release (IPA)
 
 on:
   push:
@@ -13,57 +13,56 @@ jobs:
     runs-on: macos-latest
 
     steps:
-      # -----------------------
-      # Checkout repo (important for tags)
-      # -----------------------
+      # --------------------
+      # Checkout
+      # --------------------
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      # -----------------------
-      # Setup Flutter (FIXED)
-      # -----------------------
+      # --------------------
+      # Flutter setup
+      # --------------------
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
           channel: stable
           cache: true
 
-      # -----------------------
-      # Install dependencies
-      # -----------------------
+      # --------------------
+      # Dependencies
+      # --------------------
       - name: Install dependencies
         run: flutter pub get
 
-      # -----------------------
-      # Build iOS IPA (unsigned)
-      # -----------------------
-      - name: Build unsigned IPA
+      # --------------------
+      # Build IPA (IMPORTANT)
+      # --------------------
+      - name: Build IPA
         run: flutter build ipa --release --no-codesign
 
-      # -----------------------
-      # Package build output
-      # -----------------------
-      - name: Package XCArchive
+      # --------------------
+      # Find and rename IPA
+      # --------------------
+      - name: Locate IPA
         run: |
-          cd build/ios/archive
-          zip -r ../../../MyApp-${{ github.ref_name }}.zip Runner.xcarchive
+          find build/ios/ipa -name "*.ipa"
+          cp build/ios/ipa/*.ipa MyApp-${{ github.ref_name }}.ipa
 
-      # -----------------------
+      # --------------------
       # Create GitHub Release
-      # -----------------------
-      - name: Create GitHub Release
+      # --------------------
+      - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
           name: Release ${{ github.ref_name }}
           tag_name: ${{ github.ref_name }}
-          files: MyApp-${{ github.ref_name }}.zip
+          files: MyApp-${{ github.ref_name }}.ipa
           body: |
-            ## 📱 iOS Build
+            ## 📱 iOS IPA Build
 
-            ### Install steps:
-            1. Download the `.zip`
-            2. Extract it
-            3. Use Sideloadly to install the `.xcarchive`
-            4. Trust developer in iOS settings
+            ### Install:
+            - Use Sideloadly or AltStore
+            - Drag & install the `.ipa`
+            - Trust developer in iOS settings
