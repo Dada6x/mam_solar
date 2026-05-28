@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write
+
 jobs:
   build-ios:
     name: 🎉 iOS Build
@@ -33,12 +36,10 @@ jobs:
       - name: Zip output
         run: zip -qq -r -9 FlutterIpaExport.ipa Payload
         working-directory: build/ios/iphoneos
-
-      - name: Upload binaries to release
-        uses: svenstaro/upload-release-action@v2
+      
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          repo_token: ${{ secrets.GITHUB_TOKEN }}
-          file: build/ios/iphoneos/FlutterIpaExport.ipa
-          tag: ${{ github.ref_name }}
-          overwrite: true
-          body: "This is first release"
+          files: build/ios/iphoneos/FlutterIpaExport.ipa
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
