@@ -5,25 +5,30 @@ on:
     tags:
       - 'v*'
 
+permissions:
+  contents: write   # REQUIRED for GitHub Release
+
 jobs:
   build-ios:
     runs-on: macos-latest
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.2.2
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # important for tags/releases
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
-          flutter-version: ''
-          channel: 'stable'
+          flutter-version: 'stable'   # or pin a real version like '3.24.0'
+          channel: stable
           cache: true
 
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Build unsigned archive
+      - name: Build unsigned .ipa
         run: flutter build ipa --release --no-codesign
 
       - name: Package xcarchive
@@ -38,11 +43,7 @@ jobs:
           name: Release ${{ github.ref_name }}
           body: |
             ## Install instructions
-            1. Download the `.zip` file below
+            1. Download the `.zip`
             2. Extract it
-            3. Open Sideloadly on your PC
-            4. Plug in iPhone
-            5. Drag the `.xcarchive` into Sideloadly → Start
-            6. Trust: Settings → General → VPN & Device Management
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            3. Use Sideloadly to install
+            4. Trust the developer in iOS settings
