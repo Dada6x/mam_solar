@@ -85,20 +85,7 @@ class _SettingsView extends StatelessWidget {
             ),
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _InfoRow(label: "", value: l10n.appTitle),
-                  const SizedBox(height: 12),
-                  const Divider(height: 1),
-                  const SizedBox(height: 12),
-                  _InfoRow(label: l10n.version, value: l10n.appVersion),
-                  const SizedBox(height: 12),
-                  const Divider(height: 1),
-                  const SizedBox(height: 12),
-                  _InfoRow(label: l10n.companyName, value: l10n.companyName),
-                ],
-              ),
+              child: Text("MAM Solarbau v1.0.0"),
             ),
           ),
           const SizedBox(height: 24),
@@ -151,8 +138,8 @@ class _SettingsView extends StatelessWidget {
             ),
           ),
           const Spacer(),
-          const SizedBox(height: 15),
-          Image.asset(width: 100, height: 100, "assets/logo.png"),
+          const SizedBox(height: 30),
+          Image.asset(width: 120, height: 120, "assets/logo.png"),
         ],
       ),
     );
