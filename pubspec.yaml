@@ -20,6 +20,7 @@ dependencies:
   flutter_animate: ^4.5.2
   flutter_svg: ^2.2.4
   flutter_secure_storage: ^10.0.0
+  shorebird_code_push: ^2.0.6
   go_router: ^17.2.0
   image_picker: ^1.0.7
   permission_handler: ^12.0.1
@@ -80,7 +81,7 @@ flutter_icons:
 
 flutter_native_splash:
   color: "#ffffff"
-
+  fullscreen: true
   image: assets/logo.png
 
   android: true
@@ -89,4 +90,5 @@ flutter_native_splash:
 
   android_12:
     color: "#ffffff"
-    image: assets/logo.png
+    image: assets/splash.png
+    

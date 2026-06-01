@@ -6,6 +6,7 @@ import 'package:mam_solar/data/repositories/protocol_repository.dart';
 import 'package:mam_solar/data/repositories/signature_repository.dart';
 import 'package:mam_solar/features/settings/bloc/settings_bloc.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
+import 'package:shorebird_code_push/shorebird_code_push.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -90,6 +91,10 @@ class _SettingsView extends StatelessWidget {
                 child: Text("MAM Solarbau v1.0.0"),
               ),
             ),
+            const SizedBox(height: 24),
+            const _SectionTitle(title: 'Updates'),
+            const SizedBox(height: 8),
+            const _UpdateStatusCard(),
             const SizedBox(height: 24),
             _SectionTitle(title: l10n.clearAllData),
             const SizedBox(height: 8),
@@ -247,6 +252,215 @@ class _LanguageTile extends StatelessWidget {
               color: AppColors.labelGrey,
             ),
       onTap: onTap,
+    );
+  }
+}
+
+class _UpdateStatusCard extends StatefulWidget {
+  const _UpdateStatusCard();
+
+  @override
+  State<_UpdateStatusCard> createState() => _UpdateStatusCardState();
+}
+
+class _UpdateStatusCardState extends State<_UpdateStatusCard> {
+  final _updater = ShorebirdUpdater();
+  Patch? _currentPatch;
+  UpdateStatus? _status;
+  bool _loading = true;
+  bool _downloading = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_updater.isAvailable) {
+      _checkForUpdates();
+    } else {
+      _loading = false;
+    }
+  }
+
+  Future<void> _checkForUpdates() async {
+    setState(() => _loading = true);
+    await Future.wait([
+      _updater.readCurrentPatch().then((patch) {
+        if (mounted) setState(() => _currentPatch = patch);
+      }),
+      _updater.checkForUpdate().then((status) {
+        if (mounted) setState(() => _status = status);
+      }),
+    ]);
+    if (mounted) setState(() => _loading = false);
+  }
+
+  Future<void> _downloadUpdate() async {
+    setState(() => _downloading = true);
+    try {
+      await _updater.update();
+      await _checkForUpdates();
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: const Text('Update failed'),
+            behavior: SnackBarBehavior.floating,
+            backgroundColor: AppColors.errorRed,
+          ),
+        );
+      }
+    }
+    if (mounted) setState(() => _downloading = false);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final canUpdate = _status == UpdateStatus.outdated && !_downloading;
+
+    return Card(
+      elevation: 2,
+      color: AppColors.white,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: canUpdate ? _downloadUpdate : null,
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  const Icon(
+                    Icons.system_update,
+                    size: 20,
+                    color: AppColors.primaryGreen,
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    'Patch ${_currentPatch?.number ?? '—'}',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
+                    ),
+                  ),
+                  const Spacer(),
+                  if (_downloading)
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else if (_loading)
+                    const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  else if (!_updater.isAvailable)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.grey.shade200,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Unavailable',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.grey.shade700,
+                        ),
+                      ),
+                    )
+                  else if (canUpdate)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.orange.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: const Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.download,
+                            size: 14,
+                            color: Colors.orange,
+                          ),
+                          SizedBox(width: 4),
+                          Text(
+                            'Update available',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: Colors.orange,
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  else
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.green.shade100,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      child: Text(
+                        'Up to date',
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: Colors.green.shade800,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+              if (_downloading)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Row(
+                    children: [
+                      const SizedBox(
+                        width: 14,
+                        height: 14,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      const SizedBox(width: 8),
+                      Text(
+                        'Downloading update…',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: AppColors.labelGrey,
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              else if (!_updater.isAvailable)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: Text(
+                    'Code push is not available on this build.',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: AppColors.labelGrey,
+                    ),
+                  ),
+                ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

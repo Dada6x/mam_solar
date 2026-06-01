@@ -81,13 +81,13 @@ class _SignatureViewState extends State<_SignatureView> {
         body: Center(
           child: Container(
             width: isTablet ? 600 : double.infinity,
-            constraints: const BoxConstraints(maxHeight: 400),
+            constraints: const BoxConstraints(maxHeight: 600),
             margin: const EdgeInsets.all(16),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey.shade400, width: 2),
-              borderRadius: BorderRadius.circular(8),
             ),
             child: SfSignaturePad(
+
               key: _signaturePadKey,
               minimumStrokeWidth: 2,
               maximumStrokeWidth: 4,

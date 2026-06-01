@@ -51,6 +51,7 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
+    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(

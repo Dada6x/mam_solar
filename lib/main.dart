@@ -11,11 +11,6 @@ import 'package:mam_solar/l10n/app_localizations.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  SystemChrome.setPreferredOrientations([
-    DeviceOrientation.portraitUp,
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
 
   await initDependencies();
 
@@ -49,36 +44,51 @@ class _MamSolarAppState extends State<MamSolarApp> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider.value(
-      value: _settingsBloc,
-      child: BlocBuilder<SettingsBloc, SettingsState>(
-        builder: (context, state) {
-          final locale = Locale(state.languageCode);
-          return MaterialApp.router(
-            title: 'mam-solarbau',
-            debugShowCheckedModeBanner: false,
-            theme: AppTheme.light,
-            locale: locale,
-            supportedLocales: const [Locale('en'), Locale('de'), Locale('ar')],
-            localizationsDelegates: [
-              AppLocalizations.delegate,
-              GlobalMaterialLocalizations.delegate,
-              GlobalWidgetsLocalizations.delegate,
-              GlobalCupertinoLocalizations.delegate,
-            ],
-            localeResolutionCallback: (locale, supportedLocales) {
-              if (locale != null) {
-                for (final supported in supportedLocales) {
-                  if (supported.languageCode == locale.languageCode) {
-                    return supported;
+
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        systemNavigationBarColor: Color(0xFF2e7d32),
+        systemNavigationBarIconBrightness: Brightness.light,
+        statusBarColor: Color(0xFF2e7d32),
+        statusBarIconBrightness: Brightness.light,
+      ),
+      child: SafeArea(
+        child: BlocProvider.value(
+          value: _settingsBloc,
+          child: BlocBuilder<SettingsBloc, SettingsState>(
+            builder: (context, state) {
+              final locale = Locale(state.languageCode);
+              return MaterialApp.router(
+                title: 'mam-solarbau',
+                debugShowCheckedModeBanner: false,
+                theme: AppTheme.light,
+                locale: locale,
+                supportedLocales: const [
+                  Locale('en'),
+                  Locale('de'),
+                  Locale('ar'),
+                ],
+                localizationsDelegates: [
+                  AppLocalizations.delegate,
+                  GlobalMaterialLocalizations.delegate,
+                  GlobalWidgetsLocalizations.delegate,
+                  GlobalCupertinoLocalizations.delegate,
+                ],
+                localeResolutionCallback: (locale, supportedLocales) {
+                  if (locale != null) {
+                    for (final supported in supportedLocales) {
+                      if (supported.languageCode == locale.languageCode) {
+                        return supported;
+                      }
+                    }
                   }
-                }
-              }
-              return supportedLocales.first;
+                  return supportedLocales.first;
+                },
+                routerConfig: _router,
+              );
             },
-            routerConfig: _router,
-          );
-        },
+          ),
+        ),
       ),
     );
   }
