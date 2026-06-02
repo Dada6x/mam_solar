@@ -78,7 +78,9 @@ class SignatureRepository {
       if (oldFile.existsSync()) {
         oldFile.deleteSync();
       }
-      await (_db.signaturesTable.update()).write(
+      await (_db.signaturesTable.update()
+        ..where((tbl) => tbl.id.equals(existing.id))
+      ).write(
         SignaturesTableCompanion(imagePath: Value(imagePath)),
       );
     } else {

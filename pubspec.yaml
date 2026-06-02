@@ -1,7 +1,7 @@
 name: mam_solar
 description: "mam-solarbau Field Protocol App - Offline-first protocol forms and PDF export"
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.0+3
 
 environment:
   sdk: ^3.11.5
