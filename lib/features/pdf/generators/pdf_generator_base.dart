@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 import 'package:flutter/services.dart';
 import 'package:logger/logger.dart';
 import 'package:pdf/pdf.dart';
@@ -175,6 +174,7 @@ class PdfGeneratorBase {
   // FIELD ROW
   // ---------------------------
   static pw.Widget buildFieldRow(String label, String value) {
+    if (value.isEmpty) return pw.SizedBox(height: 0);
     return pw.Padding(
       padding: const pw.EdgeInsets.symmetric(vertical: 2),
       child: pw.Row(
@@ -189,7 +189,7 @@ class PdfGeneratorBase {
           ),
           pw.Expanded(
             child: pw.Text(
-              value.isEmpty ? '-' : value,
+              value,
               style: pw.TextStyle(font: _font, fontSize: 10),
             ),
           ),

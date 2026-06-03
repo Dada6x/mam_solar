@@ -14,6 +14,7 @@ class FormFieldRenderer extends StatelessWidget {
   final String label;
   final Map<String, dynamic>? formData;
   final String? languageCode;
+  final bool isError;
 
   const FormFieldRenderer({
     super.key,
@@ -24,6 +25,7 @@ class FormFieldRenderer extends StatelessWidget {
     required this.label,
     this.formData,
     this.languageCode,
+    this.isError = false,
   });
 
   @override
@@ -39,14 +41,21 @@ class FormFieldRenderer extends StatelessWidget {
     final labelText = effectiveLabel;
     final requiredMark = field.required ? ' *' : '';
 
+    InputDecoration dec(String label, {Widget? suffixIcon, bool alignLabel = false}) {
+      return InputDecoration(
+        labelText: '$label$requiredMark',
+        labelStyle: const TextStyle(fontSize: 13),
+        suffixIcon: suffixIcon,
+        alignLabelWithHint: alignLabel,
+        errorText: isError ? '' : null,
+      );
+    }
+
     switch (field.type) {
       case FieldType.text:
         return TextFormField(
           initialValue: value as String? ?? '',
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-          ),
+          decoration: dec(labelText),
           onChanged: onChanged,
         );
 
@@ -55,11 +64,7 @@ class FormFieldRenderer extends StatelessWidget {
         return TextFormField(
           readOnly: true,
           controller: TextEditingController(text: displayValue),
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-            suffixIcon: const Icon(Icons.calendar_month, size: 18),
-          ),
+          decoration: dec(labelText, suffixIcon: const Icon(Icons.calendar_month, size: 18)),
           onTap: () async {
             final date = await showDatePicker(
               context: context,
@@ -85,10 +90,7 @@ class FormFieldRenderer extends StatelessWidget {
         return TextFormField(
           initialValue: value as String? ?? '',
           keyboardType: TextInputType.number,
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-          ),
+          decoration: dec(labelText),
           onChanged: onChanged,
         );
 
@@ -97,11 +99,7 @@ class FormFieldRenderer extends StatelessWidget {
         return TextFormField(
           readOnly: true,
           controller: TextEditingController(text: displayValue),
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-            suffixIcon: const Icon(Icons.calendar_today, size: 18),
-          ),
+          decoration: dec(labelText, suffixIcon: const Icon(Icons.calendar_today, size: 18)),
           onTap: () async {
             final date = await showDatePicker(
               context: context,
@@ -122,11 +120,7 @@ class FormFieldRenderer extends StatelessWidget {
         return TextFormField(
           readOnly: true,
           controller: TextEditingController(text: displayValue),
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-            suffixIcon: const Icon(Icons.access_time, size: 18),
-          ),
+          decoration: dec(labelText, suffixIcon: const Icon(Icons.access_time, size: 18)),
           onTap: () async {
             final time = await showTimePicker(
               context: context,
@@ -186,10 +180,7 @@ class FormFieldRenderer extends StatelessWidget {
         final options = field.dropdownOptions ?? [];
         return DropdownButtonFormField<String>(
           initialValue: value as String?,
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-          ),
+          decoration: dec(labelText),
           items: options.map((opt) {
             return DropdownMenuItem(
               value: opt,
@@ -228,11 +219,7 @@ class FormFieldRenderer extends StatelessWidget {
         return TextFormField(
           initialValue: value as String? ?? '',
           maxLines: 5,
-          decoration: InputDecoration(
-            labelText: '$labelText$requiredMark',
-            labelStyle: const TextStyle(fontSize: 13),
-            alignLabelWithHint: true,
-          ),
+          decoration: dec(labelText, alignLabel: true),
           onChanged: onChanged,
         );
 

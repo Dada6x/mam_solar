@@ -7,6 +7,7 @@ class SignatureFieldWidget extends StatelessWidget {
   final String label;
   final VoidCallback onTap;
   final VoidCallback? onClear;
+  final bool isError;
 
   const SignatureFieldWidget({
     super.key,
@@ -14,6 +15,7 @@ class SignatureFieldWidget extends StatelessWidget {
     required this.label,
     required this.onTap,
     this.onClear,
+    this.isError = false,
   });
 
   @override
@@ -33,7 +35,10 @@ class SignatureFieldWidget extends StatelessWidget {
             width: double.infinity,
             height: 180,
             decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey.shade400),
+              border: Border.all(
+                color: isError ? AppColors.errorRed : Colors.grey.shade400,
+                width: isError ? 1.5 : 1,
+              ),
               borderRadius: BorderRadius.circular(8),
               color: Colors.grey.shade50,
             ),

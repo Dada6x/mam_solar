@@ -27,6 +27,9 @@ class QuestionWizardWidget extends StatefulWidget {
 
 class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
   String? _validationError;
+  final _scrollController = ScrollController();
+  final _fieldKeys = <String, GlobalKey>{};
+  final _missingFieldPaths = <String>{};
 
   bool _evaluateShowIf(FormFieldDef field, Map<String, dynamic> formData) {
     if (field.showIfField == null ||
@@ -41,6 +44,74 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
     return true;
   }
 
+  bool _isValueFilled(dynamic val) {
+    if (val == null) return false;
+    if (val is String && val.trim().isEmpty) return false;
+    if (val is List && val.isEmpty) return false;
+    return true;
+  }
+
+  void _scrollToFirstMissing() {
+    final state = context.read<ProtocolBloc>().state;
+    for (final section in state.sections) {
+      for (final field in section.fields) {
+        if (field.required && field.type != FieldType.displayText) {
+          if (section.isRepeatable) {
+            final items = state.repeatableData[section.id] ?? [];
+            for (int ri = 0; ri < items.length; ri++) {
+              if (!_isValueFilled(items[ri][field.id])) {
+                final key = _fieldKeys['${section.id}:$ri:${field.id}'];
+                if (key?.currentContext != null) {
+                  Scrollable.ensureVisible(key!.currentContext!,
+                      duration: const Duration(milliseconds: 300));
+                  return;
+                }
+              }
+            }
+          } else {
+            if (!_isValueFilled(state.formData[field.id])) {
+              final key = _fieldKeys['${section.id}:${field.id}'];
+              if (key?.currentContext != null) {
+                Scrollable.ensureVisible(key!.currentContext!,
+                    duration: const Duration(milliseconds: 300));
+                return;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  void _populateMissingFieldPaths() {
+    _missingFieldPaths.clear();
+    final state = context.read<ProtocolBloc>().state;
+    for (final section in state.sections) {
+      for (final field in section.fields) {
+        if (field.required && field.type != FieldType.displayText) {
+          if (section.isRepeatable) {
+            final items = state.repeatableData[section.id] ?? [];
+            for (int ri = 0; ri < items.length; ri++) {
+              if (!_isValueFilled(items[ri][field.id])) {
+                _missingFieldPaths.add('${section.id}:$ri:${field.id}');
+              }
+            }
+          } else {
+            if (!_isValueFilled(state.formData[field.id])) {
+              _missingFieldPaths.add('${section.id}:${field.id}');
+            }
+          }
+        }
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     final state = context.watch<ProtocolBloc>().state;
@@ -51,6 +122,7 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
       children: [
         Expanded(
           child: SingleChildScrollView(
+            controller: _scrollController,
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -64,13 +136,18 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
           onGeneratePdf: () {
             final missing = bloc.getMissingRequiredFields();
             if (missing.isNotEmpty) {
+              _populateMissingFieldPaths();
               setState(
                 () => _validationError =
                     '${AppLocalizations.of(context)!.fieldRequired}: ${missing.join(', ')}',
               );
+              _scrollToFirstMissing();
               return;
             }
-            setState(() => _validationError = null);
+            setState(() {
+              _validationError = null;
+              _missingFieldPaths.clear();
+            });
             bloc.add(const GeneratePdf());
           },
         ),
@@ -137,6 +214,10 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
               );
             },
             canRemove: items.length > section.minRepeat,
+            fieldKeys: _fieldKeys,
+            missingFieldPaths: _missingFieldPaths,
+            onClearError: (keyPath) =>
+                setState(() => _missingFieldPaths.remove(keyPath)),
           ),
         ),
       );
@@ -214,9 +295,20 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
           final idx = entry.key;
           final field = entry.value;
           final value = formData[field.id];
+          final keyString = '${section.id}:${field.id}';
+          final fieldKey =
+              _fieldKeys.putIfAbsent(keyString, () => GlobalKey());
           return Padding(
+            key: fieldKey,
             padding: EdgeInsets.only(top: idx > 0 ? 20 : 16),
-            child: _buildFieldWidget(field, value, languageCode, formData),
+            child: _buildFieldWidget(
+              field,
+              value,
+              languageCode,
+              formData,
+              isError: _missingFieldPaths.contains(keyString),
+              fieldKeyPath: keyString,
+            ),
           );
         }),
       );
@@ -228,49 +320,65 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
     FormFieldDef field,
     dynamic value,
     String languageCode,
-    Map<String, dynamic> formData,
-  ) {
+    Map<String, dynamic> formData, {
+    bool isError = false,
+    String fieldKeyPath = '',
+  }) {
     final label = field.localizedLabel(languageCode);
+    void clearAndUpdate(dynamic v) {
+      if (fieldKeyPath.isNotEmpty) {
+        setState(() => _missingFieldPaths.remove(fieldKeyPath));
+      }
+      context.read<ProtocolBloc>().add(UpdateField(field.id, v));
+    }
+
     switch (field.type) {
       case FieldType.signature:
         final bloc = context.read<ProtocolBloc>();
         return SignatureFieldWidget(
           label: label,
           signaturePath: value as String?,
+          isError: isError,
           onTap: () async {
             final result = await context.push<String>(
               '/signature/${widget.protocolId}/${field.id}',
             );
             if (result != null) {
+              if (fieldKeyPath.isNotEmpty) {
+                setState(() => _missingFieldPaths.remove(fieldKeyPath));
+              }
               bloc.add(UpdateField(field.id, result));
             }
           },
-          onClear: () => bloc.add(UpdateField(field.id, null)),
+          onClear: () {
+            if (fieldKeyPath.isNotEmpty) {
+              setState(() => _missingFieldPaths.remove(fieldKeyPath));
+            }
+            bloc.add(UpdateField(field.id, null));
+          },
         );
       case FieldType.photo:
         return PhotoCaptureFieldWidget(
           label: label,
           imagePath: value as String?,
-          onChanged: (v) =>
-              context.read<ProtocolBloc>().add(UpdateField(field.id, v)),
+          onChanged: (v) => clearAndUpdate(v),
         );
       case FieldType.multiphoto:
         return MultiPhotoCaptureFieldWidget(
           label: label,
           imagePaths: FormFieldRenderer.toPhotoList(value),
-          onChanged: (v) =>
-              context.read<ProtocolBloc>().add(UpdateField(field.id, v)),
+          onChanged: (v) => clearAndUpdate(v),
         );
       default:
         return FormFieldRenderer(
           field: field,
           value: value,
-          onChanged: (v) =>
-              context.read<ProtocolBloc>().add(UpdateField(field.id, v)),
+          onChanged: (v) => clearAndUpdate(v),
           protocolId: widget.protocolId,
           label: label,
           formData: formData,
           languageCode: languageCode,
+          isError: isError,
         );
     }
   }
@@ -369,6 +477,9 @@ class _RepeatItemCard extends StatelessWidget {
   final String languageCode;
   final void Function(String fieldId, dynamic value) onFieldChanged;
   final bool canRemove;
+  final Map<String, GlobalKey> fieldKeys;
+  final Set<String> missingFieldPaths;
+  final void Function(String fieldKeyPath)? onClearError;
 
   const _RepeatItemCard({
     required this.section,
@@ -379,6 +490,9 @@ class _RepeatItemCard extends StatelessWidget {
     required this.languageCode,
     required this.onFieldChanged,
     required this.canRemove,
+    required this.fieldKeys,
+    required this.missingFieldPaths,
+    this.onClearError,
   });
 
   @override
@@ -443,9 +557,19 @@ class _RepeatItemCard extends StatelessWidget {
               children: fields.map((field) {
                 final value = itemData[field.id];
                 final label = field.localizedLabel(languageCode);
+                final keyString =
+                    '${section.id}:$itemIndex:${field.id}';
+                final fieldKey =
+                    fieldKeys.putIfAbsent(keyString, () => GlobalKey());
+                final isError = missingFieldPaths.contains(keyString);
                 return Padding(
+                  key: fieldKey,
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: _buildField(field, value, label, context),
+                  child: _buildField(
+                    field, value, label, context,
+                    isError: isError,
+                    fieldKeyPath: keyString,
+                  ),
                 );
               }).toList(),
             ),
@@ -459,32 +583,46 @@ class _RepeatItemCard extends StatelessWidget {
     FormFieldDef field,
     dynamic value,
     String labelText,
-    BuildContext context,
-  ) {
+    BuildContext context, {
+    bool isError = false,
+    String fieldKeyPath = '',
+  }) {
+    void clearAndUpdate(dynamic v) {
+      if (fieldKeyPath.isNotEmpty) {
+        onClearError?.call(fieldKeyPath);
+      }
+      onFieldChanged(field.id, v);
+    }
+
     switch (field.type) {
       case FieldType.signature:
-        return _buildSignatureField(field, value as String?, context);
+        return _buildSignatureField(
+          field, value as String?, context,
+          isError: isError,
+          fieldKeyPath: fieldKeyPath,
+        );
       case FieldType.photo:
         return PhotoCaptureFieldWidget(
           label: labelText,
           imagePath: value as String?,
-          onChanged: (v) => onFieldChanged(field.id, v),
+          onChanged: (v) => clearAndUpdate(v),
         );
       case FieldType.multiphoto:
         return MultiPhotoCaptureFieldWidget(
           label: labelText,
           imagePaths: FormFieldRenderer.toPhotoList(value),
-          onChanged: (v) => onFieldChanged(field.id, v),
+          onChanged: (v) => clearAndUpdate(v),
         );
       default:
         return FormFieldRenderer(
           field: field,
           value: value,
-          onChanged: (v) => onFieldChanged(field.id, v),
+          onChanged: (v) => clearAndUpdate(v),
           protocolId: protocolId,
           label: labelText,
           formData: itemData,
           languageCode: languageCode,
+          isError: isError,
         );
     }
   }
@@ -492,20 +630,33 @@ class _RepeatItemCard extends StatelessWidget {
   Widget _buildSignatureField(
     FormFieldDef field,
     String? currentPath,
-    BuildContext context,
-  ) {
+    BuildContext context, {
+    bool isError = false,
+    String fieldKeyPath = '',
+  }) {
+    void clearError() {
+      if (fieldKeyPath.isNotEmpty) {
+        onClearError?.call(fieldKeyPath);
+      }
+    }
+
     return SignatureFieldWidget(
       label: field.localizedLabel(languageCode),
       signaturePath: currentPath,
+      isError: isError,
       onTap: () async {
         final result = await context.push<String>(
           '/signature/$protocolId/${field.id}',
         );
         if (result != null && context.mounted) {
+          clearError();
           onFieldChanged(field.id, result);
         }
       },
-      onClear: () => onFieldChanged(field.id, null),
+      onClear: () {
+        clearError();
+        onFieldChanged(field.id, null);
+      },
     );
   }
 }
