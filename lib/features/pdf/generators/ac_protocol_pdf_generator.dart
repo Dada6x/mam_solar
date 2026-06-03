@@ -86,7 +86,7 @@ class AcProtocolPdfGenerator {
     ].whereType<pw.Widget>().toList();
 
     return PdfGeneratorBase.createDocument(
-      title: 'AC Acceptance Protocol',
+      title: 'AC-Abnahmeprotokoll',
       protocolNumber: protocolNumber,
       customerName: customerName,
       date: date,
@@ -99,13 +99,13 @@ class AcProtocolPdfGenerator {
   static pw.Widget? _buildCustomerDataSection(Map<String, dynamic> data) {
     final fields = [
       ..._field('Name', data['customerName']),
-      ..._field('Street', data['street']),
-      ..._field('House Number', data['houseNumber']),
-      ..._field('ZIP Code', data['zipCode']),
-      ..._field('City', data['city']),
-      ..._field('Email', data['email']),
+      ..._field('Straße', data['street']),
+      ..._field('Hausnummer', data['houseNumber']),
+      ..._field('Postleitzahl', data['zipCode']),
+      ..._field('Stadt', data['city']),
+      ..._field('E-Mail', data['email']),
     ];
-    return _section('Customer Data', fields);
+    return _section('Kundendaten', fields);
   }
 
   static pw.Widget? _buildInstallationDetailsSection(
@@ -113,18 +113,18 @@ class AcProtocolPdfGenerator {
   ) {
     final fields = [
       ..._fieldMapped(
-        'Installation Type',
+        'Installationstyp',
         data['installationType'],
         _installationType,
       ),
-      ..._field('Storage Manufacturer', data['storageManufacturer']),
-      ..._checkbox('Wallbox Available', data['wallboxAvailable']),
-      ..._checkbox('Backup Available', data['backupAvailable']),
-      ..._checkbox('Test Performed', data['testPerformed']),
-      ..._field('Installation Date', data['installationDate']),
-      ..._field('Installer Name', data['installerName']),
+      ..._field('Speicherhersteller', data['storageManufacturer']),
+      ..._checkbox('Wallbox vorhanden', data['wallboxAvailable']),
+      ..._checkbox('Backup vorhanden', data['backupAvailable']),
+      ..._checkbox('Test durchgeführt', data['testPerformed']),
+      ..._field('Installationsdatum', data['installationDate']),
+      ..._field('Name des Installateurs', data['installerName']),
     ];
-    return _section('Installation Details', fields);
+    return _section('Installationsdetails', fields);
   }
 
   static pw.Widget? _buildStorageSection(
@@ -132,23 +132,23 @@ class AcProtocolPdfGenerator {
     Map<String, List<Map<String, dynamic>>> repeatableData,
   ) {
     final fields = <pw.Widget>[
-      ..._field('Storage Model', data['storageModel']),
-      ..._field('Number of Storage Units', data['storageCount']),
+      ..._field('Speichermodell', data['storageModel']),
+      ..._field('Anzahl Speichereinheiten', data['storageCount']),
     ];
 
     final details = repeatableData['storage_details'] ?? [];
     for (var i = 0; i < details.length; i++) {
       final item = details[i];
       final itemFields = [
-        ..._field('Serial Number', item['serialNumberStorage']),
-        ..._photo('QR Code', item['photoQrCode']),
-        ..._photo('Connections', item['photoConnections']),
+        ..._field('Seriennummer', item['serialNumberStorage']),
+        ..._photo('QR-Code', item['photoQrCode']),
+        ..._photo('Anschlüsse', item['photoConnections']),
       ];
       if (itemFields.isNotEmpty) {
         fields.add(pw.SizedBox(height: 6));
         fields.add(
           pw.Text(
-            'Storage Unit #${i + 1}',
+            'Speichereinheit #${i + 1}',
             style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
           ),
         );
@@ -156,7 +156,7 @@ class AcProtocolPdfGenerator {
       }
     }
 
-    return _section('Storage', fields);
+    return _section('Speicher', fields);
   }
 
   static pw.Widget? _buildInverterSection(
@@ -164,21 +164,21 @@ class AcProtocolPdfGenerator {
     Map<String, List<Map<String, dynamic>>> repeatableData,
   ) {
     final fields = <pw.Widget>[
-      ..._field('Number of Inverters', data['inverterCount']),
+      ..._field('Anzahl Wechselrichter', data['inverterCount']),
     ];
 
     final details = repeatableData['inverter_details'] ?? [];
     for (var i = 0; i < details.length; i++) {
       final item = details[i];
       final itemFields = [
-        ..._field('Serial Number', item['serialNumberInverter']),
-        ..._photo('Nameplate', item['photoDataplate']),
+        ..._field('Seriennummer', item['serialNumberInverter']),
+        ..._photo('Typenschild', item['photoDataplate']),
       ];
       if (itemFields.isNotEmpty) {
         fields.add(pw.SizedBox(height: 6));
         fields.add(
           pw.Text(
-            'Inverter #${i + 1}',
+            'Wechselrichter #${i + 1}',
             style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
           ),
         );
@@ -186,27 +186,27 @@ class AcProtocolPdfGenerator {
       }
     }
 
-    return _section('Inverter', fields);
+    return _section('Wechselrichter', fields);
   }
 
   static pw.Widget? _buildMeterCabinetSection(Map<String, dynamic> data) {
     final fields = [
-      ..._photo('Cabinet Photos', data['photoCabinet']),
-      ..._checkbox('Cabinet Clean?', data['cabinetClean']),
-      ..._checkbox('Cabinet Labeled?', data['cabinetLabeled']),
-      ..._checkbox('VDE Tested?', data['vdeTested']),
-      ..._checkbox('Plumbed?', data['plumbed']),
+      ..._photo('Zählerschrankfotos', data['photoCabinet']),
+      ..._checkbox('Zählerschrank sauber?', data['cabinetClean']),
+      ..._checkbox('Zählerschrank beschriftet?', data['cabinetLabeled']),
+      ..._checkbox('VDE geprüft?', data['vdeTested']),
+      ..._checkbox('Verplombt?', data['plumbed']),
     ];
-    return _section('Meter Cabinet', fields);
+    return _section('Zählerschrank', fields);
   }
 
   static pw.Widget? _buildMeterIbnSection(Map<String, dynamic> data) {
     final fields = [
-      ..._fieldMapped('Counter Type', data['counterType'], _counterType),
-      ..._photo('Meter Photo', data['photoMeter']),
-      ..._checkbox('Meter Replaced?', data['meterReplaced']),
+      ..._fieldMapped('Zählertyp', data['counterType'], _counterType),
+      ..._photo('Zählerfoto', data['photoMeter']),
+      ..._checkbox('Zähler ausgetauscht?', data['meterReplaced']),
     ];
-    return _section('Meter IBN', fields);
+    return _section('Zähler IBN', fields);
   }
 
   static pw.Widget? _buildCableRoutesSection(
@@ -218,14 +218,14 @@ class AcProtocolPdfGenerator {
     for (var i = 0; i < routes.length; i++) {
       final route = routes[i];
       final itemFields = [
-        ..._photo('Cable Route Photo', route['photoCableRoute']),
-        ..._field('Cable Length (m)', route['cableLength']),
+        ..._photo('Kabelwegfoto', route['photoCableRoute']),
+        ..._field('Kabellänge (m)', route['cableLength']),
       ];
       if (itemFields.isNotEmpty) {
         if (fields.isNotEmpty) fields.add(pw.SizedBox(height: 6));
         fields.add(
           pw.Text(
-            'Cable Route #${i + 1}',
+            'Kabelweg #${i + 1}',
             style: pw.TextStyle(font: pw.Font.helveticaBold(), fontSize: 10),
           ),
         );
@@ -233,13 +233,13 @@ class AcProtocolPdfGenerator {
       }
     }
 
-    return _section('Cable Routes', fields);
+    return _section('Kabelwege', fields);
   }
 
   static pw.Widget? _buildDiplomaSection(Map<String, dynamic> data) {
     final fields = [
-      ..._field('Remarks', data['remarks']),
-      ..._field('Completion Date', data['completionDate']),
+      ..._field('Bemerkungen', data['remarks']),
+      ..._field('Abschlussdatum', data['completionDate']),
     ];
     return _section('Diploma', fields);
   }
@@ -279,13 +279,13 @@ class AcProtocolPdfGenerator {
 
   static pw.Widget? _buildSignaturesSection(Map<String, dynamic> data) {
     final fields = [
-      ..._field('Location', data['location']),
-      ..._field('Customer Full Name', data['sigCustomerFullName']),
-      ..._field('Customer Email', data['customerEmail']),
-      ..._signature('Customer Signature', data['customerSignature']),
-      ..._signature('Electrician Signature', data['electricianSignature']),
+      ..._field('Ort', data['location']),
+      ..._field('Vollständiger Name des Kunden', data['sigCustomerFullName']),
+      ..._field('E-Mail des Kunden', data['customerEmail']),
+      ..._signature('Unterschrift Kunde', data['customerSignature']),
+      ..._signature('Unterschrift Elektriker', data['electricianSignature']),
     ];
-    return _section('Signatures', fields);
+    return _section('Unterschriften', fields);
   }
 
   // ─── Section builder — returns null if fields list is empty ───────────────
@@ -334,19 +334,19 @@ class AcProtocolPdfGenerator {
   // ─── Value helpers ────────────────────────────────────────────────────────
 
   static String _yesNo(dynamic value) {
-    if (value == true || value == 'yes') return 'Yes';
-    if (value == false || value == 'no') return 'No';
+    if (value == true || value == 'yes') return 'Ja';
+    if (value == false || value == 'no') return 'Nein';
     return '-';
   }
 
   static String _installationType(dynamic value) {
     switch (value) {
       case 'pv_with_storage':
-        return 'Photovoltaic System with Storage';
+        return 'Photovoltaikanlage mit Speicher';
       case 'pv_without_storage':
-        return 'Photovoltaic System without Storage';
+        return 'Photovoltaikanlage ohne Speicher';
       case 'pv_storage_expansion':
-        return 'Photovoltaic System with Storage Expansion';
+        return 'Photovoltaikanlage mit Speichererweiterung';
       default:
         return PdfGeneratorBase.safeString(value);
     }
@@ -355,13 +355,13 @@ class AcProtocolPdfGenerator {
   static String _counterType(dynamic value) {
     switch (value) {
       case 'single_rate':
-        return 'Single Rate';
+        return 'Eintarif';
       case 'two_rate':
-        return 'Two Rate';
+        return 'Zweitarif';
       case 'smart_meter':
         return 'Smart Meter';
       case 'miscellaneous':
-        return 'Miscellaneous';
+        return 'Sonstiges';
       default:
         return PdfGeneratorBase.safeString(value);
     }
