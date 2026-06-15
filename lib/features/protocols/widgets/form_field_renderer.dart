@@ -4,6 +4,7 @@ import 'package:mam_solar/features/protocols/forms/form_definition.dart';
 import 'package:mam_solar/features/protocols/widgets/file_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/multi_photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
+import 'package:mam_solar/features/protocols/widgets/required_label.dart';
 import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
 
 class FormFieldRenderer extends StatelessWidget {
@@ -43,8 +44,7 @@ class FormFieldRenderer extends StatelessWidget {
 
     InputDecoration dec(String label, {Widget? suffixIcon, bool alignLabel = false}) {
       return InputDecoration(
-        labelText: '$label$requiredMark',
-        labelStyle: const TextStyle(fontSize: 13),
+        label: RequiredFieldLabel(text: label, required: field.required),
         suffixIcon: suffixIcon,
         alignLabelWithHint: alignLabel,
         errorText: isError ? '' : null,
@@ -151,13 +151,7 @@ class FormFieldRenderer extends StatelessWidget {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                '$labelText$requiredMark',
-                style: const TextStyle(
-                  fontSize: 13,
-                  color: AppColors.labelGrey,
-                ),
-              ),
+              RequiredFieldLabel(text: labelText, required: field.required),
               ...options.map((opt) {
                 return RadioListTile<String>(
                   title: Text(
@@ -196,6 +190,7 @@ class FormFieldRenderer extends StatelessWidget {
       case FieldType.photo:
         return PhotoCaptureFieldWidget(
           label: labelText,
+          required: field.required,
           imagePath: value as String?,
           onChanged: onChanged,
         );
@@ -203,6 +198,7 @@ class FormFieldRenderer extends StatelessWidget {
       case FieldType.multiphoto:
         return MultiPhotoCaptureFieldWidget(
           label: labelText,
+          required: field.required,
           imagePaths: toPhotoList(value),
           onChanged: (v) => onChanged(v),
         );
@@ -210,6 +206,7 @@ class FormFieldRenderer extends StatelessWidget {
       case FieldType.signature:
         return SignatureFieldWidget(
           label: labelText,
+          required: field.required,
           signaturePath: value as String?,
           onTap: () {},
           onClear: () => onChanged(null),

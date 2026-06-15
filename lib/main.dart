@@ -46,9 +46,9 @@ class _MamSolarAppState extends State<MamSolarApp> {
   Widget build(BuildContext context) {
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
-        systemNavigationBarColor: Color(0xFF2e7d32),
+        systemNavigationBarColor: Color(0xFF2196F3),
         systemNavigationBarIconBrightness: Brightness.light,
-        statusBarColor: Color(0xFF2e7d32),
+        statusBarColor: Color(0xFF2196F3),
         statusBarIconBrightness: Brightness.light,
       ),
       child: SafeArea(

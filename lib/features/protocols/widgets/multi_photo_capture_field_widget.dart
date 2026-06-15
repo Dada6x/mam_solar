@@ -1,19 +1,22 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mam_solar/core/constants/app_colors.dart';
+import 'package:mam_solar/features/protocols/widgets/dashed_box.dart';
+import 'package:mam_solar/features/protocols/widgets/required_label.dart';
 import 'package:mam_solar/l10n/app_localizations.dart';
 
 class MultiPhotoCaptureFieldWidget extends StatefulWidget {
   final List<String> imagePaths;
   final ValueChanged<List<String>> onChanged;
   final String label;
+  final bool required;
 
   const MultiPhotoCaptureFieldWidget({
     super.key,
     required this.imagePaths,
     required this.onChanged,
     required this.label,
+    this.required = false,
   });
 
   @override
@@ -73,10 +76,7 @@ class _MultiPhotoCaptureFieldWidgetState extends State<MultiPhotoCaptureFieldWid
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          widget.label,
-          style: const TextStyle(fontSize: 13, color: AppColors.labelGrey),
-        ),
+        RequiredFieldLabel(text: widget.label, required: widget.required),
         const SizedBox(height: 8),
         if (hasPhotos)
           Wrap(
@@ -121,26 +121,12 @@ class _MultiPhotoCaptureFieldWidgetState extends State<MultiPhotoCaptureFieldWid
               );
             }).toList(),
           ),
-        if (!hasPhotos)
-          const SizedBox(height: 4),
-        Row(
-          children: [
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _takePhoto,
-                icon: const Icon(Icons.camera_alt, size: 18),
-                label: Text(AppLocalizations.of(context)!.camera, style: const TextStyle(fontSize: 12)),
-              ),
-            ),
-            const SizedBox(width: 8),
-            Expanded(
-              child: OutlinedButton.icon(
-                onPressed: _pickFromGallery,
-                icon: const Icon(Icons.photo_library, size: 18),
-                label: Text(AppLocalizations.of(context)!.gallery, style: const TextStyle(fontSize: 12)),
-              ),
-            ),
-          ],
+        if (hasPhotos) const SizedBox(height: 8),
+        PhotoSourceBox(
+          onCamera: _takePhoto,
+          onGallery: _pickFromGallery,
+          cameraLabel: AppLocalizations.of(context)!.camera,
+          galleryLabel: AppLocalizations.of(context)!.gallery,
         ),
       ],
     );

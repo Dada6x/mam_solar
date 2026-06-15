@@ -20,7 +20,8 @@ class PdfGeneratorBase {
     }
   }
 
-  static PdfColor get _green => PdfColor.fromInt(0xFF2e7d32);
+  // Brand accent for PDFs (kept blue to match the app redesign).
+  static PdfColor get _green => PdfColor.fromInt(0xFF2196F3);
   static PdfColor get _labelGray => PdfColor.fromInt(0xFF555555);
 
   // ---------------------------
@@ -68,7 +69,7 @@ class PdfGeneratorBase {
               width: 80,
               height: 54,
               decoration: pw.BoxDecoration(
-                color: PdfColor.fromInt(0xFFf9a825),
+                color: _green,
                 borderRadius: pw.BorderRadius.circular(4),
               ),
               child: _logoBytes != null
@@ -79,7 +80,11 @@ class PdfGeneratorBase {
                   : pw.Center(
                       child: pw.Text(
                         'MS',
-                        style: pw.TextStyle(font: _fontBold, fontSize: 12),
+                        style: pw.TextStyle(
+                          font: _fontBold,
+                          fontSize: 12,
+                          color: PdfColors.white,
+                        ),
                       ),
                     ),
             ),

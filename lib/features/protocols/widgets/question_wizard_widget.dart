@@ -5,6 +5,7 @@ import 'package:mam_solar/core/constants/app_colors.dart';
 import 'package:mam_solar/features/protocols/bloc/protocol_bloc.dart';
 import 'package:mam_solar/features/protocols/forms/form_definition.dart';
 import 'package:mam_solar/features/protocols/widgets/form_field_renderer.dart';
+import 'package:mam_solar/features/protocols/widgets/section_card.dart';
 import 'package:mam_solar/features/protocols/widgets/multi_photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/photo_capture_field_widget.dart';
 import 'package:mam_solar/features/protocols/widgets/signature_field_widget.dart';
@@ -162,16 +163,18 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
   ) {
     final widgets = <Widget>[];
     for (final section in state.sections) {
-      if (section.isRepeatable) {
-        widgets.addAll(
-          _buildRepeatableSection(state, section, languageCode, bloc),
-        );
-      } else {
-        widgets.addAll(
-          _buildNonRepeatableSection(section, state.formData, languageCode),
-        );
-      }
-      widgets.add(const SizedBox(height: 24));
+      final inner = section.isRepeatable
+          ? _buildRepeatableSection(state, section, languageCode, bloc)
+          : _buildNonRepeatableSection(section, state.formData, languageCode);
+      // Skip sections whose fields are all hidden (showIf) so no empty card shows.
+      if (inner.isEmpty) continue;
+      widgets.add(
+        SectionCard(
+          title: section.localizedLabel(languageCode),
+          children: inner,
+        ),
+      );
+      widgets.add(const SizedBox(height: 16));
     }
     return widgets;
   }
@@ -182,20 +185,8 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
     String languageCode,
     ProtocolBloc bloc,
   ) {
+    // Section title is rendered by the surrounding SectionCard header.
     final widgets = <Widget>[];
-    widgets.add(
-      Padding(
-        padding: const EdgeInsets.only(bottom: 12),
-        child: Text(
-          section.localizedLabel(languageCode),
-          style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Color(0xFF1a1a2e),
-          ),
-        ),
-      ),
-    );
     final items = state.repeatableData[section.id] ?? [{}];
     for (int ri = 0; ri < items.length; ri++) {
       widgets.add(
@@ -263,18 +254,7 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
         (f) => _evaluateShowIf(f, formData),
       ).toList();
       if (visible.isEmpty) continue;
-      if (gi == 0) {
-        widgets.add(
-          Text(
-            section.localizedLabel(languageCode),
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF1a1a2e),
-            ),
-          ),
-        );
-      }
+      // Section title is rendered by the surrounding SectionCard header.
       if (fieldGroups.length > 1 && gi > 0) {
         widgets.add(
           Padding(
@@ -337,6 +317,7 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
         final bloc = context.read<ProtocolBloc>();
         return SignatureFieldWidget(
           label: label,
+          required: field.required,
           signaturePath: value as String?,
           isError: isError,
           onTap: () async {
@@ -360,12 +341,14 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
       case FieldType.photo:
         return PhotoCaptureFieldWidget(
           label: label,
+          required: field.required,
           imagePath: value as String?,
           onChanged: (v) => clearAndUpdate(v),
         );
       case FieldType.multiphoto:
         return MultiPhotoCaptureFieldWidget(
           label: label,
+          required: field.required,
           imagePaths: FormFieldRenderer.toPhotoList(value),
           onChanged: (v) => clearAndUpdate(v),
         );
@@ -449,7 +432,7 @@ class _BottomBar extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGreen,
+                  backgroundColor: AppColors.primaryBlue,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 14),
                   shape: RoundedRectangleBorder(
@@ -499,7 +482,8 @@ class _RepeatItemCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
+        color: AppColors.lightGrey,
+        border: Border.all(color: AppColors.borderGrey),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Column(
@@ -515,7 +499,7 @@ class _RepeatItemCard extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primaryGreen.withValues(alpha: 0.8),
+                      color: AppColors.primaryBlue.withValues(alpha: 0.8),
                     ),
                     overflow: TextOverflow.ellipsis,
                     maxLines: 1,
@@ -604,12 +588,14 @@ class _RepeatItemCard extends StatelessWidget {
       case FieldType.photo:
         return PhotoCaptureFieldWidget(
           label: labelText,
+          required: field.required,
           imagePath: value as String?,
           onChanged: (v) => clearAndUpdate(v),
         );
       case FieldType.multiphoto:
         return MultiPhotoCaptureFieldWidget(
           label: labelText,
+          required: field.required,
           imagePaths: FormFieldRenderer.toPhotoList(value),
           onChanged: (v) => clearAndUpdate(v),
         );
@@ -642,6 +628,7 @@ class _RepeatItemCard extends StatelessWidget {
 
     return SignatureFieldWidget(
       label: field.localizedLabel(languageCode),
+      required: field.required,
       signaturePath: currentPath,
       isError: isError,
       onTap: () async {

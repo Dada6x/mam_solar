@@ -86,7 +86,8 @@ class _DynamicFormView extends StatelessWidget {
           appBar: AppBar(
             title: Text(
               protocolType.replaceAll('_', ' ').toUpperCase(),
-              style: const TextStyle(fontSize: 14),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
             ),
             leading: IconButton(
               icon: const Icon(Icons.arrow_back),
@@ -130,6 +131,7 @@ class _DynamicFormView extends StatelessWidget {
               //TODO MAKE IT ONLY SAVE THE DRIFT WHEN THIS BUTTON IS CLICKED 
               IconButton(
                 icon: const Icon(Icons.save),
+                color: AppColors.primaryBlue,
                 onPressed: () =>
                     context.read<ProtocolBloc>().add(const SaveDraft()),
                 tooltip: AppLocalizations.of(context)!.save,

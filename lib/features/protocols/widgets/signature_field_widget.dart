@@ -1,6 +1,9 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:mam_solar/core/constants/app_colors.dart';
+import 'package:mam_solar/features/protocols/widgets/dashed_box.dart';
+import 'package:mam_solar/features/protocols/widgets/required_label.dart';
+import 'package:mam_solar/l10n/app_localizations.dart';
 
 class SignatureFieldWidget extends StatelessWidget {
   final String? signaturePath;
@@ -8,6 +11,7 @@ class SignatureFieldWidget extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onClear;
   final bool isError;
+  final bool required;
 
   const SignatureFieldWidget({
     super.key,
@@ -16,6 +20,7 @@ class SignatureFieldWidget extends StatelessWidget {
     required this.onTap,
     this.onClear,
     this.isError = false,
+    this.required = false,
   });
 
   @override
@@ -23,27 +28,24 @@ class SignatureFieldWidget extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 13, color: AppColors.labelGrey),
-        ),
+        RequiredFieldLabel(text: label, required: required),
         const SizedBox(height: 8),
         InkWell(
           onTap: onTap,
           borderRadius: BorderRadius.circular(8),
-          child: Container(
-            width: double.infinity,
-            height: 180,
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: isError ? AppColors.errorRed : Colors.grey.shade400,
-                width: isError ? 1.5 : 1,
-              ),
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.grey.shade50,
-            ),
-            child: signaturePath != null && File(signaturePath!).existsSync()
-                ? Stack(
+          child: signaturePath != null && File(signaturePath!).existsSync()
+              ? Container(
+                  width: double.infinity,
+                  height: 180,
+                  decoration: BoxDecoration(
+                    border: Border.all(
+                      color: isError ? AppColors.errorRed : AppColors.borderGrey,
+                      width: isError ? 1.5 : 1,
+                    ),
+                    borderRadius: BorderRadius.circular(8),
+                    color: AppColors.white,
+                  ),
+                  child: Stack(
                     children: [
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
@@ -71,24 +73,35 @@ class SignatureFieldWidget extends StatelessWidget {
                           ),
                         ),
                     ],
-                  )
-                : Center(
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(Icons.draw, size: 20, color: AppColors.labelGrey),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Tap to sign',
-                          style: TextStyle(
-                            fontSize: 13,
-                            color: AppColors.labelGrey,
+                  ),
+                )
+              : DashedBox(
+                  radius: 10,
+                  borderColor:
+                      isError ? AppColors.errorRed : AppColors.dashedBorderGrey,
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: 180,
+                    child: Center(
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          const Icon(Icons.draw_outlined,
+                              size: 22, color: AppColors.primaryBlue),
+                          const SizedBox(width: 8),
+                          Text(
+                            AppLocalizations.of(context)!.signHere,
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.primaryBlue,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-          ),
+                ),
         ),
       ],
     );

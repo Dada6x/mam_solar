@@ -412,14 +412,14 @@ class _UpdateStatusCardState extends State<_UpdateStatusCard> {
                         vertical: 2,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green.shade100,
+                        color: AppColors.primaryBlueLight,
                         borderRadius: BorderRadius.circular(4),
                       ),
-                      child: Text(
+                      child: const Text(
                         'Up to date',
                         style: TextStyle(
                           fontSize: 11,
-                          color: Colors.green.shade800,
+                          color: AppColors.primaryBlueDark,
                         ),
                       ),
                     ),
