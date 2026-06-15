@@ -46,6 +46,7 @@ class ProtocolMdParser {
   static Future<List<String>> availableTypes() async {
     final types = <String>{
       'ac_acceptance',
+      'dc_acceptance',
       'work_order',
       'damage_report',
       'installation_report',

@@ -136,6 +136,12 @@ abstract class AppLocalizations {
   /// **'AC Acceptance Protocol'**
   String get acAcceptanceProtocol;
 
+  /// No description provided for @dcAcceptanceProtocol.
+  ///
+  /// In en, this message translates to:
+  /// **'DC Acceptance Protocol'**
+  String get dcAcceptanceProtocol;
+
   /// No description provided for @workOrder.
   ///
   /// In en, this message translates to:
@@ -1173,6 +1179,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Complete AC acceptance checklist'**
   String get acAcceptanceSubtitle;
+
+  /// No description provided for @dcAcceptanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'DC installation & acceptance checklist'**
+  String get dcAcceptanceSubtitle;
 
   /// No description provided for @workOrderSubtitle.
   ///

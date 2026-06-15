@@ -27,6 +27,9 @@ class AppLocalizationsDe extends AppLocalizations {
   String get acAcceptanceProtocol => 'AC-Abnahmeprotokoll';
 
   @override
+  String get dcAcceptanceProtocol => 'DC-Abnahmeprotokoll';
+
+  @override
   String get workOrder => 'Arbeitsauftrag';
 
   @override
@@ -548,6 +551,9 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get acAcceptanceSubtitle => 'Vollständige AC-Abnahmeliste';
+
+  @override
+  String get dcAcceptanceSubtitle => 'DC-Montage & Abnahme dokumentieren';
 
   @override
   String get workOrderSubtitle => 'Arbeitsaufträge und Stunden dokumentieren';

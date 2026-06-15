@@ -27,6 +27,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get acAcceptanceProtocol => 'بروتوكول قبول التيار المتردد';
 
   @override
+  String get dcAcceptanceProtocol => 'بروتوكول قبول التيار المستمر';
+
+  @override
   String get workOrder => 'أمر العمل';
 
   @override
@@ -546,6 +549,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get acAcceptanceSubtitle => 'قائمة قبول التيار المتردد الكاملة';
+
+  @override
+  String get dcAcceptanceSubtitle => 'قائمة تركيب وقبول التيار المستمر';
 
   @override
   String get workOrderSubtitle => 'توثيق أوامر العمل والساعات';

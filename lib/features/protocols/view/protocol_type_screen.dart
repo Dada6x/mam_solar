@@ -18,8 +18,16 @@ class ProtocolTypeScreen extends StatelessWidget {
               icon: Icons.solar_power,
               title: AppLocalizations.of(context)!.acAcceptanceProtocol,
               subtitle: AppLocalizations.of(context)!.acAcceptanceSubtitle,
-              color: AppColors.primaryGreen,
+              color: AppColors.primaryBlue,
               onTap: () => context.push('/form/ac_acceptance'),
+            ),
+            const SizedBox(height: 12),
+            _ProtocolTypeCard(
+              icon: Icons.bolt,
+              title: AppLocalizations.of(context)!.dcAcceptanceProtocol,
+              subtitle: AppLocalizations.of(context)!.dcAcceptanceSubtitle,
+              color: AppColors.primaryBlueDark,
+              onTap: () => context.push('/form/dc_acceptance'),
             ),
             const SizedBox(height: 12),
             _ProtocolTypeCard(

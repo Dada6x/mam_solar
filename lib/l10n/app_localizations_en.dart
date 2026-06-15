@@ -27,6 +27,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get acAcceptanceProtocol => 'AC Acceptance Protocol';
 
   @override
+  String get dcAcceptanceProtocol => 'DC Acceptance Protocol';
+
+  @override
   String get workOrder => 'Work Order';
 
   @override
@@ -546,6 +549,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get acAcceptanceSubtitle => 'Complete AC acceptance checklist';
+
+  @override
+  String get dcAcceptanceSubtitle => 'DC installation & acceptance checklist';
 
   @override
   String get workOrderSubtitle => 'Document work orders and hours';
