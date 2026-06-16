@@ -30,55 +30,52 @@ class InstallationReportPdfGenerator {
     'hakFuseAmps',
     'hakHousingMaterial',
     'hakOpenableWithoutProvider',
-    'photoHakSealNew', 'distanceMeterToHak',
+    'distanceMeterToHak',
     'photosWayToMeter',
 
     // Section 3: Meter Cabinet (existing)
-    'photoMeterCabinet', 'photosZkDetails',
-    'typeLabelPresent', 'photoTypeLabel', 'photoZkSealNew',
+    'photoMeterCabinet',
+    'typeLabelPresent', 'photoTypeLabel',
 
     // Section 3: Main Meter
     'photoMainMeter', 'mainMeterNumber', 'mainMeterPurpose',
 
     // Section 3: Additional Meters
-    'additionalMetersPresent', 'additionalMetersCount',
+    'additionalMetersPresent',
+
+    // Section 3: Meter Consolidation & Other
+    'meterConsolidation', 'otherEnergySystems',
 
     // Section 3: Optional ZK
     'photoOptionalZkLocation',
     'photosCableRoutes',
-    'photosCableHakToOptionalZk',
-    'photosCableExistingZkToOptionalZk',
-
-    // Section 3: Consolidation & Other
-    'meterConsolidation', 'otherEnergySystems',
 
     // Section 4: Signal Measurement – Existing ZK
     'signalTMobileExisting',
     'signalVodafoneExisting',
     'signalTelefonicaExisting',
-    'photoMeterDeviceExisting', 'photoAntennaPlacementExisting',
+    'photoSignalExisting',
 
     // Section 4: Signal Measurement – Optional ZK
     'signalTMobileOptional',
     'signalVodafoneOptional',
     'signalTelefonicaOptional',
-    'photoMeterDeviceOptional', 'photoAntennaPlacementOptional',
+    'photoSignalOptional',
 
     // Section 5: Storage / Inverter
     'photosInstallLocation',
     'storageOnFireproofSurface', 'inverterOnFireproofWall',
     'customerInformedTemperature', 'storageLocation',
     'distanceInverterToZk',
-    'photosCableInverterToExistingZk', 'photosCableInverterToOptionalZk',
+    'photosCableInverterToZk',
 
     // Section 6: Earthing
-    'mainEarthingPresent', 'photoMainEarthing', 'photoPotentialRail',
-    'distanceEarthingToStorage', 'distanceEarthingToExistingZk',
-    'distanceEarthingToOptionalZk', 'photosEarthingCableRoute',
+    'mainEarthingPresent', 'photosEarthing',
+    'distanceEarthingToStorage', 'distanceEarthingToZk',
 
     // Section 7: Internet
     'internetAvailable', 'customerLaysCableThemselves',
-    'distanceRouterToStorage', 'photosRouterCableRoute', 'photoRouterTypeLabel',
+    'distanceRouterToStorage', 'photosInternetCableRoute',
 
     // Section 8: Wallbox
     'wallboxOrdered', 'photoWallboxLocation', 'distanceWallboxToZk',
@@ -87,59 +84,50 @@ class InstallationReportPdfGenerator {
     // Section 9: Blackout Package
     'blackoutOrdered', 'photoNubLocation', 'photosNubCableRoute',
 
-    // Section 11: Special Notes
-    'dcRemarks', 'dcCableDescription', 'dcOtherRemarks',
-    'acRemarks', 'acCableDescription', 'acOtherRemarks',
-    'dcAcSameRoute', 'customerCablingWish', 'techRemarks',
-    'photosSpecial',
-
-    // Section 12: Heat Pump
+    // Section 10: Heat Pump
     'heatPumpOrdered', 'photoHeatPumpLocation',
     'distanceHeatPumpToZk', 'heatPumpTechnicalData',
 
-    // Section 13: Final Acceptance
+    // Section 11: Notes & Planning
+    'dcAcSameRoute', 'customerCablingWish',
+    'dcNotes', 'acNotes', 'organizationalNotes', 'techRemarks',
+    'photosSpecial',
     'detailsRecorded',
-    'customerSignature', 'customerFullName',
-    'signatureLocation', 'signatureDate', 'signatureTime',
-    'techSignature',
+
+    // Section 12: Additional Info
+    // (repeatable section: additional_info with note + image)
+
+    // Section 13: Signatures
+    'location', 'customerFullName', 'signatureDate', 'signatureTime',
+    'customerSignature', 'techSignature',
   ];
 
   static const _expectedRepeatableKeys = {
     'roofSurfaces': [
       'dormersPresent',
-      'photoEaveFront',
-      'photoEaveLeft',
-      'photoEaveRight',
+      'photosRoof',
       'eaveHeightMeters',
-      'photoEaveOverhang',
       'eaveOverhangCm',
-      'ridgeTilesMortared',
-      'photoUndersideVerge',
       'vergeOverhangCm',
-      'photoRafterWidth',
+      'ridgeTilesMortared',
       'rafterWidthCm',
-      'photoRafterHeight',
       'rafterHeightCm',
-      'photoRafterDistance',
       'rafterDistanceCm',
+      'photoRafterMeasurements',
       'visibleRafters',
       'aboveRoofInsulation',
       'feltPlugs',
       'roofPitchDegrees',
       'photoRoofPitch',
       'tileType',
-      'photoTileTop',
-      'photoTileBottom',
-      'photoTileHeight',
+      'photoTile',
       'tileHeightCm',
-      'photoTileWidth',
       'tileWidthCm',
       'tilesScrewedOrClamped',
       'hasReplacementTiles',
       'customerInformedAboutTiles',
     ],
     'additionalMeters': ['photoMeter', 'meterNumber', 'meterPurpose'],
-    'organizational': ['notes', 'photo'],
     'additional_info': ['note', 'image'],
   };
 
@@ -197,9 +185,8 @@ class InstallationReportPdfGenerator {
         _buildInternetSection(data),
         _buildWallboxSection(data),
         _buildBlackoutSection(data),
-        _buildOrganizationalSection(repeatableData['organizational'] ?? []),
-        _buildSpecialNotesSection(data),
         _buildHeatPumpSection(data),
+        _buildNotesSection(data),
         _buildAdditionalInfoSection(repeatableData),
         _buildFinalAcceptanceSection(data),
       ],
@@ -345,21 +332,12 @@ class InstallationReportPdfGenerator {
           _yesNo(s['dormersPresent']),
         ),
         PdfGeneratorBase.buildPhotoField(
-          'Traufhöhe Frontansicht',
-          s['photoEaveFront'],
-        ),
-        PdfGeneratorBase.buildPhotoField('Traufhöhe links', s['photoEaveLeft']),
-        PdfGeneratorBase.buildPhotoField(
-          'Traufhöhe rechts',
-          s['photoEaveRight'],
+          'Dachfotos (außen + innen)',
+          s['photosRoof'],
         ),
         PdfGeneratorBase.buildFieldRow(
           'Traufhöhe (H1/H2) in m',
           PdfGeneratorBase.safeString(s['eaveHeightMeters']),
-        ),
-        PdfGeneratorBase.buildPhotoField(
-          'Traufüberstand mit Zollstock',
-          s['photoEaveOverhang'],
         ),
         PdfGeneratorBase.buildFieldRow(
           'Traufüberstand in cm',
@@ -369,37 +347,25 @@ class InstallationReportPdfGenerator {
           'Firstziegel vermörtelt',
           _yesNo(s['ridgeTilesMortared']),
         ),
-        PdfGeneratorBase.buildPhotoField(
-          'Dachunterseite Ortgang',
-          s['photoUndersideVerge'],
-        ),
         PdfGeneratorBase.buildFieldRow(
           'Dachüberstand Ortgang in cm',
           PdfGeneratorBase.safeString(s['vergeOverhangCm']),
-        ),
-        PdfGeneratorBase.buildPhotoField(
-          'Sparrenbreite mit Maßstab',
-          s['photoRafterWidth'],
         ),
         PdfGeneratorBase.buildFieldRow(
           'Sparrenbreite in cm',
           PdfGeneratorBase.safeString(s['rafterWidthCm']),
         ),
-        PdfGeneratorBase.buildPhotoField(
-          'Sparrenhöhe mit Maßstab',
-          s['photoRafterHeight'],
-        ),
         PdfGeneratorBase.buildFieldRow(
           'Sparrenhöhe in cm',
           PdfGeneratorBase.safeString(s['rafterHeightCm']),
         ),
-        PdfGeneratorBase.buildPhotoField(
-          'Sparrenabstand mit Maßstab',
-          s['photoRafterDistance'],
-        ),
         PdfGeneratorBase.buildFieldRow(
           'Sparrenabstand in cm (M-M)',
           PdfGeneratorBase.safeString(s['rafterDistanceCm']),
+        ),
+        PdfGeneratorBase.buildPhotoField(
+          'Fotos Sparrenmaße',
+          s['photoRafterMeasurements'],
         ),
         PdfGeneratorBase.buildFieldRow(
           'Sichtsparren',
@@ -422,26 +388,21 @@ class InstallationReportPdfGenerator {
           'Ziegeltyp',
           PdfGeneratorBase.safeString(s['tileType']),
         ),
-        PdfGeneratorBase.buildPhotoField('Ziegel von oben', s['photoTileTop']),
         PdfGeneratorBase.buildPhotoField(
-          'Ziegel von unten',
-          s['photoTileBottom'],
-        ),
-        PdfGeneratorBase.buildPhotoField(
-          'Deckhöhe mit Zollstock',
-          s['photoTileHeight'],
+          'Ziegelfotos (oben/unten) mit Deckmaßen',
+          s['photoTile'],
         ),
         PdfGeneratorBase.buildFieldRow(
           'Deckhöhe in cm',
           PdfGeneratorBase.safeString(s['tileHeightCm']),
         ),
-        PdfGeneratorBase.buildPhotoField(
-          'Deckbreite mit Zollstock',
-          s['photoTileWidth'],
-        ),
         PdfGeneratorBase.buildFieldRow(
           'Deckbreite in cm',
           PdfGeneratorBase.safeString(s['tileWidthCm']),
+        ),
+        PdfGeneratorBase.buildFieldRow(
+          'Ziegel geschraubt/geklammert',
+          _yesNo(s['tilesScrewedOrClamped']),
         ),
         PdfGeneratorBase.buildFieldRow(
           'Ersatzziegel vorhanden',
@@ -451,10 +412,6 @@ class InstallationReportPdfGenerator {
           'Kunde über 20 Ersatzziegel informiert',
           _yesNo(s['customerInformedAboutTiles']),
         ),
-        PdfGeneratorBase.buildFieldRow(
-          'Ziegel geschraubt/geklammert',
-          _yesNo(s['tilesScrewedOrClamped']),
-        ),
       ]);
     }
     return PdfGeneratorBase.buildSection('1. Dachflächen', rows);
@@ -463,6 +420,10 @@ class InstallationReportPdfGenerator {
   // 2. DC Cable Route
   static pw.Widget _buildDcCableRouteSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection('2. DC Kabelweg', [
+      PdfGeneratorBase.buildPhotoField(
+        'Fotos geplanter DC-Kabelweg (Linien BLAU)',
+        data['photoDcCableRoute'],
+      ),
       PdfGeneratorBase.buildFieldRow(
         'Länge Kabelweg in m',
         PdfGeneratorBase.safeString(data['dcCableLengthMeters']),
@@ -485,10 +446,6 @@ class InstallationReportPdfGenerator {
       PdfGeneratorBase.buildFieldRow(
         'HAK ohne Energieversorger öffenbar',
         _yesNo(data['hakOpenableWithoutProvider']),
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'HAK Plombe neu',
-        data['photoHakSealNew'],
       ),
       PdfGeneratorBase.buildFieldRow(
         'Abstand Zählerkasten zu HAK in m',
@@ -514,10 +471,6 @@ class InstallationReportPdfGenerator {
         'Zählerschrank (alle Abdeckungen offen)',
         data['photoMeterCabinet'],
       ),
-      PdfGeneratorBase.buildPhotoField(
-        'ZK Detailbilder',
-        data['photosZkDetails'],
-      ),
       PdfGeneratorBase.buildFieldRow(
         'Typenschild vorhanden',
         _yesNo(data['typeLabelPresent']),
@@ -527,7 +480,6 @@ class InstallationReportPdfGenerator {
           'Typenschild Foto',
           data['photoTypeLabel'],
         ),
-      PdfGeneratorBase.buildPhotoField('ZK Plombe neu', data['photoZkSealNew']),
     ]);
   }
 
@@ -562,12 +514,6 @@ class InstallationReportPdfGenerator {
     ];
 
     if (data['additionalMetersPresent'] == 'yes') {
-      rows.add(
-        PdfGeneratorBase.buildFieldRow(
-          'Anzahl zusätzliche Zähler',
-          PdfGeneratorBase.safeString(data['additionalMetersCount']),
-        ),
-      );
       for (var i = 0; i < meters.length; i++) {
         final m = meters[i];
         rows.addAll([
@@ -610,12 +556,8 @@ class InstallationReportPdfGenerator {
         data['photoOptionalZkLocation'],
       ),
       PdfGeneratorBase.buildPhotoField(
-        'Kabelweg HAK → ZK optional',
-        data['photosCableHakToOptionalZk'],
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'Kabelweg ZK Bestand → ZK optional',
-        data['photosCableExistingZkToOptionalZk'],
+        'Kabelweg HAK → ZK / Bestand → Optional',
+        data['photosCableRoutes'],
       ),
     ]);
   }
@@ -637,12 +579,8 @@ class InstallationReportPdfGenerator {
         PdfGeneratorBase.safeString(data['signalTelefonicaExisting']),
       ),
       PdfGeneratorBase.buildPhotoField(
-        'Messgerät ZK Bestand',
-        data['photoMeterDeviceExisting'],
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'Antennenplatzierung ZK Bestand',
-        data['photoAntennaPlacementExisting'],
+        'Foto Messgerät + Antenne (ZK Bestand)',
+        data['photoSignalExisting'],
       ),
       // Optional ZK location
       PdfGeneratorBase.buildFieldRow(
@@ -658,12 +596,8 @@ class InstallationReportPdfGenerator {
         PdfGeneratorBase.safeString(data['signalTelefonicaOptional']),
       ),
       PdfGeneratorBase.buildPhotoField(
-        'Messgerät ZK optional',
-        data['photoMeterDeviceOptional'],
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'Antennenplatzierung ZK optional',
-        data['photoAntennaPlacementOptional'],
+        'Foto Messgerät + Antenne (ZK optional)',
+        data['photoSignalOptional'],
       ),
     ]);
   }
@@ -696,12 +630,8 @@ class InstallationReportPdfGenerator {
         PdfGeneratorBase.safeString(data['distanceInverterToZk']),
       ),
       PdfGeneratorBase.buildPhotoField(
-        'Kabelweg WR/Speicher → ZK Bestand',
-        data['photosCableInverterToExistingZk'],
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'Kabelweg WR/Speicher → ZK optional',
-        data['photosCableInverterToOptionalZk'],
+        'Kabelweg WR/Speicher → ZK (rote Linien)',
+        data['photosCableInverterToZk'],
       ),
     ]);
   }
@@ -714,28 +644,16 @@ class InstallationReportPdfGenerator {
         _yesNo(data['mainEarthingPresent']),
       ),
       PdfGeneratorBase.buildPhotoField(
-        'Haupterdung Foto',
-        data['photoMainEarthing'],
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'Potenzialschiene Foto',
-        data['photoPotentialRail'],
+        'Fotos Erdung (Hauptpunkt + Schiene + Kabelweg)',
+        data['photosEarthing'],
       ),
       PdfGeneratorBase.buildFieldRow(
         'Entfernung Erdung → Speicher in m',
         PdfGeneratorBase.safeString(data['distanceEarthingToStorage']),
       ),
       PdfGeneratorBase.buildFieldRow(
-        'Entfernung Erdung → ZK Bestand in m',
-        PdfGeneratorBase.safeString(data['distanceEarthingToExistingZk']),
-      ),
-      PdfGeneratorBase.buildFieldRow(
-        'Entfernung Erdung → ZK optional in m',
-        PdfGeneratorBase.safeString(data['distanceEarthingToOptionalZk']),
-      ),
-      PdfGeneratorBase.buildPhotoField(
-        'Kabelweg Erdung → WR/Speicher',
-        data['photosEarthingCableRoute'],
+        'Entfernung Erdung → ZK in m',
+        PdfGeneratorBase.safeString(data['distanceEarthingToZk']),
       ),
     ]);
   }
@@ -759,12 +677,8 @@ class InstallationReportPdfGenerator {
           PdfGeneratorBase.safeString(data['distanceRouterToStorage']),
         ),
         PdfGeneratorBase.buildPhotoField(
-          'Kabelweg Router → WR/Speicher',
-          data['photosRouterCableRoute'],
-        ),
-        PdfGeneratorBase.buildPhotoField(
-          'Typenschild Router',
-          data['photoRouterTypeLabel'],
+          'Kabelweg Router → WR/Speicher + Typenschild',
+          data['photosInternetCableRoute'],
         ),
       ]);
     }
@@ -821,61 +735,11 @@ class InstallationReportPdfGenerator {
     return PdfGeneratorBase.buildSection('9. Blackout Paket', rows);
   }
 
-  // 10. Organizational (repeatable)
-  static pw.Widget _buildOrganizationalSection(
-    List<Map<String, dynamic>> entries,
-  ) {
-    if (entries.isEmpty) {
-      return PdfGeneratorBase.buildSection('10. Organisatorisches', [
-        PdfGeneratorBase.buildFieldRow('Einträge', 'Keine Einträge'),
-      ]);
-    }
-    final rows = <pw.Widget>[];
-    for (var i = 0; i < entries.length; i++) {
-      final e = entries[i];
-      rows.addAll([
-        PdfGeneratorBase.buildFieldRow(
-          'Notiz ${i + 1}',
-          PdfGeneratorBase.safeString(e['notes']),
-        ),
-        PdfGeneratorBase.buildPhotoField('Foto ${i + 1}', e['photo']),
-      ]);
-    }
-    return PdfGeneratorBase.buildSection('10. Organisatorisches', rows);
-  }
-
-  // 11. Special Notes / Internal Planning
-  static pw.Widget _buildSpecialNotesSection(Map<String, dynamic> data) {
+  // 11. Notes & Planning
+  static pw.Widget _buildNotesSection(Map<String, dynamic> data) {
     return PdfGeneratorBase.buildSection(
-      '11. Besonderheiten / Interne Planung',
+      '11. Bemerkungen & Planung',
       [
-        // DC
-        PdfGeneratorBase.buildFieldRow(
-          'Bemerkungen DC Installation',
-          PdfGeneratorBase.safeString(data['dcRemarks']),
-        ),
-        PdfGeneratorBase.buildFieldRow(
-          'Beschreibung Kabelweg DC',
-          PdfGeneratorBase.safeString(data['dcCableDescription']),
-        ),
-        PdfGeneratorBase.buildFieldRow(
-          'Sonstige Anmerkungen DC',
-          PdfGeneratorBase.safeString(data['dcOtherRemarks']),
-        ),
-        // AC
-        PdfGeneratorBase.buildFieldRow(
-          'Bemerkungen AC Installation',
-          PdfGeneratorBase.safeString(data['acRemarks']),
-        ),
-        PdfGeneratorBase.buildFieldRow(
-          'Beschreibung Kabelweg AC',
-          PdfGeneratorBase.safeString(data['acCableDescription']),
-        ),
-        PdfGeneratorBase.buildFieldRow(
-          'Sonstige Anmerkungen AC',
-          PdfGeneratorBase.safeString(data['acOtherRemarks']),
-        ),
-        // Other
         PdfGeneratorBase.buildFieldRow(
           'Kabelweg DC und AC gleich',
           _yesNo(data['dcAcSameRoute']),
@@ -885,12 +749,28 @@ class InstallationReportPdfGenerator {
           PdfGeneratorBase.safeString(data['customerCablingWish']),
         ),
         PdfGeneratorBase.buildFieldRow(
+          'DC Bemerkungen + Kabelwegbeschreibung',
+          PdfGeneratorBase.safeString(data['dcNotes']),
+        ),
+        PdfGeneratorBase.buildFieldRow(
+          'AC Bemerkungen + Kabelwegbeschreibung',
+          PdfGeneratorBase.safeString(data['acNotes']),
+        ),
+        PdfGeneratorBase.buildFieldRow(
+          'Materiallager / Parken / Anfahrt',
+          PdfGeneratorBase.safeString(data['organizationalNotes']),
+        ),
+        PdfGeneratorBase.buildFieldRow(
           'Weitere Anmerkungen Aufmaßtechniker',
           PdfGeneratorBase.safeString(data['techRemarks']),
         ),
         PdfGeneratorBase.buildPhotoField(
-          'Bilder der Besonderheiten',
+          'Optionale Fotos Besonderheiten',
           data['photosSpecial'],
+        ),
+        PdfGeneratorBase.buildFieldRow(
+          'Alle Details eingetragen und besprochen',
+          _yesNo(data['detailsRecorded']),
         ),
       ],
     );
@@ -920,7 +800,7 @@ class InstallationReportPdfGenerator {
         ),
       ]);
     }
-    return PdfGeneratorBase.buildSection('12. Wärmepumpe', rows);
+    return PdfGeneratorBase.buildSection('10. Wärmepumpe', rows);
   }
 
   // additional info
@@ -979,7 +859,7 @@ class InstallationReportPdfGenerator {
         ),
         PdfGeneratorBase.buildFieldRow(
           'Ort',
-          PdfGeneratorBase.safeString(data['signatureLocation']),
+          PdfGeneratorBase.safeString(data['location']),
         ),
         PdfGeneratorBase.buildFieldRow(
           'Datum',
