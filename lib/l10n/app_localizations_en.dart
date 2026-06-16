@@ -36,6 +36,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get installationReport => 'Installation Report';
 
   @override
+  String get dcAcceptanceProtocol => 'DC Acceptance Protocol';
+
+  @override
   String get customerData => 'Customer Data';
 
   @override
@@ -555,6 +558,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get installationReportSubtitle => 'Document installation details';
+
+  @override
+  String get dcAcceptanceSubtitle => 'Complete DC acceptance checklist';
 
   @override
   String get recentDrafts => 'Recent Drafts';

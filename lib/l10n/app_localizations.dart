@@ -154,6 +154,12 @@ abstract class AppLocalizations {
   /// **'Installation Report'**
   String get installationReport;
 
+  /// No description provided for @dcAcceptanceProtocol.
+  ///
+  /// In en, this message translates to:
+  /// **'DC Acceptance Protocol'**
+  String get dcAcceptanceProtocol;
+
   /// No description provided for @customerData.
   ///
   /// In en, this message translates to:
@@ -1191,6 +1197,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Document installation details'**
   String get installationReportSubtitle;
+
+  /// No description provided for @dcAcceptanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete DC acceptance checklist'**
+  String get dcAcceptanceSubtitle;
 
   /// No description provided for @recentDrafts.
   ///

@@ -36,6 +36,9 @@ class AppLocalizationsAr extends AppLocalizations {
   String get installationReport => 'تقرير التركيب';
 
   @override
+  String get dcAcceptanceProtocol => 'بروتوكول قبول التيار المستمر';
+
+  @override
   String get customerData => 'بيانات العميل';
 
   @override
@@ -555,6 +558,9 @@ class AppLocalizationsAr extends AppLocalizations {
 
   @override
   String get installationReportSubtitle => 'توثيق تفاصيل التركيب';
+
+  @override
+  String get dcAcceptanceSubtitle => 'قائمة قبول التيار المستمر الكاملة';
 
   @override
   String get recentDrafts => 'المسودات الأخيرة';

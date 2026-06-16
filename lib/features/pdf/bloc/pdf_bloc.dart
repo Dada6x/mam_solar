@@ -12,6 +12,7 @@ import 'package:mam_solar/features/pdf/generators/ac_protocol_pdf_generator.dart
 import 'package:mam_solar/features/pdf/generators/work_order_pdf_generator.dart';
 import 'package:mam_solar/features/pdf/generators/damage_report_pdf_generator.dart';
 import 'package:mam_solar/features/pdf/generators/installation_report_pdf_generator.dart';
+import 'package:mam_solar/features/pdf/generators/dc_acceptance_pdf_generator.dart';
 
 part 'pdf_bloc.freezed.dart';
 
@@ -149,6 +150,13 @@ class PdfBloc extends Bloc<PdfEvent, PdfState> {
         );
       case 'installation_report':
         return InstallationReportPdfGenerator.generate(
+          protocolId: protocol.id,
+          customerName: customerName,
+          data: data,
+          repeatableData: repeatableData,
+        );
+      case 'dc_acceptance':
+        return DcAcceptancePdfGenerator.generate(
           protocolId: protocol.id,
           customerName: customerName,
           data: data,

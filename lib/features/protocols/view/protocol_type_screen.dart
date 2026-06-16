@@ -47,6 +47,16 @@ class ProtocolTypeScreen extends StatelessWidget {
               color: Colors.teal.shade700,
               onTap: () => context.push('/form/installation_report'),
             ),
+            const SizedBox(height: 12),
+            _ProtocolTypeCard(
+              icon: Icons.electrical_services,
+              title: AppLocalizations.of(context)!.dcAcceptanceProtocol,
+              subtitle: AppLocalizations.of(
+                context,
+              )!.dcAcceptanceSubtitle,
+              color: Colors.purple.shade700,
+              onTap: () => context.push('/form/dc_acceptance'),
+            ),
           ],
         ),
       ),
