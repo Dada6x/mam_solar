@@ -23,19 +23,25 @@ class InstallationReportPdfGenerator {
 
     // Section 2: DC Cable Route
     'dcCableLengthMeters',
+    'photoDcCableRoute',
 
     // Section 3: Electrical – HAK
-    'hakFuseAmps', 'hakHousingMaterial', 'hakOpenableWithoutProvider',
+    'photoHak', 'hakFuseAmps', 'hakHousingMaterial', 'hakOpenableWithoutProvider',
     'photoHakSealNew', 'distanceMeterToHak',
+    'photosWayToMeter',
 
     // Section 3: Meter Cabinet (existing)
+    'photoMeterCabinet', 'photosZkDetails',
     'typeLabelPresent', 'photoTypeLabel', 'photoZkSealNew',
 
     // Section 3: Main Meter
-    'mainMeterNumber', 'mainMeterPurpose',
+    'photoMainMeter', 'mainMeterNumber', 'mainMeterPurpose',
 
     // Section 3: Additional Meters
     'additionalMetersPresent', 'additionalMetersCount',
+
+    // Section 3: Optional ZK
+    'photoOptionalZkLocation', 'photosCableHakToOptionalZk', 'photosCableExistingZkToOptionalZk',
 
     // Section 3: Consolidation & Other
     'meterConsolidation', 'otherEnergySystems',
@@ -49,29 +55,33 @@ class InstallationReportPdfGenerator {
     'photoMeterDeviceOptional', 'photoAntennaPlacementOptional',
 
     // Section 5: Storage / Inverter
+    'photosInstallLocation',
     'storageOnFireproofSurface', 'inverterOnFireproofWall',
     'customerInformedTemperature', 'storageLocation',
     'distanceInverterToZk',
+    'photosCableInverterToExistingZk', 'photosCableInverterToOptionalZk',
 
     // Section 6: Earthing
     'mainEarthingPresent', 'photoMainEarthing', 'photoPotentialRail',
     'distanceEarthingToStorage', 'distanceEarthingToExistingZk',
-    'distanceEarthingToOptionalZk',
+    'distanceEarthingToOptionalZk', 'photosEarthingCableRoute',
 
     // Section 7: Internet
     'internetAvailable', 'customerLaysCableThemselves',
-    'distanceRouterToStorage', 'photoRouterTypeLabel',
+    'distanceRouterToStorage', 'photosRouterCableRoute', 'photoRouterTypeLabel',
 
     // Section 8: Wallbox
     'wallboxOrdered', 'photoWallboxLocation', 'distanceWallboxToZk',
+    'photosWallboxCable',
 
     // Section 9: Blackout Package
-    'blackoutOrdered', 'photoNubLocation',
+    'blackoutOrdered', 'photoNubLocation', 'photosNubCableRoute',
 
     // Section 11: Special Notes
     'dcRemarks', 'dcCableDescription', 'dcOtherRemarks',
     'acRemarks', 'acCableDescription', 'acOtherRemarks',
     'dcAcSameRoute', 'customerCablingWish', 'techRemarks',
+    'photosSpecial',
 
     // Section 12: Heat Pump
     'heatPumpOrdered', 'photoHeatPumpLocation',
@@ -84,6 +94,27 @@ class InstallationReportPdfGenerator {
     'techSignature',
   ];
 
+  static const _expectedRepeatableKeys = {
+    'roofSurfaces': [
+      'dormersPresent',
+      'photoEaveFront', 'photoEaveLeft', 'photoEaveRight',
+      'eaveHeightMeters', 'photoEaveOverhang', 'eaveOverhangCm',
+      'ridgeTilesMortared', 'photoUndersideVerge', 'vergeOverhangCm',
+      'photoRafterWidth', 'rafterWidthCm',
+      'photoRafterHeight', 'rafterHeightCm',
+      'photoRafterDistance', 'rafterDistanceCm',
+      'visibleRafters', 'aboveRoofInsulation', 'feltPlugs',
+      'roofPitchDegrees', 'photoRoofPitch',
+      'tileType',
+      'photoTileTop', 'photoTileBottom', 'photoTileHeight',
+      'tileHeightCm', 'photoTileWidth', 'tileWidthCm',
+      'tilesScrewedOrClamped', 'hasReplacementTiles', 'customerInformedAboutTiles',
+    ],
+    'additionalMeters': ['photoMeter', 'meterNumber', 'meterPurpose'],
+    'organizational': ['notes', 'photo'],
+    'additional_info': ['note', 'image'],
+  };
+
   // ── Entry point ──────────────────────────────────────────────────────────
 
   static pw.Document generate({
@@ -94,6 +125,9 @@ class InstallationReportPdfGenerator {
   }) {
     PdfGeneratorBase.logExpectedFields(
       data, 'AufmassReportPdfGenerator', _expectedFlatKeys,
+    );
+    PdfGeneratorBase.logExpectedRepeatableFields(
+      repeatableData, 'AufmassReportPdfGenerator', _expectedRepeatableKeys,
     );
 
     final date = DateFormatter.formatDate(DateTime.now());

@@ -8,11 +8,11 @@ class WorkOrderPdfGenerator {
     'description', 'workDetail',
     'workCompleted',
     'reason', 'nextAppointment', 'whatIsMissing',
-    'completionDate',
+    'completionDate', 'completionTime',
     'photoMeter',
     'remarks',
-    'note','image'
-    'customerFullName','customerSignature', 'companySignature', 'signerName', 'emailSentTo',
+    'note', 'image',
+    'customerFullName', 'customerSignature', 'companySignature', 'signerName', 'emailSentTo',
   ];
 
   static const _expectedRepeatableKeys = {
@@ -213,6 +213,7 @@ class WorkOrderPdfGenerator {
     final fields = <pw.Widget>[
       PdfGeneratorBase.buildFieldRow('Arbeit abgeschlossen', isCompleted ? 'Ja' : 'Nein'),
       PdfGeneratorBase.buildFieldRow('Abschlussdatum', PdfGeneratorBase.safeString(data['completionDate'])),
+      PdfGeneratorBase.buildFieldRow('Abschlusszeit', PdfGeneratorBase.safeString(data['completionTime'])),
     ];
 
     if (!isCompleted) {

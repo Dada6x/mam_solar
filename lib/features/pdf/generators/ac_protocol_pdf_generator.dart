@@ -43,6 +43,7 @@ class AcProtocolPdfGenerator {
     ],
     'inverter_details': ['serialNumberInverter', 'photoDataplate'],
     'cable_routes': ['photoCableRoute', 'cableLength'],
+    'additional_info': ['note', 'image'],
   };
 
   // ─── Entry point ──────────────────────────────────────────────────────────

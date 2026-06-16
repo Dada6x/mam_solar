@@ -27,6 +27,7 @@ class DamageReportPdfGenerator {
     // remarks
     'remarks',
     // signatures
+    'protocolDateTime',
     'damagedPartySignature',
     'employeeSignature',
     'damagedPartyFullName',

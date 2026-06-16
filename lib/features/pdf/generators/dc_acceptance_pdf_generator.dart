@@ -46,8 +46,8 @@ class DcAcceptancePdfGenerator {
     'allDetailsRecorded', 'gutterCleaned', 'photosGutter',
 
     // Signatures
-    'location', 'completionDateTime', 'customerFullName',
-    'customerSignature', 'foremanSignature', 'emailSentTo',
+    'location', 'completionDateTime', 'noticePeriod',
+    'customerFullName', 'customerSignature', 'foremanSignature', 'emailSentTo',
   ];
 
   static const _expectedRepeatableKeys = {
@@ -82,6 +82,7 @@ class DcAcceptancePdfGenerator {
       'photoMeasurement',
       'stringNumberAndValue',
     ],
+    'additional_info': ['note', 'image'],
   };
 
   static pw.Document generate({
