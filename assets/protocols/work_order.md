@@ -3,7 +3,7 @@ protocol: work_order
 title: Work Order
 title_de: Regie-/Arbeitsauftrag
 title_ar: أمر العمل
-version: 2.0
+version: 3.0
 company: MAM Solarbau
 ---
 
@@ -40,29 +40,34 @@ max: 30
 ## Vehicle / Travel | Fahrzeug / Anreise | المركبة / السفر
 
 section_id: travel
-repeatable: true
-min: 0
-max: 10
 
+- vehicleUsed | radio | required | Was a vehicle used? | Fahrzeug eingesetzt? | هل تم استخدام مركبة؟
+  options: yes, no
 - licensePlate | text | | License Plate | Kennzeichen | لوحة الترخيص
+  show_if: vehicleUsed == yes
 - departure | text | | Departure (City/Address) | Abfahrt (Ort/Adresse) | المغادرة (المدينة/العنوان)
+  show_if: vehicleUsed == yes
 - destination | text | | Destination (City/Address) | Zielort (Ort/Adresse) | الوجهة (المدينة/العنوان)
+  show_if: vehicleUsed == yes
 - kilometers | number | | Kilometers driven | Gefahrene Kilometer | الكيلومترات المقطوعة
+  show_if: vehicleUsed == yes
 
 ## Working Hours | Arbeitszeit | ساعات العمل
 
 section_id: working_hours
 
-repeatable: true
-min: 1
-max: 14
-
+- hoursLogged | radio | required | Log working hours? | Arbeitszeit erfassen? | هل تسجيل ساعات العمل؟
+  options: yes, no
 - date | date | | Date | Datum | التاريخ
+  show_if: hoursLogged == yes
 - techName | text | | Technician Name | Technikername | اسم الفني
+  show_if: hoursLogged == yes
 - startTime | time | | Start Time | Startzeit | وقت البدء
+  show_if: hoursLogged == yes
 - endTime | time | | End Time | Endzeit | وقت الانتهاء
+  show_if: hoursLogged == yes
 - duration | text | | Duration | Arbeitsdauer | المدة
-  formula: endTime - startTime
+  show_if: hoursLogged == yes
 
 ## Meter Readings | Zählerstand | قراءة العداد
 
