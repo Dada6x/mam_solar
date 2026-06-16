@@ -7,7 +7,7 @@ class AcProtocolPdfGenerator {
 
   static const _expectedFlatKeys = [
     // Customer Data
-    'customerName', 'street', 'houseNumber', 'zipCode', 'city', 'email',
+    'customerName', 'street', 'houseNumber', 'zipCode', 'city',
 
     // Installation Details
     'installationType', 'storageManufacturer',
@@ -104,7 +104,7 @@ class AcProtocolPdfGenerator {
       ..._field('Hausnummer', data['houseNumber']),
       ..._field('Postleitzahl', data['zipCode']),
       ..._field('Stadt', data['city']),
-      ..._field('E-Mail', data['email']),
+      // ..._field('E-Mail', data['email']),
     ];
     return _section('Kundendaten', fields);
   }

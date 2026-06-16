@@ -63,7 +63,7 @@ section_id: inverter_details
 - inverterDetails | repeatable | | Inverter Details | Wechselrichterdetails | تفاصيل الانفرتر
   repeatable: true
   min: 1
-  max: 
+  max:
   - serialNumberInverter | text | | Inverter Serial Number | Seriennummer Wechselrichter | الرقم التسلسلي للانفرتر
   - photoDataplate | photo | | Photo of Nameplate | Foto Typenschild | صورة لوحة البيانات
 
@@ -93,7 +93,7 @@ section_id: meter_ibn
 
 - meterReplaced | checkbox | | Meter Replaced? | Zähler ausgetauscht? | هل تم استبدال العداد؟
 
----e
+---
 
 ## Cable Routes | Kabelwege | مسارات الكابل
 
@@ -113,8 +113,8 @@ section_id: diploma
 
 - remarks | textarea | | Remarks | Bemerkungen | ملاحظات
 - completionDate | datetime | required | Completion Date & Time | Abschlussdatum und -uhrzeit | تاريخ ووقت الانتهاء
----
 
+---
 
 ## Additional Info | Zusätzliche Informationen | معلومات إضافية
 
@@ -127,15 +127,13 @@ max: 10
 - note | textarea | | Note | Bemerkung | ملاحظة
 - image | photo | | Image | Bild | صورة
 
-
-
-
 ## Signatures | Unterschriften | التوقيعات
 
 section_id: signatures
 
 - location | text | required | Location | Ort | الموقع
 <!-- Todo make it full name instead of name  -->
-- sigCustomerFullName | text | required | Customer Full Name | Vollständiger Kundenname | الاسم الكامل للعميل- customerEmail | email | | Customer Email | Kunden-E-Mail | البريد الإلكتروني للعميل
+- sigCustomerFullName | text | required | Customer Full Name | Vollständiger Kundenname | الاسم الكامل للعميل
+- customerEmail | email | | Customer Email | Kunden-E-Mail | البريد الإلكتروني للعميل
 - customerSignature | signature | required | Customer Signature | Unterschrift Kunde | توقيع العميل
 - electricianSignature | signature | required | Electrician Signature | Unterschrift Elektriker | توقيع الكهربائي
