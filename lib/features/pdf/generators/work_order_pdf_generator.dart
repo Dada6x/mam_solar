@@ -4,15 +4,24 @@ import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
 
 class WorkOrderPdfGenerator {
   static const _expectedFlatKeys = [
+    // Customer Data
     'fullName', 'street','city', 'zipCity', 'email', 'phone',
+    // Work Description
     'description', 'workDetail',
+    // Travel
+    'vehicleUsed',
+    // Working Hours
+    'hoursLogged',
+    // Meter
+    'photoMeter',
+    // Completion
     'workCompleted',
     'reason', 'nextAppointment', 'whatIsMissing',
     'completionDate', 'completionTime',
-    'photoMeter',
+    // Remarks
     'remarks',
-    'note', 'image',
-    'customerFullName', 'customerSignature', 'companySignature', 'signerName', 'emailSentTo',
+    // Signatures
+    'customerFullName', 'customerSignature', 'companySignature', 'signerName',
   ];
 
   static const _expectedRepeatableKeys = {
