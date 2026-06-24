@@ -3,15 +3,11 @@ import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:pdf/widgets.dart' as pw;
+import 'package:mam_solar/core/parsers/protocol_md_parser.dart';
 import 'package:mam_solar/core/utils/pdf_naming_util.dart';
-import 'package:mam_solar/data/models/protocol_model.dart';
 import 'package:mam_solar/data/repositories/protocol_repository.dart';
 import 'package:mam_solar/features/pdf/generators/pdf_generator_base.dart';
-import 'package:mam_solar/features/pdf/generators/ac_protocol_pdf_generator.dart';
-import 'package:mam_solar/features/pdf/generators/work_order_pdf_generator.dart';
-import 'package:mam_solar/features/pdf/generators/damage_report_pdf_generator.dart';
-import 'package:mam_solar/features/pdf/generators/installation_report_pdf_generator.dart';
+import 'package:mam_solar/features/pdf/generators/generic_protocol_pdf_generator.dart';
 
 part 'pdf_bloc.freezed.dart';
 
@@ -70,7 +66,18 @@ class PdfBloc extends Bloc<PdfEvent, PdfState> {
       }
 
       await PdfGeneratorBase.loadLogo();
-      final doc = _generateDocument(protocol, data, repeatableData);
+      final parsed = await ProtocolMdParser.parse(protocol.type);
+      final doc = GenericProtocolPdfGenerator.generate(
+        protocolId: protocol.id,
+        title: parsed.titleDe ?? parsed.title,
+        typeCode: _typeCode(protocol.type),
+        customerName: data['customerName'] as String? ??
+            data['fullName'] as String? ??
+            'Unknown',
+        sections: parsed.sections,
+        data: data,
+        repeatableData: repeatableData,
+      );
 
       final dir = await getApplicationDocumentsDirectory();
       final pdfDir = Directory('${dir.path}/pdfs');
@@ -115,52 +122,21 @@ class PdfBloc extends Bloc<PdfEvent, PdfState> {
     }
   }
 
-  pw.Document _generateDocument(
-    ProtocolModel protocol,
-    Map<String, dynamic> data,
-    Map<String, List<Map<String, dynamic>>> repeatableData,
-  ) {
-    final customerName =
-        data['customerName'] as String? ??
-        data['fullName'] as String? ??
-        'Unknown';
-
-    switch (protocol.type) {
+  /// Short prefix for the protocol number per type (e.g. "AC 20260624-0001").
+  String _typeCode(String type) {
+    switch (type) {
       case 'ac_acceptance':
-        return AcProtocolPdfGenerator.generate(
-          protocolId: protocol.id,
-          customerName: customerName,
-          data: data,
-          repeatableData: repeatableData,
-        );
+        return 'AC';
+      case 'dc_acceptance':
+        return 'DC';
       case 'work_order':
-        return WorkOrderPdfGenerator.generate(
-          protocolId: protocol.id,
-          customerName: customerName,
-          data: data,
-          repeatableData: repeatableData,
-        );
+        return 'AB';
       case 'damage_report':
-        return DamageReportPdfGenerator.generate(
-          protocolId: protocol.id,
-          customerName: customerName,
-          data: data,
-          repeatableData: repeatableData,
-        );
+        return 'SCH';
       case 'installation_report':
-        return InstallationReportPdfGenerator.generate(
-          protocolId: protocol.id,
-          customerName: customerName,
-          data: data,
-          repeatableData: repeatableData,
-        );
+        return 'AUF';
       default:
-        return AcProtocolPdfGenerator.generate(
-          protocolId: protocol.id,
-          customerName: customerName,
-          data: data,
-          repeatableData: repeatableData,
-        );
+        return 'PR';
     }
   }
 }

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mam_solar/core/parsers/protocol_md_parser.dart';
+import 'package:mam_solar/features/pdf/generators/generic_protocol_pdf_generator.dart';
 
 void main() {
   test('ac_acceptance.md parses into the BSH structure with show_if logic', () {
@@ -63,5 +64,58 @@ void main() {
     final meters = cable.fields.firstWhere((f) => f.id == 'zusaetzlicheMeter');
     expect(meters.isVisible({'kabelwegUeber25m': 'Nein'}), isFalse);
     expect(meters.isVisible({'kabelwegUeber25m': 'Ja'}), isTrue);
+  });
+
+  test('GenericProtocolPdfGenerator renders the AC protocol without crashing',
+      () async {
+    final source =
+        File('assets/protocols/ac_acceptance.md').readAsStringSync();
+    final parsed = ProtocolMdParser.parseMarkdown('ac_acceptance', source);
+
+    final data = <String, dynamic>{
+      'customerName': 'Max Mustermann',
+      'street': 'Teststraße',
+      'houseNumber': '1',
+      'zipCode': '86179',
+      'montageort': 'Augsburg',
+      'email': 'max@example.de',
+      'einsatzart': 'Photovoltaikanlage mit Speicher',
+      'herstellerSpeicher': 'EcoFlow Stromspeicher',
+      'wallboxInstalliert': 'Nein',
+      'backupSystem': 'Nein',
+      'backupHinweis': 'Kein Backup gewünscht',
+      'pruefungDurchgefuehrt': 'Ja',
+      'neuerZaehlerkasten': 'Nein',
+      'apzInstalliert': 'Nein',
+      'kabelwegUeber25m': 'Ja',
+      'zusaetzlicheMeter': '30',
+      'cbAbfallGeladen': true,
+      'unterschriftVon': 'Kunde',
+    };
+    final repeatable = <String, List<Map<String, dynamic>>>{
+      'inverter': [
+        {'photoTypenschild': '/does/not/exist.jpg'}
+      ],
+      'storage': [
+        {'anzahlAkkumodule': '1'}
+      ],
+      'meter_ibn_meters': [
+        {'artZaehler': 'Eintarif', 'zaehlerAusbauen': 'Nein'}
+      ],
+    };
+
+    final doc = GenericProtocolPdfGenerator.generate(
+      protocolId: 1,
+      title: parsed.titleDe ?? parsed.title,
+      typeCode: 'AC',
+      customerName: 'Max Mustermann',
+      sections: parsed.sections,
+      data: data,
+      repeatableData: repeatable,
+    );
+
+    final bytes = await doc.save();
+    // A non-trivial PDF was produced (header + multiple sections).
+    expect(bytes.length, greaterThan(2000));
   });
 }
