@@ -335,6 +335,7 @@ class ProtocolMdParser {
           );
           currentFields![idx] = updated;
           _syncFieldToPages(lastField!, updated, currentFieldPages);
+          lastField = updated;
         }
         continue;
       }
@@ -366,6 +367,7 @@ class ProtocolMdParser {
           );
           currentFields![idx] = updated;
           _syncFieldToPages(lastField!, updated, currentFieldPages);
+          lastField = updated;
         }
         continue;
       }
@@ -394,6 +396,7 @@ class ProtocolMdParser {
           );
           currentFields![idx] = updated;
           _syncFieldToPages(lastField!, updated, currentFieldPages);
+          lastField = updated;
         }
         continue;
       }

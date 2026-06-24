@@ -3,27 +3,25 @@ protocol: work_order
 title: Work Order
 title_de: Regie-/Arbeitsauftrag
 title_ar: أمر العمل
-version: 3.0
+version: 4.0
 company: MAM Solarbau
+note: Rebuilt 1:1 from the BSH Regie-/Arbeitsauftrag PDF, adapted for MAM Solarbau. MAM improvements (materials, vehicle, working hours) kept as optional Ja/Nein-gated blocks so installers only see them when needed.
 ---
 
 ## Customer Data | Kundendaten | بيانات العميل
 
 section_id: customer_data
 
-- fullName | text | required | Full Name (or Company) | Vollständiger Name (oder Firma) | الاسم الكامل (أو الشركة)
-- street | text |required | Street | Straße | الشارع
-- city | text | required | City | Stadt | المدينة
-- zipCity | text | required | ZIP / City | PLZ / Ort | الرمز البريدي / المدينة
-- email | email | required | Email | E-Mail | البريد الإلكتروني
-- phone | text | required | Phone | Telefon | الهاتف
+- customerName | text | required | First and last name (company, if any) | Vor- und Nachname (Firma, falls vorhanden) | الاسم الكامل (الشركة إن وجدت)
+- street | text | required | Street | Straße | الشارع
+- zipCity | text | required | ZIP, City | PLZ, Ort | الرمز البريدي، المدينة
+- email | email | required | Customer email address | E-Mail-Adresse des Kunden | البريد الإلكتروني للعميل
 
-## Work Description | Arbeitsbeschreibung | وصف العمل
+## Work Performed (Description) | Ausgeführte Arbeiten (Beschreibung) | الأعمال المنفذة (الوصف)
 
 section_id: work_description
 
-- description | textarea | required | Description | Beschreibung | الوصف
-- workDetail | textarea | | Work Detail | Arbeitsdetail | تفاصيل العمل
+- arbeitsbeschreibung | textarea | required | Work performed (work description) | Ausgeführte Arbeiten (Arbeitsbeschreibung) | الأعمال المنفذة (وصف العمل)
 
 ## Materials | Materialverbrauch | استهلاك المواد
 
@@ -34,7 +32,7 @@ max: 30
 
 - quantity | number | | Quantity | Menge | الكمية
 - unit | dropdown | | Unit | Einheit | الوحدة
-  options: piece, meter, kg, liter, set
+  options: Stück, Meter, kg, Liter, Satz
 - material | text | | Material / Article | Material / Artikel | المادة / الصنف
 
 ## Vehicle / Travel | Fahrzeug / Anreise | المركبة / السفر
@@ -42,94 +40,58 @@ max: 30
 section_id: travel
 
 - vehicleUsed | radio | required | Was a vehicle used? | Fahrzeug eingesetzt? | هل تم استخدام مركبة؟
-  options: yes, no
-- licensePlate | text | | License Plate | Kennzeichen | لوحة الترخيص
-  show_if: vehicleUsed == yes
-- departure | text | | Departure (City/Address) | Abfahrt (Ort/Adresse) | المغادرة (المدينة/العنوان)
-  show_if: vehicleUsed == yes
-- destination | text | | Destination (City/Address) | Zielort (Ort/Adresse) | الوجهة (المدينة/العنوان)
-  show_if: vehicleUsed == yes
+  options: Ja, Nein
+- licensePlate | text | | License plate | Kennzeichen | لوحة الترخيص
+  show_if: vehicleUsed == Ja
+- departure | text | | Departure (city / address) | Abfahrt (Ort/Adresse) | المغادرة (المدينة/العنوان)
+  show_if: vehicleUsed == Ja
+- destination | text | | Destination (city / address) | Zielort (Ort/Adresse) | الوجهة (المدينة/العنوان)
+  show_if: vehicleUsed == Ja
 - kilometers | number | | Kilometers driven | Gefahrene Kilometer | الكيلومترات المقطوعة
-  show_if: vehicleUsed == yes
+  show_if: vehicleUsed == Ja
 
 ## Working Hours | Arbeitszeit | ساعات العمل
 
 section_id: working_hours
 
-- hoursLogged | radio | required | Log working hours? | Arbeitszeit erfassen? | هل تسجيل ساعات العمل؟
-  options: yes, no
+- hoursLogged | radio | required | Record working hours? | Arbeitszeit erfassen? | هل تسجيل ساعات العمل؟
+  options: Ja, Nein
 - date | date | | Date | Datum | التاريخ
-  show_if: hoursLogged == yes
-- techName | text | | Technician Name | Technikername | اسم الفني
-  show_if: hoursLogged == yes
-- startTime | time | | Start Time | Startzeit | وقت البدء
-  show_if: hoursLogged == yes
-- endTime | time | | End Time | Endzeit | وقت الانتهاء
-  show_if: hoursLogged == yes
+  show_if: hoursLogged == Ja
+- techName | text | | Technician name | Name des Monteurs | اسم الفني
+  show_if: hoursLogged == Ja
+- startTime | time | | Start time | Startzeit | وقت البدء
+  show_if: hoursLogged == Ja
+- endTime | time | | End time | Endzeit | وقت الانتهاء
+  show_if: hoursLogged == Ja
 - duration | text | | Duration | Arbeitsdauer | المدة
-  show_if: hoursLogged == yes
+  show_if: hoursLogged == Ja
 
-## Meter Readings | Zählerstand | قراءة العداد
+## Section | Abschnitt | القسم
 
-section_id: meter_readings
-optional_section: true
-repeatable: true
-min: 0
-max: 5
+section_id: completion
 
-- meterNumber | text | | Meter Number | Zählernummer | رقم العداد
-- reading | number | | Reading (kWh) | Zählerstand (kWh) | القراءة (كيلوواط ساعة)
-
----
-
-- photoMeter | photo | | Photo - Meter | Foto - Zähler | صورة - العداد
+- arbeitAbgeschlossen | radio | required | Is the work completed? | Ist die Arbeit abgeschlossen? | هل اكتمل العمل؟
+  options: Ja, Nein
+- reason | textarea | required | Reason (why not completed) | Begründung (warum nicht abgeschlossen) | السبب (لماذا لم يكتمل)
+  show_if: arbeitAbgeschlossen == Nein
+- whatIsMissing | textarea | | What is still missing | Was fehlt noch | ما الذي لا يزال مفقودًا
+  show_if: arbeitAbgeschlossen == Nein
+- nextAppointment | date | | Next appointment | Folgetermin | الموعد التالي
+  show_if: arbeitAbgeschlossen == Nein
+- datumUhrzeit | datetime | required | Date and time | Datum und Uhrzeit | التاريخ والوقت
 
 ## Work Photos | Bilder der erbrachten Arbeit | صور العمل المنجز
 
 section_id: work_photos
 
-repeatable: true
-min: 1
-max: 20
-
-- category | dropdown | | Category | Kategorie | الفئة
-  options: before, during, after, other
-- photo | photo | | Photo | Foto | الصورة
-- description | text | | Description | Beschreibung | الوصف
-
-## Completion | Abschluss | الإكمال
-
-section_id: completion
-
-- workCompleted | radio | required | Work Completed? | Arbeit abgeschlossen? | العمل مكتمل؟
-  options: yes, no
-- reason | textarea | | Reason (why not completed) | Begründung (warum nicht abgeschlossen) | السبب (لماذا لم يكتمل)
-  show_if: workCompleted == no
-- nextAppointment | date | | Next Appointment | Folgetermin | الموعد التالي
-  show_if: workCompleted == no
-- whatIsMissing | textarea | | What is missing | Was fehlt noch | ما الذي لا يزال مفقودًا
-  show_if: workCompleted == no
-- completionDate | date | | Date of Completion | Datum der Fertigstellung | تاريخ الإكمال
-  show_if: workCompleted == yes
-- completionTime | time | | Time of Completion | Uhrzeit der Fertigstellung | وقت الإكمال
-  show_if: workCompleted == yes
+- fotos | multiphoto | | Photos | Fotos | الصور
 
 ## Remarks | Sonstige Bemerkungen | ملاحظات أخرى
 
 section_id: remarks
-optional_section: true
 
 - remarks | textarea | | Remarks | Bemerkungen | ملاحظات
-
-## Additional info | additional | معلومات اضافية
-
-section_id: additional_info
-repeatable: true
-min: 1
-max: 10
-
-- note | textarea | | Remarks | Bemerkungen | ملاحظة
-- image | photo| | | image| image | صورة
 
 ---
 
@@ -137,9 +99,8 @@ max: 10
 
 section_id: signatures
 
-- customerFullName | text | required | Customer Full Name | Kundenvollname | الاسم الكامل للعميل
-- customerSignature | signature | required | Customer Signature | Unterschrift des Kunden/Bevollmächtigten | توقيع العميل
-- signerName | text | required | Name of Signing Technician | Name unterzeichnender Monteur | اسم الفني الموقع
-- companySignature | signature | required | MAM Solarbau Signature | Unterschrift MAM Solarbau | توقيع MAM Solarbau
-<!-- - emailSentTo | email | calculated | Email sent to | E-Mail versendet an | البريد الإلكتروني المرسل إلى
-  source: customer_data.email -->
+- customerFullName | text | required | First and last name (customer) | Vor- und Nachname (Kunde) | الاسم الكامل (العميل)
+- customerSignature | signature | required | Customer / representative signature | Unterschrift des Kunden/Bevollmächtigten | توقيع العميل/الممثل
+- signerName | text | required | Name of signing installer | Name unterzeichnender Monteur | اسم الفني الموقّع
+- companySignature | signature | required | MAM Solarbau signature | Unterschrift - MAM Solarbau | توقيع MAM Solarbau
+- versendeteEmail | email | | Sent email | Versendete E-Mail | البريد الإلكتروني المُرسل

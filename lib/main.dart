@@ -48,7 +48,7 @@ class _MamSolarAppState extends State<MamSolarApp> {
       value: const SystemUiOverlayStyle(
         systemNavigationBarColor: Color(0xFF2196F3),
         systemNavigationBarIconBrightness: Brightness.light,
-        statusBarColor: Color(0xFF2196F3),
+        statusBarColor: Color.fromARGB(255, 243, 170, 33),
         statusBarIconBrightness: Brightness.light,
       ),
       child: SafeArea(
