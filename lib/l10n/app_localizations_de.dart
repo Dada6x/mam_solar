@@ -610,10 +610,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get signatureRequired => 'Unterschrift erforderlich';
 
   @override
-  String get companyName => 'BSH GmbH & Co. KG';
+  String get companyName => 'MAM Solarbau';
 
   @override
-  String get companyAddress => 'Bamberger Str. 44, 97631 Bad Königshofen';
+  String get companyAddress => 'Sperlingstr. 2, 86179 Augsburg';
 
   @override
   String get appVersion => '1.0.0';

@@ -3,9 +3,9 @@ protocol: ac_acceptance
 title: AC Acceptance Protocol
 title_de: AC-Abnahmeprotokoll
 title_ar: بروتوكول قبول التيار المتردد
-version: 6.0
+version: 6.1
 company: MAM Solarbau
-note: Rebuilt 1:1 from the BSH AC acceptance protocol (PDFs + smapOne fill-out screenshots). Conditional fields via show_if. Nested repeatables flattened (Batterieturm -> Akkumodule via per-item OR-gated slots).
+note: MAM Solarbau AC acceptance protocol. Conditional fields via show_if. Nested repeatables flattened (Batterieturm -> Akkumodule via per-item OR-gated slots).
 ---
 
 ## Customer Data | Kundendaten | بيانات العميل
@@ -23,8 +23,12 @@ section_id: customer_data
   show_if: wallboxInstalliert == Ja
 - backupSystem | radio | required | Backup system installed? | Backup System installiert? | هل تم تركيب نظام احتياطي؟
   options: Ja, Nein
+- backupHinweis | textarea | required | Note (why no backup system?) | Hinweis (warum kein Backup-System?) | ملاحظة (لماذا لا يوجد نظام احتياطي؟)
+  show_if: backupSystem == Nein
 - pruefungDurchgefuehrt | radio | required | Test performed? | Prüfung durchgeführt? | هل تم إجراء الفحص؟
   options: Ja, Nein
+- pruefungBegruendung | textarea | required | Reason (why no test performed?) | Begründung (warum keine Prüfung durchgeführt?) | السبب (لماذا لم يتم الفحص؟)
+  show_if: pruefungDurchgefuehrt == Nein
 - montagetermin | datetime | required | Installation date + time | Montagetermin Datum + Uhrzeit | تاريخ ووقت التركيب
 - partnerunternehmen | text | required | Partner company name | Name Partnerunternehmen | اسم الشركة الشريكة
 - monteurVorarbeiter | text | required | Installer / foreman name | Name Monteur/Vorarbeiter | اسم الفني/المشرف
@@ -175,17 +179,17 @@ section_id: meter_ibn
   options: Überschusseinspeisung, Volleinspeisung, Wärmepumpenkaskade, Sonstiges Messkonzept
 - photoVorbereitung14a | multiphoto | required | Photos preparation §14a | Bilder Vorbereitung §14a | صور تحضير §14a
 
-## 6. Heat Pump Order for BSH Heat Pump | 6. Wärmepumpenauftrag für BSH-Wärmepumpe | 6. طلب المضخة الحرارية BSH
+## 6. Heat Pump Order | 6. Wärmepumpenauftrag | 6. طلب المضخة الحرارية
 
 section_id: heat_pump
 
-- hpHinweis | display_text | | For an order confirmed and commissioned by BSH for a heat pump. | Bei einem von der BSH beauftragten und bestätigten Wärmepumpenauftrag. | في حال طلب مضخة حرارية معتمد من BSH.
-- bshWaermepumpe | radio | required | BSH heat pump ordered? | BSH-Wärmepumpe beauftragt? | هل تم طلب مضخة BSH الحرارية؟
+- hpHinweis | display_text | | For a heat pump order commissioned and confirmed via MAM Solarbau. | Bei einem über MAM Solarbau beauftragten und bestätigten Wärmepumpenauftrag. | في حال طلب مضخة حرارية معتمد عبر MAM Solarbau.
+- waermepumpeBeauftragt | radio | required | Heat pump ordered? | Wärmepumpe beauftragt? | هل تم طلب مضخة حرارية؟
   options: Ja, Nein
 - photoUnterverteilungZk | photo | required | Sub-distribution / meter cabinet integration from a greater distance (with covers) | Unterverteilung/ZK Einbindung aus größerer Entfernung (mit Abdeckungen) | دمج التوزيع الفرعي من مسافة أكبر (مع الأغطية)
-  show_if: bshWaermepumpe == Ja
+  show_if: waermepumpeBeauftragt == Ja
 - photoSicherungenWp | photo | required | Fuses for heat pump protection photographed legibly (without covers) | Sicherungen für Wärmepumpenabsicherung leserlich fotografiert (ohne Abdeckungen) | منصهرات حماية المضخة (بدون أغطية)
-  show_if: bshWaermepumpe == Ja
+  show_if: waermepumpeBeauftragt == Ja
 
 ## 7. Cable Routes | 7. Kabelwege | 7. مسارات الكابل
 

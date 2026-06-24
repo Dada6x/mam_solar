@@ -129,7 +129,7 @@ class PdfGeneratorBase {
           mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
           children: [
             pw.Text(
-              'BSH GmbH & Co. KG, Bamberger Str. 44, 97631 Bad Königshofen',
+              'MAM Solarbau, Sperlingstr. 2, 86179 Augsburg',
               style: pw.TextStyle(font: _font, fontSize: 8, color: _labelGray),
             ),
             pw.Text(

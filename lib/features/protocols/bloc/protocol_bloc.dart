@@ -123,6 +123,11 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     _log.i('Field updated: ${event.key} = ${event.value}');
     final newData = Map<String, dynamic>.from(state.formData);
     newData[event.key] = event.value;
+    // Drop values of fields that are now hidden by show_if (e.g. a gate was
+    // switched back to "Nein") so stale values never reach the draft/PDF.
+    final globalFields =
+        state.sections.where((s) => !s.isRepeatable).expand((s) => s.fields);
+    _pruneHiddenIn(globalFields, newData);
     emit(state.copyWith(formData: newData, isDirty: true, saveMessage: null));
   }
 
@@ -133,9 +138,34 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     while (items.length <= event.index) {
       items.add({});
     }
-    items[event.index] = Map<String, dynamic>.from(items[event.index])..[event.key] = event.value;
+    final item = Map<String, dynamic>.from(items[event.index])..[event.key] = event.value;
+    // Drop now-hidden values within this item (e.g. fewer Akkumodule selected).
+    final section = state.sections
+        .where((s) => s.id == event.sectionId)
+        .cast<FormSection?>()
+        .firstWhere((s) => true, orElse: () => null);
+    if (section != null) _pruneHiddenIn(section.fields, item);
+    items[event.index] = item;
     newRepeatable[event.sectionId] = items;
     emit(state.copyWith(repeatableData: newRepeatable, isDirty: true, saveMessage: null));
+  }
+
+  /// Removes values of fields hidden by show_if from [data]. Loops to a
+  /// fixpoint so chained gates (A hides B, B hides C) are all cleared.
+  void _pruneHiddenIn(Iterable<FormFieldDef> fields, Map<String, dynamic> data) {
+    final list = fields.toList();
+    bool changed = true;
+    var guard = 0;
+    while (changed && guard++ < 6) {
+      changed = false;
+      for (final field in list) {
+        if (field.showIfField == null) continue;
+        if (data.containsKey(field.id) && !field.isVisible(data)) {
+          data.remove(field.id);
+          changed = true;
+        }
+      }
+    }
   }
 
   void _onAddRepeatableItem(AddRepeatableItem event, Emitter<ProtocolState> emit) {
@@ -270,11 +300,12 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
         if (field.required && field.type != FieldType.displayText) {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
-            final allFilled = items.isNotEmpty && items.every((item) {
-              return _isValueFilled(item[field.id]);
-            });
-            if (!allFilled) return false;
+            final visibleFilled = items
+                .where((item) => field.isVisible(item))
+                .every((item) => _isValueFilled(item[field.id]));
+            if (!(items.isNotEmpty && visibleFilled)) return false;
           } else {
+            if (!field.isVisible(state.formData)) continue;
             if (!_isValueFilled(state.formData[field.id])) {
               return false;
             }
@@ -285,7 +316,10 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     return true;
   }
 
-  List<String> getMissingRequiredFields() {
+  /// Returns the localized labels of all missing required fields. Pass the
+  /// current [languageCode] so the validation message is shown in the user's
+  /// language (was previously the English labelKey).
+  List<String> getMissingRequiredFields(String languageCode) {
     final missing = <String>[];
     for (final section in state.sections) {
       for (final field in section.fields) {
@@ -299,12 +333,12 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
                 .where((item) => field.isVisible(item))
                 .every((item) => _isValueFilled(item[field.id]));
             final allFilled = items.isNotEmpty && visibleFilled;
-            if (!allFilled) missing.add(field.labelKey);
+            if (!allFilled) missing.add(field.localizedLabel(languageCode));
           } else {
             // Skip required fields hidden by show_if so they never block submit.
             if (!field.isVisible(state.formData)) continue;
             if (!_isValueFilled(state.formData[field.id])) {
-              missing.add(field.labelKey);
+              missing.add(field.localizedLabel(languageCode));
             }
           }
         }

@@ -134,7 +134,7 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
           validationError: _validationError,
           pdfGenerating: state.pdfGenerating,
           onGeneratePdf: () {
-            final missing = bloc.getMissingRequiredFields();
+            final missing = bloc.getMissingRequiredFields(languageCode);
             if (missing.isNotEmpty) {
               _populateMissingFieldPaths();
               setState(
@@ -518,9 +518,9 @@ class _RepeatItemCard extends StatelessWidget {
                         size: 16,
                         color: AppColors.errorRed,
                       ),
-                      label: const Text(
-                        'Remove',
-                        style: TextStyle(
+                      label: Text(
+                        AppLocalizations.of(context)!.removeItem,
+                        style: const TextStyle(
                           fontSize: 11,
                           color: AppColors.errorRed,
                         ),

@@ -1297,13 +1297,13 @@ abstract class AppLocalizations {
   /// No description provided for @companyName.
   ///
   /// In en, this message translates to:
-  /// **'BSH GmbH & Co. KG'**
+  /// **'MAM Solarbau'**
   String get companyName;
 
   /// No description provided for @companyAddress.
   ///
   /// In en, this message translates to:
-  /// **'Bamberger Str. 44, 97631 Bad Königshofen'**
+  /// **'Sperlingstr. 2, 86179 Augsburg'**
   String get companyAddress;
 
   /// No description provided for @appVersion.
