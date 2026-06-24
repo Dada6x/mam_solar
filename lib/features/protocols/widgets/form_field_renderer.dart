@@ -247,33 +247,8 @@ class FormFieldRenderer extends StatelessWidget {
   }
 
   bool _evaluateShowIf() {
-    if (field.showIfField == null ||
-        field.showIfOperator == null ||
-        field.showIfValue == null) {
-      return true;
-    }
-
-    final currentValue = formData?[field.showIfField];
-
-    bool evaluateSingle(String operator, String compareValue) {
-      if (compareValue == 'unchecked') {
-        final isChecked = currentValue == true || currentValue == 'true';
-        return operator == '==' ? !isChecked : isChecked;
-      }
-      final currentStr = currentValue?.toString() ?? '';
-      if (operator == '==') return currentStr == compareValue;
-      if (operator == '!=') return currentStr != compareValue;
-      return true;
-    }
-
-    // OR conditions: if showIfValues is set, any match is sufficient
-    if (field.showIfValues != null && field.showIfValues!.isNotEmpty) {
-      return field.showIfValues!.any(
-        (v) => evaluateSingle(field.showIfOperator!, v),
-      );
-    }
-
-    return evaluateSingle(field.showIfOperator!, field.showIfValue!);
+    // Single source of truth (see FormFieldDef.isVisible).
+    return field.isVisible(formData);
   }
 
   static List<String> toPhotoList(dynamic value) {

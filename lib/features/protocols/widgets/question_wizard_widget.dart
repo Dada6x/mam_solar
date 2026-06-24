@@ -33,16 +33,9 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
   final _missingFieldPaths = <String>{};
 
   bool _evaluateShowIf(FormFieldDef field, Map<String, dynamic> formData) {
-    if (field.showIfField == null ||
-        field.showIfOperator == null ||
-        field.showIfValue == null) {
-      return true;
-    }
-    final currentValue = formData[field.showIfField];
-    final currentStr = currentValue?.toString() ?? '';
-    if (field.showIfOperator == '==') return currentStr == field.showIfValue;
-    if (field.showIfOperator == '!=') return currentStr != field.showIfValue;
-    return true;
+    // Delegate to FormFieldDef.isVisible (single source of truth — supports
+    // OR lists and the 'unchecked' checkbox gate, unlike the old inline check).
+    return field.isVisible(formData);
   }
 
   bool _isValueFilled(dynamic val) {
@@ -60,6 +53,8 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
             for (int ri = 0; ri < items.length; ri++) {
+              // Skip fields hidden by show_if in this item.
+              if (!field.isVisible(items[ri])) continue;
               if (!_isValueFilled(items[ri][field.id])) {
                 final key = _fieldKeys['${section.id}:$ri:${field.id}'];
                 if (key?.currentContext != null) {
@@ -70,6 +65,8 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
               }
             }
           } else {
+            // Skip fields hidden by show_if.
+            if (!field.isVisible(state.formData)) continue;
             if (!_isValueFilled(state.formData[field.id])) {
               final key = _fieldKeys['${section.id}:${field.id}'];
               if (key?.currentContext != null) {
@@ -93,11 +90,13 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
             for (int ri = 0; ri < items.length; ri++) {
+              if (!field.isVisible(items[ri])) continue;
               if (!_isValueFilled(items[ri][field.id])) {
                 _missingFieldPaths.add('${section.id}:$ri:${field.id}');
               }
             }
           } else {
+            if (!field.isVisible(state.formData)) continue;
             if (!_isValueFilled(state.formData[field.id])) {
               _missingFieldPaths.add('${section.id}:${field.id}');
             }

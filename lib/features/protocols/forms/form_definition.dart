@@ -86,4 +86,39 @@ class FormFieldDef {
     if (languageCode == 'ar' && labelAr != null) return labelAr!;
     return labelKey;
   }
+
+  /// Whether this field should be shown given the current [data] (the global
+  /// form data for normal sections, or the item data for repeatable items).
+  ///
+  /// Single source of truth for show_if so the renderer, the section visibility
+  /// filter and the required-field validation never drift apart. Supports:
+  ///  - `field == value` / `field != value`
+  ///  - OR lists (`a == x OR a == y`) via [showIfValues] (any match shows; for
+  ///    `!=` all must differ)
+  ///  - the special `unchecked` value for checkbox gates.
+  bool isVisible(Map<String, dynamic>? data) {
+    if (showIfField == null || showIfOperator == null) return true;
+    final currentValue = data?[showIfField];
+
+    bool evalSingle(String op, String compareValue) {
+      if (compareValue == 'unchecked') {
+        final isChecked = currentValue == true || currentValue == 'true';
+        return op == '==' ? !isChecked : isChecked;
+      }
+      final currentStr = currentValue?.toString() ?? '';
+      if (op == '==') return currentStr == compareValue;
+      if (op == '!=') return currentStr != compareValue;
+      return true;
+    }
+
+    if (showIfValues != null && showIfValues!.isNotEmpty) {
+      if (showIfOperator == '!=') {
+        return showIfValues!.every((v) => evalSingle('!=', v));
+      }
+      return showIfValues!.any((v) => evalSingle(showIfOperator!, v));
+    }
+
+    if (showIfValue == null) return true;
+    return evalSingle(showIfOperator!, showIfValue!);
+  }
 }

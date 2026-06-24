@@ -292,11 +292,17 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
         if (field.required && field.type != FieldType.displayText) {
           if (section.isRepeatable) {
             final items = state.repeatableData[section.id] ?? [];
-            final allFilled = items.isNotEmpty && items.every((item) {
-              return _isValueFilled(item[field.id]);
-            });
+            // A required field counts only for items where it is visible
+            // (show_if). Empty section still forces >=1 item; items that hide
+            // the field via show_if are simply not required there.
+            final visibleFilled = items
+                .where((item) => field.isVisible(item))
+                .every((item) => _isValueFilled(item[field.id]));
+            final allFilled = items.isNotEmpty && visibleFilled;
             if (!allFilled) missing.add(field.labelKey);
           } else {
+            // Skip required fields hidden by show_if so they never block submit.
+            if (!field.isVisible(state.formData)) continue;
             if (!_isValueFilled(state.formData[field.id])) {
               missing.add(field.labelKey);
             }
