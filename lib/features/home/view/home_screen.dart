@@ -51,7 +51,6 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
 
   @override
   Widget build(BuildContext context) {
-    
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -72,7 +71,7 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
               child: Image.asset('assets/logo.png'),
             ),
             const SizedBox(width: 8),
-            Text("MAM-Solarbau"),
+            Text(AppLocalizations.of(context)!.companyName),
           ],
         ),
       ),
@@ -103,6 +102,13 @@ class _HomeViewState extends State<_HomeView> with RouteAware {
                             ? '${state.draftCount}'
                             : null,
                         onTap: () => context.push('/drafts'),
+                      ),
+                      const SizedBox(height: 12),
+                      _HomeListCard(
+                        title: AppLocalizations.of(context)!.completedProtocols,
+                        icon: Icons.task_alt,
+                        color: AppColors.primaryBlue,
+                        onTap: () => context.push('/completed'),
                       ),
                     ]),
                   ),

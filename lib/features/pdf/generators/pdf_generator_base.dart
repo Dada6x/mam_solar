@@ -23,6 +23,7 @@ class PdfGeneratorBase {
   // Brand accent for PDFs (kept blue to match the app redesign).
   static PdfColor get _green => PdfColor.fromInt(0xFF2196F3);
   static PdfColor get _labelGray => PdfColor.fromInt(0xFF555555);
+  static PdfColor get _textDark => PdfColor.fromInt(0xFF1F2933);
 
   // ---------------------------
   // DOCUMENT
@@ -154,23 +155,24 @@ class PdfGeneratorBase {
       crossAxisAlignment: pw.CrossAxisAlignment.start,
       children: [
         pw.Container(
-          padding: const pw.EdgeInsets.symmetric(horizontal: 8, vertical: 6),
+          width: double.infinity,
+          padding: const pw.EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           decoration: pw.BoxDecoration(
             color: _green,
-            borderRadius: pw.BorderRadius.circular(2),
+            borderRadius: pw.BorderRadius.circular(3),
           ),
           child: pw.Text(
             title,
             style: pw.TextStyle(
               font: _fontBold,
-              fontSize: 11,
+              fontSize: 14,
               color: PdfColors.white,
             ),
           ),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 10),
         ...fields,
-        pw.SizedBox(height: 12),
+        pw.SizedBox(height: 18),
       ],
     );
   }
@@ -180,23 +182,21 @@ class PdfGeneratorBase {
   // ---------------------------
   static pw.Widget buildFieldRow(String label, String value) {
     if (value.isEmpty) return pw.SizedBox(height: 0);
+    // Stacked layout (BSH style): bold label on top, value below — far more
+    // readable for long German labels than a narrow two-column row.
     return pw.Padding(
-      padding: const pw.EdgeInsets.symmetric(vertical: 2),
-      child: pw.Row(
+      padding: const pw.EdgeInsets.only(bottom: 9),
+      child: pw.Column(
         crossAxisAlignment: pw.CrossAxisAlignment.start,
         children: [
-          pw.SizedBox(
-            width: 160,
-            child: pw.Text(
-              label,
-              style: pw.TextStyle(font: _font, fontSize: 9, color: _labelGray),
-            ),
+          pw.Text(
+            label,
+            style: pw.TextStyle(font: _fontBold, fontSize: 11, color: _textDark),
           ),
-          pw.Expanded(
-            child: pw.Text(
-              value,
-              style: pw.TextStyle(font: _font, fontSize: 10),
-            ),
+          pw.SizedBox(height: 2),
+          pw.Text(
+            value,
+            style: pw.TextStyle(font: _font, fontSize: 12, color: _textDark),
           ),
         ],
       ),
@@ -237,8 +237,8 @@ class PdfGeneratorBase {
       if (img == null) return null;
       return pw.Column(
         children: [
-          pw.Image(img, width: 120, height: 80, fit: pw.BoxFit.cover),
-          pw.SizedBox(height: 4),
+          pw.Image(img, width: 240, height: 180, fit: pw.BoxFit.contain),
+          pw.SizedBox(height: 6),
         ],
       );
     }).whereType<pw.Widget>().toList();
@@ -252,11 +252,11 @@ class PdfGeneratorBase {
       children: [
         pw.Text(
           label,
-          style: pw.TextStyle(font: _font, fontSize: 9, color: _labelGray),
+          style: pw.TextStyle(font: _fontBold, fontSize: 11, color: _textDark),
         ),
-        pw.SizedBox(height: 4),
+        pw.SizedBox(height: 6),
         ...images,
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 12),
       ],
     );
   }
@@ -276,18 +276,18 @@ class PdfGeneratorBase {
       children: [
         pw.Text(
           label,
-          style: pw.TextStyle(font: _font, fontSize: 9, color: _labelGray),
+          style: pw.TextStyle(font: _fontBold, fontSize: 11, color: _textDark),
         ),
-        pw.SizedBox(height: 4),
+        pw.SizedBox(height: 6),
         pw.Container(
-          width: 200,
-          height: 60,
+          width: 260,
+          height: 100,
           decoration: pw.BoxDecoration(
             border: pw.Border.all(color: PdfColors.grey),
           ),
           child: pw.Image(image, fit: pw.BoxFit.contain),
         ),
-        pw.SizedBox(height: 8),
+        pw.SizedBox(height: 12),
       ],
     );
   }
@@ -300,7 +300,12 @@ class PdfGeneratorBase {
       padding: const pw.EdgeInsets.symmetric(vertical: 4),
       child: pw.Text(
         text,
-        style: pw.TextStyle(font: _font, fontSize: 9, fontStyle: pw.FontStyle.italic),
+        style: pw.TextStyle(
+          font: _font,
+          fontSize: 10.5,
+          color: _textDark,
+          fontStyle: pw.FontStyle.italic,
+        ),
       ),
     );
   }

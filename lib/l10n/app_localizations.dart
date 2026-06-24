@@ -1306,6 +1306,54 @@ abstract class AppLocalizations {
   /// **'Sperlingstr. 2, 86179 Augsburg'**
   String get companyAddress;
 
+  /// No description provided for @finishProtocol.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish'**
+  String get finishProtocol;
+
+  /// No description provided for @duplicateAsDraft.
+  ///
+  /// In en, this message translates to:
+  /// **'Duplicate as draft'**
+  String get duplicateAsDraft;
+
+  /// No description provided for @protocolLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'This protocol is finished and locked.'**
+  String get protocolLocked;
+
+  /// No description provided for @protocolFinished.
+  ///
+  /// In en, this message translates to:
+  /// **'Protocol finished'**
+  String get protocolFinished;
+
+  /// No description provided for @completedProtocols.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed protocols'**
+  String get completedProtocols;
+
+  /// No description provided for @searchByCustomer.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by customer'**
+  String get searchByCustomer;
+
+  /// No description provided for @noCompletedYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No completed protocols yet'**
+  String get noCompletedYet;
+
+  /// No description provided for @noSearchResults.
+  ///
+  /// In en, this message translates to:
+  /// **'No results'**
+  String get noSearchResults;
+
   /// No description provided for @appVersion.
   ///
   /// In en, this message translates to:

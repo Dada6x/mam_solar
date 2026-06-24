@@ -64,6 +64,21 @@ class _DynamicFormView extends StatelessWidget {
         if (state.pdfPath == 'preview' && context.mounted) {
           context.push('/pdf-preview/${state.protocolId}');
         }
+        if (state.duplicatedDraftId != null && context.mounted) {
+          // Open the editable draft copy (replaces the locked one in the stack).
+          context.pushReplacement(
+            '/form/$protocolType/${state.duplicatedDraftId}',
+          );
+        }
+        if (state.saveMessage == 'finished' && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(AppLocalizations.of(context)!.protocolFinished),
+              behavior: SnackBarBehavior.floating,
+              backgroundColor: AppColors.primaryBlue,
+            ),
+          );
+        }
       },
       builder: (context, state) {
         if (state.isLoading || (state.sections.isEmpty && state.error == null)) {
@@ -127,8 +142,15 @@ class _DynamicFormView extends StatelessWidget {
                 }
               },
             ),
-            actions: [
-              //TODO MAKE IT ONLY SAVE THE DRIFT WHEN THIS BUTTON IS CLICKED 
+            actions: state.isReadOnly
+                ? const [
+                    Padding(
+                      padding: EdgeInsets.only(right: 16),
+                      child: Icon(Icons.lock_outline,
+                          color: AppColors.primaryBlueDark),
+                    ),
+                  ]
+                : [
               IconButton(
                 icon: const Icon(Icons.save),
                 color: AppColors.primaryBlue,

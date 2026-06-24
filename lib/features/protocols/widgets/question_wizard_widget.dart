@@ -117,39 +117,77 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
     final state = context.watch<ProtocolBloc>().state;
     final bloc = context.read<ProtocolBloc>();
     final languageCode = context.watch<SettingsBloc>().state.languageCode;
+    final readOnly = state.isReadOnly;
+
+    // Validate visible required fields; on miss, show + highlight + scroll.
+    bool validateOk() {
+      final missing = bloc.getMissingRequiredFields(languageCode);
+      if (missing.isNotEmpty) {
+        _populateMissingFieldPaths();
+        setState(() => _validationError =
+            '${AppLocalizations.of(context)!.fieldRequired}: ${missing.join(', ')}');
+        _scrollToFirstMissing();
+        return false;
+      }
+      setState(() {
+        _validationError = null;
+        _missingFieldPaths.clear();
+      });
+      return true;
+    }
 
     return Column(
       children: [
+        if (readOnly)
+          Container(
+            width: double.infinity,
+            color: AppColors.primaryBlueLight,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                const Icon(Icons.lock_outline,
+                    size: 18, color: AppColors.primaryBlueDark),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    AppLocalizations.of(context)!.protocolLocked,
+                    style: const TextStyle(
+                      fontSize: 12,
+                      color: AppColors.primaryBlueDark,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         Expanded(
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: _buildContent(state, languageCode, bloc),
+          child: IgnorePointer(
+            ignoring: readOnly,
+            child: SingleChildScrollView(
+              controller: _scrollController,
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 32),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: _buildContent(state, languageCode, bloc),
+              ),
             ),
           ),
         ),
         _BottomBar(
           validationError: _validationError,
           pdfGenerating: state.pdfGenerating,
+          isReadOnly: readOnly,
+          isBusy: state.isSaving,
           onGeneratePdf: () {
-            final missing = bloc.getMissingRequiredFields(languageCode);
-            if (missing.isNotEmpty) {
-              _populateMissingFieldPaths();
-              setState(
-                () => _validationError =
-                    '${AppLocalizations.of(context)!.fieldRequired}: ${missing.join(', ')}',
-              );
-              _scrollToFirstMissing();
-              return;
-            }
-            setState(() {
-              _validationError = null;
-              _missingFieldPaths.clear();
-            });
+            if (!validateOk()) return;
             bloc.add(const GeneratePdf());
           },
+          onFinish: () {
+            if (!validateOk()) return;
+            bloc.add(const FinishProtocol());
+          },
+          onDuplicate: () => bloc.add(const DuplicateAsDraft()),
         ),
       ],
     );
@@ -371,16 +409,25 @@ class _QuestionWizardWidgetState extends State<QuestionWizardWidget> {
 class _BottomBar extends StatelessWidget {
   final String? validationError;
   final bool pdfGenerating;
+  final bool isReadOnly;
+  final bool isBusy;
   final VoidCallback onGeneratePdf;
+  final VoidCallback onFinish;
+  final VoidCallback onDuplicate;
 
   const _BottomBar({
     this.validationError,
     required this.pdfGenerating,
+    required this.isReadOnly,
+    required this.isBusy,
     required this.onGeneratePdf,
+    required this.onFinish,
+    required this.onDuplicate,
   });
 
   @override
   Widget build(BuildContext context) {
+    final l = AppLocalizations.of(context)!;
     return Container(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       decoration: BoxDecoration(
@@ -412,38 +459,93 @@ class _BottomBar extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton.icon(
-                onPressed: pdfGenerating ? null : onGeneratePdf,
-                icon: pdfGenerating
-                    ? const SizedBox(
-                        width: 18,
-                        height: 18,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 2,
-                          color: Colors.white,
-                        ),
-                      )
-                    : const Icon(Icons.picture_as_pdf, size: 20),
-                label: Text(
-                  AppLocalizations.of(context)!.generatePdf,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryBlue,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 14),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+            if (isReadOnly) ...[
+              _pdfButton(l, filled: true),
+              const SizedBox(height: 8),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: onDuplicate,
+                  icon: const Icon(Icons.copy_all_outlined, size: 20),
+                  label: Text(l.duplicateAsDraft,
+                      overflow: TextOverflow.ellipsis),
+                  style: OutlinedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
                   ),
-                  elevation: 2,
                 ),
               ),
-            ),
+            ] else ...[
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton.icon(
+                  onPressed: isBusy ? null : onFinish,
+                  icon: const Icon(Icons.check_circle_outline, size: 20),
+                  label:
+                      Text(l.finishProtocol, overflow: TextOverflow.ellipsis),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryBlue,
+                    foregroundColor: Colors.white,
+                    padding: const EdgeInsets.symmetric(vertical: 14),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    elevation: 2,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 8),
+              _pdfButton(l, filled: false),
+            ],
           ],
         ),
       ),
+    );
+  }
+
+  Widget _pdfButton(AppLocalizations l, {required bool filled}) {
+    final icon = pdfGenerating
+        ? SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+              color: filled ? Colors.white : AppColors.primaryBlue,
+            ),
+          )
+        : const Icon(Icons.picture_as_pdf, size: 20);
+    final label = Text(l.generatePdf, overflow: TextOverflow.ellipsis);
+    final onPressed = pdfGenerating ? null : onGeneratePdf;
+    return SizedBox(
+      width: double.infinity,
+      child: filled
+          ? ElevatedButton.icon(
+              onPressed: onPressed,
+              icon: icon,
+              label: label,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryBlue,
+                foregroundColor: Colors.white,
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                elevation: 2,
+              ),
+            )
+          : OutlinedButton.icon(
+              onPressed: onPressed,
+              icon: icon,
+              label: label,
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+            ),
     );
   }
 }

@@ -879,10 +879,7 @@ final class $$ProtocolsTableTableReferences
   static MultiTypedResultKey<$SignaturesTableTable, List<SignaturesTableData>>
   _signaturesTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
     db.signaturesTable,
-    aliasName: $_aliasNameGenerator(
-      db.protocolsTable.id,
-      db.signaturesTable.protocolId,
-    ),
+    aliasName: 'protocols_table__id__signatures_table__protocol_id',
   );
 
   $$SignaturesTableTableProcessedTableManager get signaturesTableRefs {
@@ -1240,13 +1237,9 @@ final class $$SignaturesTableTableReferences
     super.$_typedResult,
   );
 
-  static $ProtocolsTableTable _protocolIdTable(_$AppDatabase db) =>
-      db.protocolsTable.createAlias(
-        $_aliasNameGenerator(
-          db.signaturesTable.protocolId,
-          db.protocolsTable.id,
-        ),
-      );
+  static $ProtocolsTableTable _protocolIdTable(_$AppDatabase db) => db
+      .protocolsTable
+      .createAlias('signatures_table__protocol_id__protocols_table__id');
 
   $$ProtocolsTableTableProcessedTableManager get protocolId {
     final $_column = $_itemColumn<int>('protocol_id')!;

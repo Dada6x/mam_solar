@@ -55,7 +55,7 @@ extension ProtocolEventPatterns on ProtocolEvent {
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( LoadProtocol value)?  load,TResult Function( UpdateField value)?  updateField,TResult Function( UpdateRepeatableField value)?  updateRepeatableField,TResult Function( AddRepeatableItem value)?  addRepeatableItem,TResult Function( RemoveRepeatableItem value)?  removeRepeatableItem,TResult Function( SaveDraft value)?  saveDraft,TResult Function( GeneratePdf value)?  generatePdf,TResult Function( DeleteDraft value)?  deleteDraft,required TResult orElse(),}){
+@optionalTypeArgs TResult maybeMap<TResult extends Object?>({TResult Function( LoadProtocol value)?  load,TResult Function( UpdateField value)?  updateField,TResult Function( UpdateRepeatableField value)?  updateRepeatableField,TResult Function( AddRepeatableItem value)?  addRepeatableItem,TResult Function( RemoveRepeatableItem value)?  removeRepeatableItem,TResult Function( SaveDraft value)?  saveDraft,TResult Function( GeneratePdf value)?  generatePdf,TResult Function( DeleteDraft value)?  deleteDraft,TResult Function( FinishProtocol value)?  finish,TResult Function( DuplicateAsDraft value)?  duplicateAsDraft,required TResult orElse(),}){
 final _that = this;
 switch (_that) {
 case LoadProtocol() when load != null:
@@ -66,7 +66,9 @@ return addRepeatableItem(_that);case RemoveRepeatableItem() when removeRepeatabl
 return removeRepeatableItem(_that);case SaveDraft() when saveDraft != null:
 return saveDraft(_that);case GeneratePdf() when generatePdf != null:
 return generatePdf(_that);case DeleteDraft() when deleteDraft != null:
-return deleteDraft(_that);case _:
+return deleteDraft(_that);case FinishProtocol() when finish != null:
+return finish(_that);case DuplicateAsDraft() when duplicateAsDraft != null:
+return duplicateAsDraft(_that);case _:
   return orElse();
 
 }
@@ -84,7 +86,7 @@ return deleteDraft(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( LoadProtocol value)  load,required TResult Function( UpdateField value)  updateField,required TResult Function( UpdateRepeatableField value)  updateRepeatableField,required TResult Function( AddRepeatableItem value)  addRepeatableItem,required TResult Function( RemoveRepeatableItem value)  removeRepeatableItem,required TResult Function( SaveDraft value)  saveDraft,required TResult Function( GeneratePdf value)  generatePdf,required TResult Function( DeleteDraft value)  deleteDraft,}){
+@optionalTypeArgs TResult map<TResult extends Object?>({required TResult Function( LoadProtocol value)  load,required TResult Function( UpdateField value)  updateField,required TResult Function( UpdateRepeatableField value)  updateRepeatableField,required TResult Function( AddRepeatableItem value)  addRepeatableItem,required TResult Function( RemoveRepeatableItem value)  removeRepeatableItem,required TResult Function( SaveDraft value)  saveDraft,required TResult Function( GeneratePdf value)  generatePdf,required TResult Function( DeleteDraft value)  deleteDraft,required TResult Function( FinishProtocol value)  finish,required TResult Function( DuplicateAsDraft value)  duplicateAsDraft,}){
 final _that = this;
 switch (_that) {
 case LoadProtocol():
@@ -95,7 +97,9 @@ return addRepeatableItem(_that);case RemoveRepeatableItem():
 return removeRepeatableItem(_that);case SaveDraft():
 return saveDraft(_that);case GeneratePdf():
 return generatePdf(_that);case DeleteDraft():
-return deleteDraft(_that);case _:
+return deleteDraft(_that);case FinishProtocol():
+return finish(_that);case DuplicateAsDraft():
+return duplicateAsDraft(_that);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -112,7 +116,7 @@ return deleteDraft(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( LoadProtocol value)?  load,TResult? Function( UpdateField value)?  updateField,TResult? Function( UpdateRepeatableField value)?  updateRepeatableField,TResult? Function( AddRepeatableItem value)?  addRepeatableItem,TResult? Function( RemoveRepeatableItem value)?  removeRepeatableItem,TResult? Function( SaveDraft value)?  saveDraft,TResult? Function( GeneratePdf value)?  generatePdf,TResult? Function( DeleteDraft value)?  deleteDraft,}){
+@optionalTypeArgs TResult? mapOrNull<TResult extends Object?>({TResult? Function( LoadProtocol value)?  load,TResult? Function( UpdateField value)?  updateField,TResult? Function( UpdateRepeatableField value)?  updateRepeatableField,TResult? Function( AddRepeatableItem value)?  addRepeatableItem,TResult? Function( RemoveRepeatableItem value)?  removeRepeatableItem,TResult? Function( SaveDraft value)?  saveDraft,TResult? Function( GeneratePdf value)?  generatePdf,TResult? Function( DeleteDraft value)?  deleteDraft,TResult? Function( FinishProtocol value)?  finish,TResult? Function( DuplicateAsDraft value)?  duplicateAsDraft,}){
 final _that = this;
 switch (_that) {
 case LoadProtocol() when load != null:
@@ -123,7 +127,9 @@ return addRepeatableItem(_that);case RemoveRepeatableItem() when removeRepeatabl
 return removeRepeatableItem(_that);case SaveDraft() when saveDraft != null:
 return saveDraft(_that);case GeneratePdf() when generatePdf != null:
 return generatePdf(_that);case DeleteDraft() when deleteDraft != null:
-return deleteDraft(_that);case _:
+return deleteDraft(_that);case FinishProtocol() when finish != null:
+return finish(_that);case DuplicateAsDraft() when duplicateAsDraft != null:
+return duplicateAsDraft(_that);case _:
   return null;
 
 }
@@ -140,7 +146,7 @@ return deleteDraft(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int? protocolId,  String? protocolType)?  load,TResult Function( String key,  dynamic value)?  updateField,TResult Function( String sectionId,  int index,  String key,  dynamic value)?  updateRepeatableField,TResult Function( String sectionId)?  addRepeatableItem,TResult Function( String sectionId,  int index)?  removeRepeatableItem,TResult Function()?  saveDraft,TResult Function()?  generatePdf,TResult Function()?  deleteDraft,required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>({TResult Function( int? protocolId,  String? protocolType)?  load,TResult Function( String key,  dynamic value)?  updateField,TResult Function( String sectionId,  int index,  String key,  dynamic value)?  updateRepeatableField,TResult Function( String sectionId)?  addRepeatableItem,TResult Function( String sectionId,  int index)?  removeRepeatableItem,TResult Function()?  saveDraft,TResult Function()?  generatePdf,TResult Function()?  deleteDraft,TResult Function()?  finish,TResult Function()?  duplicateAsDraft,required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case LoadProtocol() when load != null:
 return load(_that.protocolId,_that.protocolType);case UpdateField() when updateField != null:
@@ -150,7 +156,9 @@ return addRepeatableItem(_that.sectionId);case RemoveRepeatableItem() when remov
 return removeRepeatableItem(_that.sectionId,_that.index);case SaveDraft() when saveDraft != null:
 return saveDraft();case GeneratePdf() when generatePdf != null:
 return generatePdf();case DeleteDraft() when deleteDraft != null:
-return deleteDraft();case _:
+return deleteDraft();case FinishProtocol() when finish != null:
+return finish();case DuplicateAsDraft() when duplicateAsDraft != null:
+return duplicateAsDraft();case _:
   return orElse();
 
 }
@@ -168,7 +176,7 @@ return deleteDraft();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int? protocolId,  String? protocolType)  load,required TResult Function( String key,  dynamic value)  updateField,required TResult Function( String sectionId,  int index,  String key,  dynamic value)  updateRepeatableField,required TResult Function( String sectionId)  addRepeatableItem,required TResult Function( String sectionId,  int index)  removeRepeatableItem,required TResult Function()  saveDraft,required TResult Function()  generatePdf,required TResult Function()  deleteDraft,}) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>({required TResult Function( int? protocolId,  String? protocolType)  load,required TResult Function( String key,  dynamic value)  updateField,required TResult Function( String sectionId,  int index,  String key,  dynamic value)  updateRepeatableField,required TResult Function( String sectionId)  addRepeatableItem,required TResult Function( String sectionId,  int index)  removeRepeatableItem,required TResult Function()  saveDraft,required TResult Function()  generatePdf,required TResult Function()  deleteDraft,required TResult Function()  finish,required TResult Function()  duplicateAsDraft,}) {final _that = this;
 switch (_that) {
 case LoadProtocol():
 return load(_that.protocolId,_that.protocolType);case UpdateField():
@@ -178,7 +186,9 @@ return addRepeatableItem(_that.sectionId);case RemoveRepeatableItem():
 return removeRepeatableItem(_that.sectionId,_that.index);case SaveDraft():
 return saveDraft();case GeneratePdf():
 return generatePdf();case DeleteDraft():
-return deleteDraft();case _:
+return deleteDraft();case FinishProtocol():
+return finish();case DuplicateAsDraft():
+return duplicateAsDraft();case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,7 +205,7 @@ return deleteDraft();case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int? protocolId,  String? protocolType)?  load,TResult? Function( String key,  dynamic value)?  updateField,TResult? Function( String sectionId,  int index,  String key,  dynamic value)?  updateRepeatableField,TResult? Function( String sectionId)?  addRepeatableItem,TResult? Function( String sectionId,  int index)?  removeRepeatableItem,TResult? Function()?  saveDraft,TResult? Function()?  generatePdf,TResult? Function()?  deleteDraft,}) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>({TResult? Function( int? protocolId,  String? protocolType)?  load,TResult? Function( String key,  dynamic value)?  updateField,TResult? Function( String sectionId,  int index,  String key,  dynamic value)?  updateRepeatableField,TResult? Function( String sectionId)?  addRepeatableItem,TResult? Function( String sectionId,  int index)?  removeRepeatableItem,TResult? Function()?  saveDraft,TResult? Function()?  generatePdf,TResult? Function()?  deleteDraft,TResult? Function()?  finish,TResult? Function()?  duplicateAsDraft,}) {final _that = this;
 switch (_that) {
 case LoadProtocol() when load != null:
 return load(_that.protocolId,_that.protocolType);case UpdateField() when updateField != null:
@@ -205,7 +215,9 @@ return addRepeatableItem(_that.sectionId);case RemoveRepeatableItem() when remov
 return removeRepeatableItem(_that.sectionId,_that.index);case SaveDraft() when saveDraft != null:
 return saveDraft();case GeneratePdf() when generatePdf != null:
 return generatePdf();case DeleteDraft() when deleteDraft != null:
-return deleteDraft();case _:
+return deleteDraft();case FinishProtocol() when finish != null:
+return finish();case DuplicateAsDraft() when duplicateAsDraft != null:
+return duplicateAsDraft();case _:
   return null;
 
 }
@@ -652,9 +664,73 @@ String toString() {
 
 
 /// @nodoc
+
+
+class FinishProtocol implements ProtocolEvent {
+  const FinishProtocol();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is FinishProtocol);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ProtocolEvent.finish()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
+
+
+class DuplicateAsDraft implements ProtocolEvent {
+  const DuplicateAsDraft();
+  
+
+
+
+
+
+
+@override
+bool operator ==(Object other) {
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is DuplicateAsDraft);
+}
+
+
+@override
+int get hashCode => runtimeType.hashCode;
+
+@override
+String toString() {
+  return 'ProtocolEvent.duplicateAsDraft()';
+}
+
+
+}
+
+
+
+
+/// @nodoc
 mixin _$ProtocolState {
 
- bool get isLoading; bool get isSaving; bool get isDirty; bool get pdfGenerating; String? get protocolType; int get protocolId; Map<String, dynamic> get formData; Map<String, List<Map<String, dynamic>>> get repeatableData; List<FormSection> get sections; String? get error; String? get pdfPath; String? get saveMessage;
+ bool get isLoading; bool get isSaving; bool get isDirty; bool get pdfGenerating; String? get protocolType; int get protocolId; String get status; Map<String, dynamic> get formData; Map<String, List<Map<String, dynamic>>> get repeatableData; List<FormSection> get sections; String? get error; String? get pdfPath; String? get saveMessage; int? get duplicatedDraftId;
 /// Create a copy of ProtocolState
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -665,16 +741,16 @@ $ProtocolStateCopyWith<ProtocolState> get copyWith => _$ProtocolStateCopyWithImp
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProtocolState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isDirty, isDirty) || other.isDirty == isDirty)&&(identical(other.pdfGenerating, pdfGenerating) || other.pdfGenerating == pdfGenerating)&&(identical(other.protocolType, protocolType) || other.protocolType == protocolType)&&(identical(other.protocolId, protocolId) || other.protocolId == protocolId)&&const DeepCollectionEquality().equals(other.formData, formData)&&const DeepCollectionEquality().equals(other.repeatableData, repeatableData)&&const DeepCollectionEquality().equals(other.sections, sections)&&(identical(other.error, error) || other.error == error)&&(identical(other.pdfPath, pdfPath) || other.pdfPath == pdfPath)&&(identical(other.saveMessage, saveMessage) || other.saveMessage == saveMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is ProtocolState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isDirty, isDirty) || other.isDirty == isDirty)&&(identical(other.pdfGenerating, pdfGenerating) || other.pdfGenerating == pdfGenerating)&&(identical(other.protocolType, protocolType) || other.protocolType == protocolType)&&(identical(other.protocolId, protocolId) || other.protocolId == protocolId)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other.formData, formData)&&const DeepCollectionEquality().equals(other.repeatableData, repeatableData)&&const DeepCollectionEquality().equals(other.sections, sections)&&(identical(other.error, error) || other.error == error)&&(identical(other.pdfPath, pdfPath) || other.pdfPath == pdfPath)&&(identical(other.saveMessage, saveMessage) || other.saveMessage == saveMessage)&&(identical(other.duplicatedDraftId, duplicatedDraftId) || other.duplicatedDraftId == duplicatedDraftId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,isSaving,isDirty,pdfGenerating,protocolType,protocolId,const DeepCollectionEquality().hash(formData),const DeepCollectionEquality().hash(repeatableData),const DeepCollectionEquality().hash(sections),error,pdfPath,saveMessage);
+int get hashCode => Object.hash(runtimeType,isLoading,isSaving,isDirty,pdfGenerating,protocolType,protocolId,status,const DeepCollectionEquality().hash(formData),const DeepCollectionEquality().hash(repeatableData),const DeepCollectionEquality().hash(sections),error,pdfPath,saveMessage,duplicatedDraftId);
 
 @override
 String toString() {
-  return 'ProtocolState(isLoading: $isLoading, isSaving: $isSaving, isDirty: $isDirty, pdfGenerating: $pdfGenerating, protocolType: $protocolType, protocolId: $protocolId, formData: $formData, repeatableData: $repeatableData, sections: $sections, error: $error, pdfPath: $pdfPath, saveMessage: $saveMessage)';
+  return 'ProtocolState(isLoading: $isLoading, isSaving: $isSaving, isDirty: $isDirty, pdfGenerating: $pdfGenerating, protocolType: $protocolType, protocolId: $protocolId, status: $status, formData: $formData, repeatableData: $repeatableData, sections: $sections, error: $error, pdfPath: $pdfPath, saveMessage: $saveMessage, duplicatedDraftId: $duplicatedDraftId)';
 }
 
 
@@ -685,7 +761,7 @@ abstract mixin class $ProtocolStateCopyWith<$Res>  {
   factory $ProtocolStateCopyWith(ProtocolState value, $Res Function(ProtocolState) _then) = _$ProtocolStateCopyWithImpl;
 @useResult
 $Res call({
- bool isLoading, bool isSaving, bool isDirty, bool pdfGenerating, String? protocolType, int protocolId, Map<String, dynamic> formData, Map<String, List<Map<String, dynamic>>> repeatableData, List<FormSection> sections, String? error, String? pdfPath, String? saveMessage
+ bool isLoading, bool isSaving, bool isDirty, bool pdfGenerating, String? protocolType, int protocolId, String status, Map<String, dynamic> formData, Map<String, List<Map<String, dynamic>>> repeatableData, List<FormSection> sections, String? error, String? pdfPath, String? saveMessage, int? duplicatedDraftId
 });
 
 
@@ -702,7 +778,7 @@ class _$ProtocolStateCopyWithImpl<$Res>
 
 /// Create a copy of ProtocolState
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isSaving = null,Object? isDirty = null,Object? pdfGenerating = null,Object? protocolType = freezed,Object? protocolId = null,Object? formData = null,Object? repeatableData = null,Object? sections = null,Object? error = freezed,Object? pdfPath = freezed,Object? saveMessage = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? isLoading = null,Object? isSaving = null,Object? isDirty = null,Object? pdfGenerating = null,Object? protocolType = freezed,Object? protocolId = null,Object? status = null,Object? formData = null,Object? repeatableData = null,Object? sections = null,Object? error = freezed,Object? pdfPath = freezed,Object? saveMessage = freezed,Object? duplicatedDraftId = freezed,}) {
   return _then(_self.copyWith(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
@@ -710,13 +786,15 @@ as bool,isDirty: null == isDirty ? _self.isDirty : isDirty // ignore: cast_nulla
 as bool,pdfGenerating: null == pdfGenerating ? _self.pdfGenerating : pdfGenerating // ignore: cast_nullable_to_non_nullable
 as bool,protocolType: freezed == protocolType ? _self.protocolType : protocolType // ignore: cast_nullable_to_non_nullable
 as String?,protocolId: null == protocolId ? _self.protocolId : protocolId // ignore: cast_nullable_to_non_nullable
-as int,formData: null == formData ? _self.formData : formData // ignore: cast_nullable_to_non_nullable
+as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,formData: null == formData ? _self.formData : formData // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,repeatableData: null == repeatableData ? _self.repeatableData : repeatableData // ignore: cast_nullable_to_non_nullable
 as Map<String, List<Map<String, dynamic>>>,sections: null == sections ? _self.sections : sections // ignore: cast_nullable_to_non_nullable
 as List<FormSection>,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,pdfPath: freezed == pdfPath ? _self.pdfPath : pdfPath // ignore: cast_nullable_to_non_nullable
 as String?,saveMessage: freezed == saveMessage ? _self.saveMessage : saveMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,duplicatedDraftId: freezed == duplicatedDraftId ? _self.duplicatedDraftId : duplicatedDraftId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 
@@ -798,10 +876,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isDirty,  bool pdfGenerating,  String? protocolType,  int protocolId,  Map<String, dynamic> formData,  Map<String, List<Map<String, dynamic>>> repeatableData,  List<FormSection> sections,  String? error,  String? pdfPath,  String? saveMessage)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isDirty,  bool pdfGenerating,  String? protocolType,  int protocolId,  String status,  Map<String, dynamic> formData,  Map<String, List<Map<String, dynamic>>> repeatableData,  List<FormSection> sections,  String? error,  String? pdfPath,  String? saveMessage,  int? duplicatedDraftId)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _ProtocolState() when $default != null:
-return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating,_that.protocolType,_that.protocolId,_that.formData,_that.repeatableData,_that.sections,_that.error,_that.pdfPath,_that.saveMessage);case _:
+return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating,_that.protocolType,_that.protocolId,_that.status,_that.formData,_that.repeatableData,_that.sections,_that.error,_that.pdfPath,_that.saveMessage,_that.duplicatedDraftId);case _:
   return orElse();
 
 }
@@ -819,10 +897,10 @@ return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isDirty,  bool pdfGenerating,  String? protocolType,  int protocolId,  Map<String, dynamic> formData,  Map<String, List<Map<String, dynamic>>> repeatableData,  List<FormSection> sections,  String? error,  String? pdfPath,  String? saveMessage)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( bool isLoading,  bool isSaving,  bool isDirty,  bool pdfGenerating,  String? protocolType,  int protocolId,  String status,  Map<String, dynamic> formData,  Map<String, List<Map<String, dynamic>>> repeatableData,  List<FormSection> sections,  String? error,  String? pdfPath,  String? saveMessage,  int? duplicatedDraftId)  $default,) {final _that = this;
 switch (_that) {
 case _ProtocolState():
-return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating,_that.protocolType,_that.protocolId,_that.formData,_that.repeatableData,_that.sections,_that.error,_that.pdfPath,_that.saveMessage);}
+return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating,_that.protocolType,_that.protocolId,_that.status,_that.formData,_that.repeatableData,_that.sections,_that.error,_that.pdfPath,_that.saveMessage,_that.duplicatedDraftId);}
 }
 /// A variant of `when` that fallback to returning `null`
 ///
@@ -836,10 +914,10 @@ return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isSaving,  bool isDirty,  bool pdfGenerating,  String? protocolType,  int protocolId,  Map<String, dynamic> formData,  Map<String, List<Map<String, dynamic>>> repeatableData,  List<FormSection> sections,  String? error,  String? pdfPath,  String? saveMessage)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( bool isLoading,  bool isSaving,  bool isDirty,  bool pdfGenerating,  String? protocolType,  int protocolId,  String status,  Map<String, dynamic> formData,  Map<String, List<Map<String, dynamic>>> repeatableData,  List<FormSection> sections,  String? error,  String? pdfPath,  String? saveMessage,  int? duplicatedDraftId)?  $default,) {final _that = this;
 switch (_that) {
 case _ProtocolState() when $default != null:
-return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating,_that.protocolType,_that.protocolId,_that.formData,_that.repeatableData,_that.sections,_that.error,_that.pdfPath,_that.saveMessage);case _:
+return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating,_that.protocolType,_that.protocolId,_that.status,_that.formData,_that.repeatableData,_that.sections,_that.error,_that.pdfPath,_that.saveMessage,_that.duplicatedDraftId);case _:
   return null;
 
 }
@@ -850,8 +928,8 @@ return $default(_that.isLoading,_that.isSaving,_that.isDirty,_that.pdfGenerating
 /// @nodoc
 
 
-class _ProtocolState implements ProtocolState {
-  const _ProtocolState({this.isLoading = false, this.isSaving = false, this.isDirty = false, this.pdfGenerating = false, this.protocolType, this.protocolId = 0, final  Map<String, dynamic> formData = const {}, final  Map<String, List<Map<String, dynamic>>> repeatableData = const {}, final  List<FormSection> sections = const [], this.error, this.pdfPath, this.saveMessage}): _formData = formData,_repeatableData = repeatableData,_sections = sections;
+class _ProtocolState extends ProtocolState {
+  const _ProtocolState({this.isLoading = false, this.isSaving = false, this.isDirty = false, this.pdfGenerating = false, this.protocolType, this.protocolId = 0, this.status = 'draft', final  Map<String, dynamic> formData = const {}, final  Map<String, List<Map<String, dynamic>>> repeatableData = const {}, final  List<FormSection> sections = const [], this.error, this.pdfPath, this.saveMessage, this.duplicatedDraftId}): _formData = formData,_repeatableData = repeatableData,_sections = sections,super._();
   
 
 @override@JsonKey() final  bool isLoading;
@@ -860,6 +938,7 @@ class _ProtocolState implements ProtocolState {
 @override@JsonKey() final  bool pdfGenerating;
 @override final  String? protocolType;
 @override@JsonKey() final  int protocolId;
+@override@JsonKey() final  String status;
  final  Map<String, dynamic> _formData;
 @override@JsonKey() Map<String, dynamic> get formData {
   if (_formData is EqualUnmodifiableMapView) return _formData;
@@ -884,6 +963,7 @@ class _ProtocolState implements ProtocolState {
 @override final  String? error;
 @override final  String? pdfPath;
 @override final  String? saveMessage;
+@override final  int? duplicatedDraftId;
 
 /// Create a copy of ProtocolState
 /// with the given fields replaced by the non-null parameter values.
@@ -895,16 +975,16 @@ _$ProtocolStateCopyWith<_ProtocolState> get copyWith => __$ProtocolStateCopyWith
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProtocolState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isDirty, isDirty) || other.isDirty == isDirty)&&(identical(other.pdfGenerating, pdfGenerating) || other.pdfGenerating == pdfGenerating)&&(identical(other.protocolType, protocolType) || other.protocolType == protocolType)&&(identical(other.protocolId, protocolId) || other.protocolId == protocolId)&&const DeepCollectionEquality().equals(other._formData, _formData)&&const DeepCollectionEquality().equals(other._repeatableData, _repeatableData)&&const DeepCollectionEquality().equals(other._sections, _sections)&&(identical(other.error, error) || other.error == error)&&(identical(other.pdfPath, pdfPath) || other.pdfPath == pdfPath)&&(identical(other.saveMessage, saveMessage) || other.saveMessage == saveMessage));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _ProtocolState&&(identical(other.isLoading, isLoading) || other.isLoading == isLoading)&&(identical(other.isSaving, isSaving) || other.isSaving == isSaving)&&(identical(other.isDirty, isDirty) || other.isDirty == isDirty)&&(identical(other.pdfGenerating, pdfGenerating) || other.pdfGenerating == pdfGenerating)&&(identical(other.protocolType, protocolType) || other.protocolType == protocolType)&&(identical(other.protocolId, protocolId) || other.protocolId == protocolId)&&(identical(other.status, status) || other.status == status)&&const DeepCollectionEquality().equals(other._formData, _formData)&&const DeepCollectionEquality().equals(other._repeatableData, _repeatableData)&&const DeepCollectionEquality().equals(other._sections, _sections)&&(identical(other.error, error) || other.error == error)&&(identical(other.pdfPath, pdfPath) || other.pdfPath == pdfPath)&&(identical(other.saveMessage, saveMessage) || other.saveMessage == saveMessage)&&(identical(other.duplicatedDraftId, duplicatedDraftId) || other.duplicatedDraftId == duplicatedDraftId));
 }
 
 
 @override
-int get hashCode => Object.hash(runtimeType,isLoading,isSaving,isDirty,pdfGenerating,protocolType,protocolId,const DeepCollectionEquality().hash(_formData),const DeepCollectionEquality().hash(_repeatableData),const DeepCollectionEquality().hash(_sections),error,pdfPath,saveMessage);
+int get hashCode => Object.hash(runtimeType,isLoading,isSaving,isDirty,pdfGenerating,protocolType,protocolId,status,const DeepCollectionEquality().hash(_formData),const DeepCollectionEquality().hash(_repeatableData),const DeepCollectionEquality().hash(_sections),error,pdfPath,saveMessage,duplicatedDraftId);
 
 @override
 String toString() {
-  return 'ProtocolState(isLoading: $isLoading, isSaving: $isSaving, isDirty: $isDirty, pdfGenerating: $pdfGenerating, protocolType: $protocolType, protocolId: $protocolId, formData: $formData, repeatableData: $repeatableData, sections: $sections, error: $error, pdfPath: $pdfPath, saveMessage: $saveMessage)';
+  return 'ProtocolState(isLoading: $isLoading, isSaving: $isSaving, isDirty: $isDirty, pdfGenerating: $pdfGenerating, protocolType: $protocolType, protocolId: $protocolId, status: $status, formData: $formData, repeatableData: $repeatableData, sections: $sections, error: $error, pdfPath: $pdfPath, saveMessage: $saveMessage, duplicatedDraftId: $duplicatedDraftId)';
 }
 
 
@@ -915,7 +995,7 @@ abstract mixin class _$ProtocolStateCopyWith<$Res> implements $ProtocolStateCopy
   factory _$ProtocolStateCopyWith(_ProtocolState value, $Res Function(_ProtocolState) _then) = __$ProtocolStateCopyWithImpl;
 @override @useResult
 $Res call({
- bool isLoading, bool isSaving, bool isDirty, bool pdfGenerating, String? protocolType, int protocolId, Map<String, dynamic> formData, Map<String, List<Map<String, dynamic>>> repeatableData, List<FormSection> sections, String? error, String? pdfPath, String? saveMessage
+ bool isLoading, bool isSaving, bool isDirty, bool pdfGenerating, String? protocolType, int protocolId, String status, Map<String, dynamic> formData, Map<String, List<Map<String, dynamic>>> repeatableData, List<FormSection> sections, String? error, String? pdfPath, String? saveMessage, int? duplicatedDraftId
 });
 
 
@@ -932,7 +1012,7 @@ class __$ProtocolStateCopyWithImpl<$Res>
 
 /// Create a copy of ProtocolState
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isSaving = null,Object? isDirty = null,Object? pdfGenerating = null,Object? protocolType = freezed,Object? protocolId = null,Object? formData = null,Object? repeatableData = null,Object? sections = null,Object? error = freezed,Object? pdfPath = freezed,Object? saveMessage = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? isLoading = null,Object? isSaving = null,Object? isDirty = null,Object? pdfGenerating = null,Object? protocolType = freezed,Object? protocolId = null,Object? status = null,Object? formData = null,Object? repeatableData = null,Object? sections = null,Object? error = freezed,Object? pdfPath = freezed,Object? saveMessage = freezed,Object? duplicatedDraftId = freezed,}) {
   return _then(_ProtocolState(
 isLoading: null == isLoading ? _self.isLoading : isLoading // ignore: cast_nullable_to_non_nullable
 as bool,isSaving: null == isSaving ? _self.isSaving : isSaving // ignore: cast_nullable_to_non_nullable
@@ -940,13 +1020,15 @@ as bool,isDirty: null == isDirty ? _self.isDirty : isDirty // ignore: cast_nulla
 as bool,pdfGenerating: null == pdfGenerating ? _self.pdfGenerating : pdfGenerating // ignore: cast_nullable_to_non_nullable
 as bool,protocolType: freezed == protocolType ? _self.protocolType : protocolType // ignore: cast_nullable_to_non_nullable
 as String?,protocolId: null == protocolId ? _self.protocolId : protocolId // ignore: cast_nullable_to_non_nullable
-as int,formData: null == formData ? _self._formData : formData // ignore: cast_nullable_to_non_nullable
+as int,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String,formData: null == formData ? _self._formData : formData // ignore: cast_nullable_to_non_nullable
 as Map<String, dynamic>,repeatableData: null == repeatableData ? _self._repeatableData : repeatableData // ignore: cast_nullable_to_non_nullable
 as Map<String, List<Map<String, dynamic>>>,sections: null == sections ? _self._sections : sections // ignore: cast_nullable_to_non_nullable
 as List<FormSection>,error: freezed == error ? _self.error : error // ignore: cast_nullable_to_non_nullable
 as String?,pdfPath: freezed == pdfPath ? _self.pdfPath : pdfPath // ignore: cast_nullable_to_non_nullable
 as String?,saveMessage: freezed == saveMessage ? _self.saveMessage : saveMessage // ignore: cast_nullable_to_non_nullable
-as String?,
+as String?,duplicatedDraftId: freezed == duplicatedDraftId ? _self.duplicatedDraftId : duplicatedDraftId // ignore: cast_nullable_to_non_nullable
+as int?,
   ));
 }
 

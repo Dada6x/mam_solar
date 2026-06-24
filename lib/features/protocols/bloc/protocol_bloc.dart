@@ -19,6 +19,8 @@ class ProtocolEvent with _$ProtocolEvent {
   const factory ProtocolEvent.saveDraft() = SaveDraft;
   const factory ProtocolEvent.generatePdf() = GeneratePdf;
   const factory ProtocolEvent.deleteDraft() = DeleteDraft;
+  const factory ProtocolEvent.finish() = FinishProtocol;
+  const factory ProtocolEvent.duplicateAsDraft() = DuplicateAsDraft;
 }
 
 @freezed
@@ -30,13 +32,20 @@ sealed class ProtocolState with _$ProtocolState {
     @Default(false) bool pdfGenerating,
     String? protocolType,
     @Default(0) int protocolId,
+    @Default('draft') String status,
     @Default({}) Map<String, dynamic> formData,
     @Default({}) Map<String, List<Map<String, dynamic>>> repeatableData,
     @Default([]) List<FormSection> sections,
     String? error,
     String? pdfPath,
     String? saveMessage,
+    int? duplicatedDraftId,
   }) = _ProtocolState;
+
+  const ProtocolState._();
+
+  /// Finished protocols are locked: the form is read-only.
+  bool get isReadOnly => status == 'completed';
 }
 
 class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
@@ -52,6 +61,16 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     on<SaveDraft>(_onSaveDraft);
     on<GeneratePdf>(_onGeneratePdf);
     on<DeleteDraft>(_onDeleteDraft);
+    on<FinishProtocol>(_onFinish);
+    on<DuplicateAsDraft>(_onDuplicate);
+  }
+
+  /// Customer display name from the form (varies per protocol type).
+  String? _customerName() {
+    final d = state.formData;
+    final raw = d['customerName'] ?? d['fullName'] ?? d['injuredName'];
+    final s = raw?.toString().trim() ?? '';
+    return s.isEmpty ? null : s;
   }
 
   Future<void> _onLoad(LoadProtocol event, Emitter<ProtocolState> emit) async {
@@ -99,6 +118,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           isLoading: false,
           protocolType: type,
           protocolId: 0,
+          status: 'draft',
           sections: sections,
           formData: formData,
           repeatableData: repeatableData,
@@ -109,6 +129,7 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           isLoading: false,
           protocolType: type,
           protocolId: existing.id,
+          status: existing.status,
           sections: sections,
           formData: formData,
           repeatableData: repeatableData,
@@ -212,7 +233,8 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           (k, v) => MapEntry(k, v.map((e) => Map<String, dynamic>.from(e)).toList()),
         );
       }
-      await _protocolRepo.updateJsonData(protocolId, data);
+      await _protocolRepo.updateJsonData(protocolId, data,
+          customerName: _customerName());
       emit(state.copyWith(
         isSaving: false,
         isDirty: false,
@@ -261,7 +283,8 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
           (k, v) => MapEntry(k, v.map((e) => Map<String, dynamic>.from(e)).toList()),
         );
       }
-      await _protocolRepo.updateJsonData(protocolId, data);
+      await _protocolRepo.updateJsonData(protocolId, data,
+          customerName: _customerName());
 
       // Invalidate cached pdfPath so PdfBloc regenerates instead of showing stale PDF
       final existing = await _protocolRepo.getProtocol(protocolId);
@@ -285,6 +308,64 @@ class ProtocolBloc extends Bloc<ProtocolEvent, ProtocolState> {
     try {
       await _protocolRepo.deleteProtocol(state.protocolId);
     } catch (_) {}
+  }
+
+  /// Finalize a protocol: persist data, then lock it (status -> completed).
+  /// The UI validates required fields before dispatching this.
+  Future<void> _onFinish(FinishProtocol event, Emitter<ProtocolState> emit) async {
+    emit(state.copyWith(isSaving: true, error: null));
+    try {
+      int protocolId = state.protocolId;
+      if (protocolId == 0) {
+        final now = DateTime.now().millisecondsSinceEpoch;
+        protocolId = await _protocolRepo.insertProtocol(
+          ProtocolModel(
+            type: state.protocolType ?? '',
+            customerName: _customerName(),
+            createdAt: now,
+            updatedAt: now,
+            status: 'draft',
+            jsonData: '{}',
+          ),
+        );
+      }
+      final data = Map<String, dynamic>.from(state.formData);
+      if (state.repeatableData.isNotEmpty) {
+        data['_repeatable'] = state.repeatableData.map(
+          (k, v) =>
+              MapEntry(k, v.map((e) => Map<String, dynamic>.from(e)).toList()),
+        );
+      }
+      await _protocolRepo.updateJsonData(protocolId, data,
+          customerName: _customerName());
+      await _protocolRepo.markCompleted(protocolId);
+      _log.i('Protocol #$protocolId finished (completed)');
+      emit(state.copyWith(
+        isSaving: false,
+        isDirty: false,
+        protocolId: protocolId,
+        status: 'completed',
+        saveMessage: 'finished',
+      ));
+    } catch (e) {
+      _log.e('Finish failed', error: e);
+      emit(state.copyWith(isSaving: false, error: 'saveFailed'));
+    }
+  }
+
+  /// Create an editable draft copy of a finished protocol (the original stays
+  /// locked). Emits [duplicatedDraftId] for the UI to navigate to.
+  Future<void> _onDuplicate(
+      DuplicateAsDraft event, Emitter<ProtocolState> emit) async {
+    if (state.protocolId == 0) return;
+    try {
+      final newId = await _protocolRepo.duplicateAsDraft(state.protocolId);
+      if (newId > 0) {
+        emit(state.copyWith(duplicatedDraftId: newId));
+      }
+    } catch (e) {
+      _log.e('Duplicate failed', error: e);
+    }
   }
 
   bool _isValueFilled(dynamic val) {

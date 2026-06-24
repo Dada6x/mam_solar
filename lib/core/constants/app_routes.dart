@@ -6,6 +6,7 @@ import 'package:mam_solar/features/protocols/view/dynamic_form_screen.dart';
 import 'package:mam_solar/features/signatures/view/signature_screen.dart';
 import 'package:mam_solar/features/pdf/view/pdf_preview_screen.dart';
 import 'package:mam_solar/features/drafts/view/saved_drafts_screen.dart';
+import 'package:mam_solar/features/completed/view/completed_protocols_screen.dart';
 import 'package:mam_solar/features/settings/view/settings_screen.dart';
 
 class AppRoutes {
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String signature = '/signature/:protocolId/:signatureType';
   static const String pdfPreview = '/pdf-preview/:protocolId';
   static const String drafts = '/drafts';
+  static const String completed = '/completed';
   static const String settings = '/settings';
 
   static final RouteObserver<ModalRoute> routeObserver =
@@ -75,6 +77,10 @@ class AppRoutes {
       GoRoute(
         path: '/drafts',
         builder: (context, state) => const SavedDraftsScreen(),
+      ),
+      GoRoute(
+        path: '/completed',
+        builder: (context, state) => const CompletedProtocolsScreen(),
       ),
       GoRoute(
         path: '/settings',

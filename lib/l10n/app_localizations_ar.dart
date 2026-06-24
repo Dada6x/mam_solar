@@ -614,6 +614,30 @@ class AppLocalizationsAr extends AppLocalizations {
   String get companyAddress => 'Sperlingstr. 2, 86179 Augsburg';
 
   @override
+  String get finishProtocol => 'إنهاء';
+
+  @override
+  String get duplicateAsDraft => 'نسخ كمسودة';
+
+  @override
+  String get protocolLocked => 'هذا البروتوكول مكتمل ومقفل.';
+
+  @override
+  String get protocolFinished => 'تم إنهاء البروتوكول';
+
+  @override
+  String get completedProtocols => 'البروتوكولات المكتملة';
+
+  @override
+  String get searchByCustomer => 'البحث حسب العميل';
+
+  @override
+  String get noCompletedYet => 'لا توجد بروتوكولات مكتملة بعد';
+
+  @override
+  String get noSearchResults => 'لا نتائج';
+
+  @override
   String get appVersion => '1.0.0';
 
   @override

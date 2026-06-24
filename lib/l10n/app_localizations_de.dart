@@ -616,6 +616,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get companyAddress => 'Sperlingstr. 2, 86179 Augsburg';
 
   @override
+  String get finishProtocol => 'Abschließen';
+
+  @override
+  String get duplicateAsDraft => 'Als Entwurf duplizieren';
+
+  @override
+  String get protocolLocked =>
+      'Dieses Protokoll ist abgeschlossen und gesperrt.';
+
+  @override
+  String get protocolFinished => 'Protokoll abgeschlossen';
+
+  @override
+  String get completedProtocols => 'Fertige Protokolle';
+
+  @override
+  String get searchByCustomer => 'Nach Kunde suchen';
+
+  @override
+  String get noCompletedYet => 'Noch keine fertigen Protokolle';
+
+  @override
+  String get noSearchResults => 'Keine Treffer';
+
+  @override
   String get appVersion => '1.0.0';
 
   @override
